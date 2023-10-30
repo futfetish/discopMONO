@@ -1,0 +1,15 @@
+.but{
+    color: white;
+    outline: none;
+    height: 32px;
+    border-radius: 5px ;
+    box-shadow : none;
+    padding: 5px 10px;
+    border: none;
+    background-color: #6368ff;
+    transition: all ease-in-out 0.1s;
+    width: auto;
+    &:hover{
+        background-color: #565adb;
+    }
+}
