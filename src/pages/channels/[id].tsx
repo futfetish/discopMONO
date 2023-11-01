@@ -3,7 +3,10 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
+import GroupRight from "~/components/GroupRight";
 
+import RoomUntilAdd from "~/components/RoomUntilAdd";
+import ErrorContent from "~/components/errorContent";
 import { GetServerSideProps } from "next";
 import { useRouter } from 'next/router';
 import  Styles  from"../../styles/room.module.scss"
@@ -17,10 +20,12 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const id = ctx.params?.id;
 
     if (!id){
-        throw new Error('mis id')
+      return {
+        notFound : true
+      }
     }
   
-    const res = await db.room.findUniqueOrThrow({
+    const res = await db.room.findUnique({
         where : {
            id: parseInt(id as string)
         },
@@ -32,7 +37,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
                 id:true,
                 name:true,
                 image:true
-            }}
+            }},
+            isAdmin : true
             }
             
           },
@@ -55,7 +61,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         }
     })
   
-
+    if(!res){
+      return {
+        notFound : true
+      }
+    }
 
     return {
       props: {
@@ -69,18 +79,24 @@ export default function Room( props: {data : string} ) {
     const router = useRouter();
     const { id } = router.query;
     if(!id){
-        throw new  Error(`mis id`)
+      <MainContainer tab="none" content={() => ErrorContent('вы не являетесь участником этой группы') } top={() => <div></div> }  right={() => <div></div>} title={ 'вы не являетесь участником этой группы'} />
     }
     
     const {data : sessionData } = useSession()
     if (!sessionData ){
       return (  <button onClick={()=> void signIn()}>signin </button> )
     }
+    console.log(res.members)
+    if( !res.members.some((u : any) => u.user.id === sessionData.user.id) ){
+      return (
+        <MainContainer tab="none" content={() => ErrorContent('вы не являетесь участником этой группы') } top={() => <div></div> }  right={() => <div></div>} title={ 'вы не являетесь участником этой группы'} />
+      )
+    }
 
 
 
   return (
-    <MainContainer tab={'room_' + res.id} content={() => content(res , sessionData.user) } top={() =>  top(res , sessionData.user) }  right={right} title={ res.type == 'ls' ? res.members.map((u :  any) => u.user).filter((m : any) => m.id !== sessionData.user.id).map((m : any) => m = m.name).join(', ')  :  res.name} />
+    <MainContainer tab={'room_' + res.id} content={() => content(res , sessionData.user) } top={() =>  top(res , sessionData.user) }  right={() => res.type == 'ls' ? right() : GroupRight(res , sessionData.user)} title={ res.type == 'ls' ? res.members.map((u :  any) => u.user).filter((m : any) => m.id !== sessionData.user.id).map((m : any) => m = m.name).join(', ')  :  res.name} />
   );
 }
 
@@ -226,9 +242,7 @@ function top( room : any , user : any){
       <img src={ room.type == 'ls' ? room.members.map((u :  any) => u.user).filter((m : any) => m.id !== user.id)[0].image : '/img/grav.png' } alt="" className={Styles.room_big_ava}/>
         <p className={Styles.room_title}> { room.type == 'ls' ? room.members.map((u :  any) => u.user).filter((m : any) => m.id !== user.id).map((m : any)=> m = m.name).join(', ')  :  room.name} </p>
         <div className={Styles.top_utils}>
-            <div className={[Styles.utils_add , Styles.util].join(' ')}>
-              <i className="bi bi-person-plus-fill"></i>
-            </div>
+            <RoomUntilAdd room={room}/>
         </div>
     </div>
   )

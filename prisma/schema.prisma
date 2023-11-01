@@ -121,6 +121,7 @@ model UserRooms {
     room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
     roomId Int
     isRead Boolean @default(false)
+    isAdmin Boolean @default(false)
 
     @@id([userId, roomId])
 }
