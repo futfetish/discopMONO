@@ -50,33 +50,16 @@ model User {
     sessions      Session[]
     email         String?   @unique
     emailVerified DateTime?
-    name          String  
+    name          String
     image         String    @default("https://cdn.discordapp.com/embed/avatars/0.png")
 
-    id        String      @id @default(cuid())
-    msgs      Message[]
-    rooms     UserRooms[]
+    id    String      @id @default(cuid())
+    msgs  Message[]
+    rooms UserRooms[]
+    token String?     @unique
 
-    friends Friends[] @relation("FriendsFrom")
-    friendsOf   Friends[] @relation("FriendsTo")
-
-    tokens friendTokenToUser[] 
-}
-
-model FriendToken {
-    id Int      @id @default(autoincrement())
-    token String? @unique
-    users friendTokenToUser[] 
-}
-
-model friendTokenToUser {
-  token FriendToken @relation( fields: [tokenId], references: [id], onDelete: Cascade)
-  tokenId Int @unique
-
-  user User @relation( fields: [userId], references: [id], onDelete: Cascade)
-  userId String @unique
-
-  @@id([tokenId, userId])
+    friends   Friends[] @relation("FriendsFrom")
+    friendsOf Friends[] @relation("FriendsTo")
 }
 
 model Friends {
@@ -98,9 +81,9 @@ model Room {
     id        Int      @id @default(autoincrement())
     createdAt DateTime @default(now())
 
-    name  String      @default("новый канал")
-    type  Room_types
-    msgs  Message[]
+    name    String      @default("новый канал")
+    type    Room_types
+    msgs    Message[]
     members UserRooms[]
 }
 
@@ -116,11 +99,11 @@ model Message {
 }
 
 model UserRooms {
-    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId String
-    room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
-    roomId Int
-    isRead Boolean @default(false)
+    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId  String
+    room    Room    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+    roomId  Int
+    isRead  Boolean @default(false)
     isAdmin Boolean @default(false)
 
     @@id([userId, roomId])
