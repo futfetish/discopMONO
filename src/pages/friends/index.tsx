@@ -37,9 +37,9 @@ function content(user : any){
         image: string;
       }
 
-    const {mutate  } = api.users.friend_del.useMutation()
+    const {mutate  } = api.friends.del.useMutation()
 
-    const {data : friends , isLoading} = api.users.friends.useQuery()
+    const {data : friends , isLoading} = api.friends.all.useQuery()
 
     const [friendList, setFriendList] = useState<FriendType[]>([]);
 

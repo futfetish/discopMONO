@@ -56,7 +56,7 @@ model User {
     id    String      @id @default(cuid())
     msgs  Message[]
     rooms UserRooms[]
-    token String?     @unique
+    uniqName String?     @unique
 
     friends   Friends[] @relation("FriendsFrom")
     friendsOf Friends[] @relation("FriendsTo")

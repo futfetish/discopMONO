@@ -5,20 +5,21 @@ import { useState, useRef } from "react";
 import { useRouter } from "next/router";
 
 export default function RoomUntilAdd({ room }: any) {
-  const { data } = api.users.friends.useQuery();
+  const { data } = api.friends.all.useQuery();
   const users = room.members.map((u: any) => u.user);
   const friends = data?.filter(
     (friend) => !users.some((user: any) => user.id === friend.id),
   );
   const router = useRouter();
 
-  const { mutate, isLoading } = api.rooms.addUsersToChat.useMutation({
+  const { mutate : createRoom , isLoading : isLoading1 } =  api.rooms.createNewChat.useMutation({
     onSuccess: (data) => {
-      if (data.isCreated) {
-        router.push("/channels/" + data.roomId);
-      }
+      router.push("/channels/" + data.roomId);
     },
-  });
+  }) 
+  const {mutate : addUsers , isLoading : isLoading2 } = api.rooms.addUsersToChat.useMutation({
+    
+  })
 
   const [members, setMembers] = useState(
     new Set<string>(users.map((u: any) => u.id)),
@@ -92,8 +93,8 @@ export default function RoomUntilAdd({ room }: any) {
           </div>
           <MyButton
             className="w-full"
-            disabled={isLoading}
-            onClick={() => mutate({ roomId: room.id, userIds: members })}
+            disabled={isLoading1 || isLoading2  }
+            onClick={() => room.type === 'ls' ?  createRoom({userIds: members }) :  addUsers({ roomId: room.id, userIds: members }) }
           >
             Добавить
           </MyButton>

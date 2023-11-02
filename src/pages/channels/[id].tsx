@@ -108,7 +108,9 @@ function content(room : any , user : any){
 
   const {mutate} = api.message.create.useMutation({
     onSuccess : (data) => {
-      room.msgs.push(data)
+      room.msgs.push({id : data.messageId , createdAt : new Date().toISOString() , authorId : user.id , author : user , text : input})
+      console.log(room.msgs)
+      setInput('')
     }
   })
 
@@ -225,7 +227,6 @@ msgs.forEach((msg : any, i : number, arr : any[]) => {
               e.preventDefault();
               if (input !== "") {
                 mutate({ text: input , roomId : room.id });
-                setInput('')
               }
             }
           }}

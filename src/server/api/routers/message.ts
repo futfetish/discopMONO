@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { TRPCClientError } from "@trpc/client";
 
 import {
   createTRPCRouter,
@@ -27,5 +28,41 @@ export const messageRouter = createTRPCRouter({
       // TODO: уведомить участников канала
       // TODO: Вернуть пользователю статус отправки
     }),
-  // TODO: Добавить удаление сообщении
+
+  delete : protectedProcedure.input(z.object({
+    messageId: z.number(),
+  })).mutation( async ({ctx , input}) => {
+    await ctx.db.message.delete({
+      where : {
+        id : input.messageId
+      }
+    })
+    return {isSuccess : true}
+  }),
+
+  update : protectedProcedure.input(z.object({
+    text : z.string(),
+    messageId: z.number(),
+  })).mutation( async ({ctx , input}) => {
+    const message = await ctx.db.message.findUnique({
+      where : {
+        id : input.messageId
+      }
+    })
+
+    if (!message){
+      throw new TRPCClientError("404 room not found");
+    }
+
+    const updatedMessage = await ctx.db.message.update({
+      where : {
+        id : input.messageId
+      },
+      data : {
+        text : input.text
+      }
+    })
+
+    return {status : "OK" , message : updatedMessage }
+  }),
 });

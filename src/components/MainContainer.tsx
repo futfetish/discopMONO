@@ -23,13 +23,14 @@ export default function MainContainer({
   tab: string;
 }) {
   const { data: sessionData } = useSession();
-  let { data: userRooms } = api.rooms.showRoomsJoined.useQuery();
+  let { data: userRoomsData } = api.rooms.showRoomsJoined.useQuery();
   if (!sessionData) {
     return <button onClick={() => void signIn()}>signin </button>;
   }
-  if (!userRooms) {
-    userRooms = [];
-  }
+  const  userRooms = userRoomsData?.rooms || []
+
+
+  console.log(userRooms)
 
   const user = {
     id: sessionData.user.id,

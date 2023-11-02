@@ -19,13 +19,14 @@ export const roomsRouter = createTRPCRouter({
           z.object({
             id: z.number(),
             type: zRoomType,
+            name: z.string(),
             _count: z.object({ members: z.number() }),
             members: z.array(
               z.object({
                 user: z.object({
                   id: z.string(),
                   name: z.string().optional().nullable(),
-                  image: z.string().optional().nullable(),
+                  image: z.string()
                 }),
               }),
             ),
@@ -75,7 +76,6 @@ export const roomsRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      // TODO: разделить на два разных эндпойнта
       const roomId = input.roomId;
       const userIds = Array.from(input.userIds);
       const room = await ctx.db.room.findUnique({
@@ -87,22 +87,7 @@ export const roomsRouter = createTRPCRouter({
       }
 
       if (room.type === "ls") {
-        const newGroupRoom = await ctx.db.room.create({
-          data: {
-            name: "Новая группа",
-            type: "group",
-          },
-        });
-
-        await ctx.db.userRooms.createMany({
-          data: userIds.map((userId) => ({
-            userId,
-            roomId: newGroupRoom.id,
-            isAdmin: userId === ctx.session.user.id,
-          })),
-        });
-
-        return { isCreated: true, roomId: newGroupRoom.id };
+        throw new TRPCClientError("wrong type of room");
       } else {
         const existingMembers = await ctx.db.userRooms.findMany({
           where: {
@@ -122,13 +107,37 @@ export const roomsRouter = createTRPCRouter({
           data: newUsers.map((userId) => ({
             userId,
             roomId,
-            isAdmin: false,
-            isRead: false,
           })),
         });
-        return { isCreated: false, roomId: 0 };
+        return { isSuccess : true };
       }
     }),
+
+  createNewChat : protectedProcedure.input(
+    z.object({
+      userIds: z.set(z.string()),
+    }),
+  ).mutation( async ({ctx  ,input}) => {
+    const userIds =  Array.from(input.userIds)
+    const newGroupRoom = await ctx.db.room.create({
+      data: {
+        name: "Новая группа",
+        type: "group",
+      },
+    });
+
+    await ctx.db.userRooms.createMany({
+      data: userIds.map((userId) => ({
+        userId,
+        roomId: newGroupRoom.id,
+        isAdmin: userId === ctx.session.user.id,
+      })),
+    });
+
+    return { roomId: newGroupRoom.id };
+  }),
+
+  
 
   leave: protectedProcedure
     .input(
@@ -175,6 +184,30 @@ export const roomsRouter = createTRPCRouter({
           },
         },
       });
-      return { status: "OK" };
+      return { isSuccses: true };
     }),
+
+    changeName : protectedProcedure.input(z.object({
+      roomId : z.number(),
+      name : z.string()
+    })).mutation( async ({ctx , input}) => {
+      const userIn = await ctx.db.userRooms.findUnique({
+        where : {
+          userId_roomId : {
+            userId : ctx.session.user.id,
+            roomId : input.roomId
+          }
+        },
+      })
+      if (userIn){
+        await ctx.db.room.update({
+          where : {
+            id : input.roomId
+          },
+          data : {
+            name : input.name
+          }
+        })
+      }
+    })
 });

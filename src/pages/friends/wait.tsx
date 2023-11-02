@@ -37,14 +37,14 @@ function content(user : any){
         image: string;
       }
 
-    const {data : friends , isLoading} =  api.users.friend_wait.useQuery()
+    const {data : friends , isLoading} =  api.friends.requests.useQuery()
     
     
     const [friendListTo, setFriendListTo] = useState<FriendType[]>([]);
     const [friendListFrom, setFriendListFrom] = useState<FriendType[]>([]);
-    const {mutate : reject} = api.users.friend_reject.useMutation()
-    const {mutate : cancel} = api.users.friend_cancel.useMutation()
-    const {mutate : accept} = api.users.friend_accept.useMutation()
+    const {mutate : reject} = api.friends.rejectReq.useMutation()
+    const {mutate : cancel} = api.friends.cancelReq.useMutation()
+    const {mutate : accept} = api.friends.acceptReq.useMutation()
 
     useEffect(() => {
       if (!isLoading && friends) {

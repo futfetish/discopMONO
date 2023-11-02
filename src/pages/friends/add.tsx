@@ -13,7 +13,6 @@ import MyButton from "../../components/myButton";
 
 import z from 'zod'
 import { FriendTop } from "~/components/FriendsTop";
-import FriendTokenReset from "~/components/FriendTokenReset";
 
 export default function Friends_add()  {
 
@@ -37,7 +36,7 @@ export default function Friends_add()  {
 function content(user : any){
 
     const [checkText , setCheckText] = useState('')
-    const {mutate} = api.users.friend_add.useMutation()
+    const {mutate} = api.friends.add.useMutation()
     const [input , setInput] = useState('')
     
     // console.log(user)
@@ -51,7 +50,7 @@ function content(user : any){
           ДОБАВИТЬ В ДРУЗЬЯ
         </div>
         <div className={Styles.add_friend_container}  ref={formRef}>
-          <input value={input} type="text" v-model="name" placeholder="Вы можете добавить друзей по токену друга"
+          <input value={input} type="text" v-model="name" placeholder="Вы можете добавить друзей по уникальному имени"
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
@@ -64,21 +63,17 @@ function content(user : any){
           <MyButton ref={buttonRef} className={Styles.but}
           onClick={()  =>  {
             if (input !== "") {
-              setCheckText('Запрос дружбы отправлен пользователю с токеном дружбы ' + input)
+              setCheckText('Запрос дружбы отправлен пользователю с уникальным именем ' + input)
               if(formRef.current){
                 formRef.current.style.borderColor  = '#42d66b'
               }
               setInput('')
-              mutate({ token  : input });
+              mutate({ name  : input });
             }
           }}
           >Отправить запрос дружбы</MyButton>
-      
-      </div>
-      <div className={Styles.check} id="check"> {checkText} </div>
-      <FriendTokenReset tokens={user.tokens}/>
-      
-
+        </div>
+        <div className={Styles.check} id="check"> {checkText} </div>
       </div>
           
         
