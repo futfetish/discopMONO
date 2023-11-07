@@ -1,14 +1,11 @@
-
 import { useRouter } from "next/router";
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
-export default function Home( ) {
-  const router  =  useRouter()
+export default function Home() {
+  const router = useRouter();
   useEffect(() => {
-    router.push('/friends');
+    router.push("/friends");
   }, []);
 
-  return (
- <div>...</div>
-  );
+  return <div>...</div>;
 }

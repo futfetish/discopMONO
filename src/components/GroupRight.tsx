@@ -3,6 +3,7 @@ import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
+// TODO: Типы данных
 export default function GroupRight(room: any, user: any) {
   const router = useRouter();
   const { mutate: leave } = api.rooms.leave.useMutation({
