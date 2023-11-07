@@ -53,9 +53,9 @@ model User {
     name          String
     image         String    @default("https://cdn.discordapp.com/embed/avatars/0.png")
 
-    id    String      @id @default(cuid())
-    msgs  Message[]
-    rooms UserRooms[]
+    id       String      @id @default(cuid())
+    msgs     Message[]
+    rooms    UserRooms[]
     uniqName String?     @unique
 
     friends   Friends[] @relation("FriendsFrom")
