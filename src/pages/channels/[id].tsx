@@ -1,7 +1,8 @@
-import { signIn, signOut, useSession } from "next-auth/react";
+import { getSession, signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import GroupRight from "~/components/GroupRight";
+import Image from "next/image";
 
 import RoomUntilAdd from "~/components/RoomUntilAdd";
 import ErrorContent from "~/components/errorContent";
@@ -12,9 +13,8 @@ import MainContainer from "~/components/MainContainer";
 import { api } from "~/utils/api";
 import { db } from "~/server/db";
 import { useState } from "react";
-import { Awaitable } from "next-auth";
 
-const getAsyncData = async (id: number) => {
+const getRoom = async (id: number) => {
   const res = await db.room.findUnique({
     where: {
       id,
@@ -34,7 +34,11 @@ const getAsyncData = async (id: number) => {
         },
       },
       msgs: {
-        include: {
+        select: {
+          authorId: true,
+          id: true,
+          createdAt: true,
+          text: true,
           author: {
             select: {
               id: true,
@@ -63,9 +67,9 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
 
-  const res = await getAsyncData(parseInt(id as string));
+  const res = await getRoom(parseInt(id as string));
 
-  if (res === null) {
+  if (res === null || res.members.length < 1) {
     return {
       notFound: true,
     };
@@ -79,7 +83,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 };
 
 export default function Room(props: {
-  data: NonNullable<Awaited<ReturnType<typeof getAsyncData>>>;
+  data: NonNullable<Awaited<ReturnType<typeof getRoom>>>;
 }) {
   const res = props.data;
   const router = useRouter();
@@ -114,13 +118,30 @@ export default function Room(props: {
   return (
     <MainContainer
       tab={"room_" + res.id}
-      content={<Content room={res} user={sessionData.user} />}
-      top={<Top room={res} user={sessionData.user} />}
+      content={
+        <Content
+          room={res}
+          user={{
+            id: sessionData.user.id,
+            image: sessionData.user.image || "",
+            name: sessionData.user.name || "[blank]",
+          }}
+        />
+      }
+      top={<Top room={res} user={{
+            id: sessionData.user.id,
+            image: sessionData.user.image || "",
+            name: sessionData.user.name || "[blank]",
+          }} />}
       right={
         res.type == "ls" ? (
           <Right />
         ) : (
-          <GroupRight room={res} user={sessionData.user} />
+          <GroupRight room={res} user={{
+            id: sessionData.user.id,
+            image: sessionData.user.image || "",
+            name: sessionData.user.name || "[blank]",
+          }} />
         )
       }
       title={
@@ -136,16 +157,21 @@ export default function Room(props: {
   );
 }
 
-// TODO: убрать any, приоритет высокий
-function Content({ room, user }: { room: any; user: any }) {
+function Content({
+  room,
+  user,
+}: {
+  room: NonNullable<Awaited<ReturnType<typeof getRoom>>>;
+  user: { id: string; name: string; image: string };
+}) {
   const [input, setInput] = useState("");
 
   const { mutate } = api.message.create.useMutation({
     onSuccess: (data) => {
       room.msgs.push({
-        id: data.messageId,
-        createdAt: new Date().toISOString(),
         authorId: user.id,
+        id: data.messageId,
+        createdAt: new Date(),
         author: user,
         text: input,
       });
@@ -153,8 +179,6 @@ function Content({ room, user }: { room: any; user: any }) {
       setInput("");
     },
   });
-
-  let msgs: any = room.msgs;
 
   function formatDate(date: Date | string): string {
     const dateObj = typeof date === "string" ? new Date(date) : date;
@@ -208,65 +232,64 @@ function Content({ room, user }: { room: any; user: any }) {
     );
   }
 
-  msgs.forEach((msg: any, i: number, arr: any[]) => {
-    if (
-      !arr[i - 1] ||
-      (msg && arr[i - 1] && msg.authorId !== arr[i - 1]?.authorId) ||
-      !isSameDay(msg.createdAt, arr[i - 1].createdAt)
-    ) {
-      msg.type = "new";
-    } else {
-      msg.type = "past";
-    }
-  });
-
-  // for (let i = 0; i < msgs.length; i++) {
-  //   if (i === 0 || (!msgs[i - 1] || (msgs[i] && msgs[i - 1] && msgs[i].authorId !== msgs[i - 1].authorId)) || !isSameDay(msgs[i].createdAt, msgs[i - 1].createdAt)) {
-  //     msgs[i].type = 'new';
-  //   } else {
-  //     msgs[i].type = 'past';
-  //   }
-  // }
+  function isNewMessage(message : {
+    authorId: string,
+    createdAt: Date | string
+  } , pastMessage : {
+    authorId: string,
+    createdAt: Date | string
+  }){
+    return (message && pastMessage && message.authorId !== pastMessage.authorId) ||
+    !isSameDay(message.createdAt, pastMessage.createdAt)
+  }
 
   return (
     <div className={Styles.container}>
       <div className={Styles.chat}>
-        {msgs.map((msg: any, i: number, arr: any[]) => (
-          <div
-            key={msg.id}
-            className={[
-              Styles.message,
-              !arr[i - 1] ||
-              (msg && arr[i - 1] && msg.authorId !== arr[i - 1]?.authorId) ||
-              !isSameDay(msg.createdAt, arr[i - 1].createdAt)
-                ? Styles.message_new
-                : Styles.message_past,
-            ].join(" ")}
-          >
-            <div className={Styles.message__info}>
-              {!arr[i - 1] ||
-              (msg && arr[i - 1] && msg.authorId !== arr[i - 1]?.authorId) ||
-              !isSameDay(msg.createdAt, arr[i - 1].createdAt) ? (
-                <img
-                  src={msg.author.image}
-                  className={Styles.message__author_ava}
-                />
-              ) : null}
-              <div className={Styles.message__author}> {msg.author.name} </div>
-              {msg.type == "new" ? (
-                <div v-if="msg.type === 'new'" className={Styles.message__date}>
-                  {formatDate(msg.createdAt)}
+        {room.msgs.map(
+          (
+            msg: (typeof room.msgs)[number],
+            i: number,
+            arr: (typeof room.msgs)[number][],
+          ) => (
+            <div
+              key={msg.id}
+              className={[
+                Styles.message,
+                !arr[i - 1] ||
+                isNewMessage(msg , arr[i-1])
+                  ? Styles.message_new
+                  : Styles.message_past,
+              ].join(" ")}
+            >
+              <div className={Styles.message__info}>
+                {!arr[i - 1] ||
+               isNewMessage(msg , arr[i-1]) ? (
+                  <img
+                    src={msg.author.image}
+                    className={Styles.message__author_ava}
+                  />
+                ) : null}
+                <div className={Styles.message__author}>
+                  {" "}
+                  {msg.author.name}{" "}
                 </div>
-              ) : (
-                <div className={Styles.message__date}>
-                  {formatTimeDate(msg.createdAt)}
-                </div>
-              )}
-            </div>
+                {!arr[i - 1] ||
+                isNewMessage(msg , arr[i-1]) ? (
+                  <div className={Styles.message__date}>
+                    {formatDate(msg.createdAt)}
+                  </div>
+                ) : (
+                  <div className={Styles.message__date}>
+                    {formatTimeDate(msg.createdAt)}
+                  </div>
+                )}
+              </div>
 
-            <div className={Styles.message__text}>{msg.text}</div>
-          </div>
-        ))}
+              <div className={Styles.message__text}>{msg.text}</div>
+            </div>
+          ),
+        )}
       </div>
       <div className={Styles.input_area}>
         <div className={Styles.input_container}>
@@ -289,9 +312,9 @@ function Content({ room, user }: { room: any; user: any }) {
               "написать " +
               (room.type == "ls"
                 ? room.members
-                    .map((u: any) => u.user)
-                    .filter((m: any) => m.id !== user.id)
-                    .map((m: any) => (m = m.name))
+                    .map((u) => u.user)
+                    .filter((m) => m.id !== user.id)
+                    .map((m) => m.name)
                     .join(", ")
                 : room.name)
             }
@@ -302,15 +325,20 @@ function Content({ room, user }: { room: any; user: any }) {
   );
 }
 
-function Top({ room, user }: { room: any; user: any }) {
+function Top({
+  room,
+  user,
+}: {
+  room: NonNullable<Awaited<ReturnType<typeof getRoom>>>;
+  user: { id: string; name: string; image: string };
+}) {
   return (
     <div className={Styles.self__top}>
       <img
         src={
           room.type == "ls"
-            ? room.members
-                .map((u: any) => u.user)
-                .filter((m: any) => m.id !== user.id)[0].image
+            ? room.members.map((u) => u.user).filter((m) => m.id !== user.id)[0]
+                .image
             : "/img/grav.png"
         }
         alt=""
@@ -320,14 +348,14 @@ function Top({ room, user }: { room: any; user: any }) {
         {" "}
         {room.type == "ls"
           ? room.members
-              .map((u: any) => u.user)
-              .filter((m: any) => m.id !== user.id)
-              .map((m: any) => (m = m.name))
+              .map((u) => u.user)
+              .filter((m) => m.id !== user.id)
+              .map((m) =>   m.name)
               .join(", ")
           : room.name}{" "}
       </p>
       <div className={Styles.top_utils}>
-        <RoomUntilAdd room={room} />
+        <RoomUntilAdd room={{id : room.id , members : room.members , type : room.type}} />
       </div>
     </div>
   );

@@ -3,12 +3,24 @@ import { api } from "~/utils/api";
 import MyButton from "./myButton";
 import { useState, useRef } from "react";
 import { useRouter } from "next/router";
-
-export default function RoomUntilAdd({ room }: any) {
+export default function RoomUntilAdd({ room }: {room : 
+  {
+    id: number,
+    type :  string,
+    members: {
+      user: { id: string; name: string; image: string };
+      isAdmin: boolean;
+    }[];
+  }
+}) {
+  const [open, setOpen] = useState(false);
+  function toggleModal() {
+    setOpen(!open);
+  }
   const { data } = api.friends.all.useQuery();
-  const users = room.members.map((u: any) => u.user);
+  const users = room.members.map((u) => u.user);
   const friends = data?.filter(
-    (friend) => !users.some((user: any) => user.id === friend.id),
+    (friend) => !users.some((user) => user.id === friend.id),
   );
   const router = useRouter();
 
@@ -18,20 +30,16 @@ export default function RoomUntilAdd({ room }: any) {
     },
   }) 
   const {mutate : addUsers , isLoading : isLoading2 } = api.rooms.addUsersToChat.useMutation({
-    
+    onSuccess : () => {
+      toggleModal()
+    }
   })
 
   const [members, setMembers] = useState(
-    new Set<string>(users.map((u: any) => u.id)),
+    new Set<string>(users.map((u) => u.id)),
   );
 
-  const [open, setOpen] = useState(false);
-
-  function toggleModal() {
-    setOpen(!open);
-  }
-
-  function toggleUser(id: any) {
+  function toggleUser(id  :  string) {
     if (members.has(id)) {
       const temp = new Set(members);
       temp.delete(id);
@@ -74,8 +82,9 @@ export default function RoomUntilAdd({ room }: any) {
           </div>
 
           <div className={Styles.friends}>
-            {friends?.map((friend: any) => (
+            {friends?.map((friend) => (
               <a
+                key={friend.id}
                 href="#"
                 className={Styles.friend_obj}
                 onClick={() => toggleUser(friend.id)}

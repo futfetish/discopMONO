@@ -1,15 +1,10 @@
-import { signIn, signOut, useSession } from "next-auth/react";
-import Head from "next/head";
-import Link from "next/link";
+import { signIn, useSession } from "next-auth/react";
 import  { useEffect } from 'react';
-import { useRouter } from 'next/router';
 import  Styles  from"../../styles/friends.module.scss"
 import MainContainer from "~/components/MainContainer";
 import { api } from "~/utils/api";
 import { useState } from "react";
-import { db } from "~/server/db";
 
-import z from 'zod'
 import { FriendTop } from "~/components/FriendsTop";
 
 
@@ -24,13 +19,13 @@ export default function Friends_wait()  {
 
 
   return (
-    <MainContainer tab='friends'  content={() => content(sessionData.user) } top={() =>  FriendTop('wait')}  right={() => <div></div> } title='friends' />
+    <MainContainer tab='friends'  content={<Content/>} top={ <FriendTop tab="wait" /> }  right={<div></div> } title='friends' />
   );
 }
 
 
 
-function content(user : any){
+function Content(){
     interface FriendType {
         name: string;
         id: string;
@@ -107,11 +102,5 @@ function content(user : any){
           </>
             }
         </div>
-    )
-}
-
-function top(user : any){
-    return(
-        <div></div>
     )
 }

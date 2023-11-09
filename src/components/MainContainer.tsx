@@ -29,8 +29,6 @@ export default function MainContainer({
   }
   const userRooms = userRoomsData?.rooms || [];
 
-  console.log(userRooms);
-
   const user = {
     id: sessionData.user.id,
     name: sessionData.user.name || "[blank]",

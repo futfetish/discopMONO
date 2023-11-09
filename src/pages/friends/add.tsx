@@ -1,26 +1,12 @@
-import { signIn, signOut, useSession } from "next-auth/react";
-import Head from "next/head";
-import Link from "next/link";
-import { useEffect, useRef } from "react";
-import { useRouter } from "next/router";
+import { useRef } from "react";
 import Styles from "../../styles/friends.module.scss";
 import MainContainer from "~/components/MainContainer";
 import { api } from "~/utils/api";
 import { useState } from "react";
-import { db } from "~/server/db";
-
 import MyButton from "../../components/myButton";
-
-import z from "zod";
 import { FriendTop } from "~/components/FriendsTop";
 
 export default function Friends_add() {
-  const { data: user, isLoading } = api.users.user.useQuery();
-
-  if (isLoading) {
-    return <div>loading...</div>;
-  }
-
   return (
     <MainContainer
       tab="friends"
@@ -63,7 +49,7 @@ function Content() {
         />
         <MyButton
           ref={buttonRef}
-          className={Styles.but}
+          className={[Styles.but].join(' ')}
           onClick={() => {
             if (input !== "") {
               setCheckText(

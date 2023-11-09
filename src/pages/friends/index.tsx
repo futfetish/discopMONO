@@ -1,17 +1,12 @@
-import { signIn, signOut, useSession } from "next-auth/react";
-import Head from "next/head";
+import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
-import { FC, useEffect } from "react";
-import { useRouter } from "next/router";
+import { useEffect } from "react";
 import Styles from "../../styles/friends.module.scss";
 import MainContainer from "~/components/MainContainer";
 import { api } from "~/utils/api";
 import { useState } from "react";
-import { db } from "~/server/db";
-
-import z from "zod";
 import { FriendTop } from "~/components/FriendsTop";
-import { Session } from "next-auth";
+
 
 export default function Friends_all() {
   const { data: sessionData } = useSession();
@@ -22,15 +17,15 @@ export default function Friends_all() {
   return (
     <MainContainer
       tab="friends"
-      content={<Content session={sessionData} />}
-      top={<FriendTop tab="add" />}
+      content={<Content />}
+      top={<FriendTop tab="all" />}
       right={<div></div>}
       title="friends"
     />
   );
 }
 
-const Content: FC<{ session: Session }> = ({ session }) => {
+const Content = () => {
   interface FriendType {
     name: string;
     id: string;
