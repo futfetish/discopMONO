@@ -18,7 +18,11 @@ export const SettingsProfile = ({
   const ava = useRef<HTMLImageElement>(null);
   const noti = useRef<HTMLDivElement>(null);
   const [saveReq, setSaveReq] = useState(false);
-  const { mutate: updateUser } = api.users.update.useMutation({});
+  const { mutate: updateUser, isSuccess: mutateIsSuccess, isLoading: mutateIsLoading, isError: mutateIsError } = api.users.update.useMutation({
+    onSuccess: ()=> {
+              closeNoti();
+    }
+  });
 
   function editAva() {
     if (avaInput.current) {
@@ -117,8 +121,7 @@ export const SettingsProfile = ({
         </div>
         <div className={Styles.save_notification} ref={noti}>
           <p>Аккуратнее, вы не сохранили изменения!</p>
-          <a
-            href="#"
+          <button
             className={Styles.cancel}
             onClick={() => {
               closeNoti();
@@ -129,17 +132,17 @@ export const SettingsProfile = ({
             }}
           >
             сброс
-          </a>
-          <a
-            href="#"
+          </button>
+          <button
             className={Styles.save}
+            disabled={mutateIsLoading|| mutateIsSuccess}
             onClick={() => {
               updateUser({ name: name });
-              closeNoti();
             }}
           >
-            сохранить изменения
-          </a>
+           {mutateIsError? "Ошибка" : mutateIsLoading?
+           "Загрузка" : mutateIsSuccess ?"Успех" : "сохранить изменения"}  
+          </button>
         </div>
       </div>
     </>

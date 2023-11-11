@@ -26,12 +26,12 @@ export default function MainContainer({
   const [isSettingsOpen , setIsSettingsOpen] = useState(false)
   const { data: sessionData } = useSession();
   const { data: userRoomsData } = api.rooms.showRoomsJoined.useQuery();
+  const{data : user }= api.users.user.useQuery()
+  const userRooms = userRoomsData?.rooms || [];
+
   if (!sessionData) {
     return <button onClick={() => void signIn()}>signin </button>;
   }
-  const userRooms = userRoomsData?.rooms || [];
-
-  const{data : user }= api.users.user.useQuery()
   if (!user){
     return <button onClick={() => void signIn()}>signin </button>
   }
