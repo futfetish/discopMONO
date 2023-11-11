@@ -128,20 +128,28 @@ export default function Room(props: {
           }}
         />
       }
-      top={<Top room={res} user={{
+      top={
+        <Top
+          room={res}
+          user={{
             id: sessionData.user.id,
             image: sessionData.user.image || "",
             name: sessionData.user.name || "[blank]",
-          }} />}
+          }}
+        />
+      }
       right={
         res.type == "ls" ? (
           <Right />
         ) : (
-          <GroupRight room={res} user={{
-            id: sessionData.user.id,
-            image: sessionData.user.image || "",
-            name: sessionData.user.name || "[blank]",
-          }} />
+          <GroupRight
+            room={res}
+            user={{
+              id: sessionData.user.id,
+              image: sessionData.user.image || "",
+              name: sessionData.user.name || "[blank]",
+            }}
+          />
         )
       }
       title={
@@ -232,15 +240,20 @@ function Content({
     );
   }
 
-  function isNewMessage(message : {
-    authorId: string,
-    createdAt: Date | string
-  } , pastMessage : {
-    authorId: string,
-    createdAt: Date | string
-  }){
-    return (message && pastMessage && message.authorId !== pastMessage.authorId) ||
-    !isSameDay(message.createdAt, pastMessage.createdAt)
+  function isNewMessage(
+    message: {
+      authorId: string;
+      createdAt: Date | string;
+    },
+    pastMessage: {
+      authorId: string;
+      createdAt: Date | string;
+    },
+  ) {
+    return (
+      (message && pastMessage && message.authorId !== pastMessage.authorId) ||
+      !isSameDay(message.createdAt, pastMessage.createdAt)
+    );
   }
 
   return (
@@ -256,26 +269,24 @@ function Content({
               key={msg.id}
               className={[
                 Styles.message,
-                !arr[i - 1] ||
-                isNewMessage(msg , arr[i-1])
+                !arr[i - 1] || isNewMessage(msg, arr[i - 1]!)
                   ? Styles.message_new
                   : Styles.message_past,
               ].join(" ")}
             >
               <div className={Styles.message__info}>
-                {!arr[i - 1] ||
-               isNewMessage(msg , arr[i-1]) ? (
+                {!arr[i - 1] || isNewMessage(msg, arr[i - 1]!) ? (
                   <img
                     src={msg.author.image}
                     className={Styles.message__author_ava}
+                    alt=""
                   />
                 ) : null}
                 <div className={Styles.message__author}>
                   {" "}
                   {msg.author.name}{" "}
                 </div>
-                {!arr[i - 1] ||
-                isNewMessage(msg , arr[i-1]) ? (
+                {!arr[i - 1] || isNewMessage(msg, arr[i - 1]!) ? (
                   <div className={Styles.message__date}>
                     {formatDate(msg.createdAt)}
                   </div>
@@ -338,7 +349,7 @@ function Top({
         src={
           room.type == "ls"
             ? room.members.map((u) => u.user).filter((m) => m.id !== user.id)[0]
-                .image
+                ?.image
             : "/img/grav.png"
         }
         alt=""
@@ -350,12 +361,14 @@ function Top({
           ? room.members
               .map((u) => u.user)
               .filter((m) => m.id !== user.id)
-              .map((m) =>   m.name)
+              .map((m) => m.name)
               .join(", ")
           : room.name}{" "}
       </p>
       <div className={Styles.top_utils}>
-        <RoomUntilAdd room={{id : room.id , members : room.members , type : room.type}} />
+        <RoomUntilAdd
+          room={{ id: room.id, members: room.members, type: room.type }}
+        />
       </div>
     </div>
   );
