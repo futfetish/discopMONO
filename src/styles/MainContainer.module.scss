@@ -224,3 +224,12 @@
         }
     }
 }
+
+.global_settings_container{
+    top:0;
+    left:0;
+    z-index: 10000000;
+    width:100vw;
+    height: 100vh;
+    position: absolute;
+}
