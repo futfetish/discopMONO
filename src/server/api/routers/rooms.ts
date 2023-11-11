@@ -26,7 +26,7 @@ export const roomsRouter = createTRPCRouter({
                 user: z.object({
                   id: z.string(),
                   name: z.string().optional().nullable(),
-                  image: z.string()
+                  image: z.string(),
                 }),
               }),
             ),
@@ -109,35 +109,35 @@ export const roomsRouter = createTRPCRouter({
             roomId,
           })),
         });
-        return { isSuccess : true };
+        return { isSuccess: true };
       }
     }),
 
-  createNewChat : protectedProcedure.input(
-    z.object({
-      userIds: z.set(z.string()),
+  createNewChat: protectedProcedure
+    .input(
+      z.object({
+        userIds: z.set(z.string()),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userIds = Array.from(input.userIds);
+      const newGroupRoom = await ctx.db.room.create({
+        data: {
+          name: "Новая группа",
+          type: "group",
+        },
+      });
+
+      await ctx.db.userRooms.createMany({
+        data: userIds.map((userId) => ({
+          userId,
+          roomId: newGroupRoom.id,
+          isAdmin: userId === ctx.session.user.id,
+        })),
+      });
+
+      return { roomId: newGroupRoom.id };
     }),
-  ).mutation( async ({ctx  ,input}) => {
-    const userIds =  Array.from(input.userIds)
-    const newGroupRoom = await ctx.db.room.create({
-      data: {
-        name: "Новая группа",
-        type: "group",
-      },
-    });
-
-    await ctx.db.userRooms.createMany({
-      data: userIds.map((userId) => ({
-        userId,
-        roomId: newGroupRoom.id,
-        isAdmin: userId === ctx.session.user.id,
-      })),
-    });
-
-    return { roomId: newGroupRoom.id };
-  }),
-
-  
 
   leave: protectedProcedure
     .input(
@@ -187,27 +187,31 @@ export const roomsRouter = createTRPCRouter({
       return { isSuccses: true };
     }),
 
-    changeName : protectedProcedure.input(z.object({
-      roomId : z.number(),
-      name : z.string()
-    })).mutation( async ({ctx , input}) => {
+  changeName: protectedProcedure
+    .input(
+      z.object({
+        roomId: z.number(),
+        name: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
       const userIn = await ctx.db.userRooms.findUnique({
-        where : {
-          userId_roomId : {
-            userId : ctx.session.user.id,
-            roomId : input.roomId
-          }
-        },
-      })
-      if (userIn){
-        await ctx.db.room.update({
-          where : {
-            id : input.roomId
+        where: {
+          userId_roomId: {
+            userId: ctx.session.user.id,
+            roomId: input.roomId,
           },
-          data : {
-            name : input.name
-          }
-        })
+        },
+      });
+      if (userIn) {
+        await ctx.db.room.update({
+          where: {
+            id: input.roomId,
+          },
+          data: {
+            name: input.name,
+          },
+        });
       }
-    })
+    }),
 });

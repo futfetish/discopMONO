@@ -1,4 +1,5 @@
-import { z } from "zod";
+
+import { ZodError, z } from "zod";
 
 import {
   createTRPCRouter,
@@ -20,4 +21,41 @@ export const usersRouter = createTRPCRouter({
       },
     });
   }),
+
+  update : protectedProcedure.input(z.object({
+    name: z.string().optional(),
+    uniqName: z.string().optional(),
+    image: z.string().optional(),
+  }))
+  .mutation( async({ ctx , input  }) => {
+    const dataSchema = z.object({
+      name: z.string().optional(),
+      uniqName: z.string()
+      .refine((value) => /^[a-zA-Z0-9_]+$/.test(value), {
+        message: 'Имя должно состоять только из латинских букв, цифр и подчеркиваний',
+      })
+      .optional(),
+      image: z.string().optional(),
+    })
+    try{
+       dataSchema.parse(input)
+       const user = await ctx.db.user.update({
+        where : {
+          id : ctx.session.user.id
+        },
+        data : {
+          name : input.name,
+          uniqName : input.uniqName,
+          image : input.image
+        }
+      })
+      return {isSuccess : true}
+    } catch(error : any){
+      if (error.errors){
+        const firstError = error.errors[0]  
+        return {error : true , message : firstError.message , type :firstError.path[0] }
+      }
+    }
+   
+  })
 });

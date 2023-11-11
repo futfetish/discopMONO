@@ -1,13 +1,14 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useState } from "react";
 import Styles from "../styles/MainContainer.module.scss";
 import ProfileBar from "~/components/profileBar";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { api } from "~/utils/api";
 import { error } from "console";
 import { array } from "zod";
+import { GlobalSettings } from "./GlobalSettings";
 
 export default function MainContainer({
   content,
@@ -22,6 +23,7 @@ export default function MainContainer({
   title: string;
   tab: string;
 }) {
+  const [isSettingsOpen , setIsSettingsOpen] = useState(false)
   const { data: sessionData } = useSession();
   const { data: userRoomsData } = api.rooms.showRoomsJoined.useQuery();
   if (!sessionData) {
@@ -29,14 +31,21 @@ export default function MainContainer({
   }
   const userRooms = userRoomsData?.rooms || [];
 
-  const user = {
-    id: sessionData.user.id,
-    name: sessionData.user.name || "[blank]",
-    image: sessionData.user.image || "",
-  };
+  const{data : user }= api.users.user.useQuery()
+  if (!user){
+    return <button onClick={() => void signIn()}>signin </button>
+  }
+
+
+  
+
+  function toggleSettings(){
+    setIsSettingsOpen(!isSettingsOpen)
+  }
 
   return (
     <>
+
       {/* TODO: Переписать на страницы, приоритет низкий */}
       <Head>
         <title>{title}</title>
@@ -100,7 +109,7 @@ export default function MainContainer({
               </div>
             </div>
             {/* <button onClick={() => void signOut()}>out</button> */}
-            <ProfileBar user={user}></ProfileBar>
+            <ProfileBar user={user} callBack={toggleSettings}></ProfileBar>
           </div>
           <div className={Styles.self__content} id="self_content">
             <div className={[Styles.self__top, Styles.top].join(" ")}>
@@ -113,6 +122,13 @@ export default function MainContainer({
           </div>
         </div>
       </div>
+      {
+        isSettingsOpen ?
+        <div  className={Styles.global_settings_container}>
+          <GlobalSettings callBack={toggleSettings} user={user} />
+      </div> : ''
+      }
+      
     </>
   );
 }

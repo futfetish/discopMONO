@@ -13,7 +13,7 @@ export const appRouter = createTRPCRouter({
   rooms  : roomsRouter,
   message : messageRouter,
   users : usersRouter,
-  friends : friendRouter
+  friends : friendRouter,
 });
 
 // export type definition of API
