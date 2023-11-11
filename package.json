@@ -30,6 +30,8 @@
     "@trpc/react-query": "^10.37.1",
     "@trpc/server": "^10.37.1",
     "bootstrap-icons": "^1.11.1",
+    "cuid": "^3.0.0",
+    "formidable": "^3.5.1",
     "next": "^13.5.4",
     "next-auth": "^4.23.0",
     "next-superjson-plugin": "^0.5.9",
@@ -43,6 +45,7 @@
   "devDependencies": {
     "@faker-js/faker": "^8.2.0",
     "@types/eslint": "^8.44.2",
+    "@types/formidable": "^3.4.5",
     "@types/node": "^18.16.0",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",

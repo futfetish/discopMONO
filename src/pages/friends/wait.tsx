@@ -9,14 +9,10 @@ import { FriendTop } from "~/components/FriendsTop";
 
 
 export default function Friends_wait()  {
-
-
     const {data : sessionData } = useSession()
     if (!sessionData ){
       return (  <button onClick={()=> void signIn()}>signin </button> )
     }
-
-
 
   return (
     <MainContainer tab='friends'  content={<Content/>} top={ <FriendTop tab="wait" /> }  right={<div></div> } title='friends' />
