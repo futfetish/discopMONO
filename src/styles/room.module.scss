@@ -18,16 +18,24 @@
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
+                display: flex;
             }
             .room_title__input{
-                border: none;
                 font: inherit;
                 color : white;
                 background-color: transparent;
                 font-size: 16px;
+                padding: 2px 4px;
+                border: transparent solid 1px;
                 &:focus-visible{
                     outline: none;
-
+                }
+                &:focus {
+                    border: black solid 1px;
+                    background-color: #26272b;
+                }
+                &:hover{
+                    border: black solid 1px;
                 }
             }
             .top_utils{

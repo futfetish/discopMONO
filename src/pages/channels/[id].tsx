@@ -336,6 +336,7 @@ function Content({
   );
 }
 
+
 function Top({
   room,
   user,
@@ -343,6 +344,8 @@ function Top({
   room: NonNullable<Awaited<ReturnType<typeof getRoom>>>;
   user: { id: string; name: string; image: string };
 }) {
+  const [roomName , setRoomName] = useState(room.name)
+  const {mutate : changeRoomName} = api.rooms.changeName.useMutation()
   return (
     <div className={Styles.self__top}>
       <img
@@ -355,16 +358,27 @@ function Top({
         alt=""
         className={Styles.room_big_ava}
       />
-      <p className={Styles.room_title}>
-        {" "}
-        {room.type == "ls"
-          ? room.members
-              .map((u) => u.user)
-              .filter((m) => m.id !== user.id)
-              .map((m) => m.name)
-              .join(", ")
-          : room.name}{" "}
-      </p>
+{room.type === "ls" ? (
+  <p className={Styles.room_title}>
+    {room.members
+      .map((u) => u.user)
+      .filter((m) => m.id !== user.id)
+      .map((m) => m.name)
+      .join(", ")}
+  </p>
+) : (
+  <input type="text" className={[Styles.room_title__input , Styles.room_title].join(' ')} value={roomName}
+  onChange={(e) => setRoomName(e.target.value)}
+  onBlur={() => changeRoomName({roomId : room.id , name : roomName}) }
+  onKeyDown={(e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      e.currentTarget.blur()
+    }
+  }}
+  />
+)}
+      
       <div className={Styles.top_utils}>
         <RoomUntilAdd
           room={{ id: room.id, members: room.members, type: room.type }}
