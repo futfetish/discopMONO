@@ -107,7 +107,7 @@ export const SettingsProfile = ({
                 <div className={Styles.hover_thing}>
                   <i className="bi bi-pencil-fill"></i>
                 </div>
-                <img ref={ava} src={user.image} />
+                <img alt='' ref={ava} src={user.image} />
               </div>
               <div className={Styles.profile_cart__content}>
                 <div className={Styles.profile_cart__info}>

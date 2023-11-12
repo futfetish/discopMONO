@@ -1,14 +1,13 @@
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
-import React, { ReactNode, useState } from "react";
+import { type ReactNode, useState } from "react";
 import Styles from "../styles/MainContainer.module.scss";
 import ProfileBar from "~/components/profileBar";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { api } from "~/utils/api";
-import { error } from "console";
-import { array } from "zod";
 import { GlobalSettings } from "./GlobalSettings";
+import { RoomsSearch } from "./roomsSearch";
 
 export default function MainContainer({
   content,
@@ -65,7 +64,9 @@ export default function MainContainer({
           <div className={Styles.self__leftbar}>
             <div
               className={[Styles.self__leftbar_top, Styles.top].join(" ")}
-            ></div>
+            >
+              <RoomsSearch user={user}/>
+            </div>
 
             <div className={Styles.my_rooms__bar} id="my_rooms">
               <div className={Styles.nav}>
@@ -88,6 +89,7 @@ export default function MainContainer({
                     key={room.id}
                   >
                     <img
+                      alt=''
                       src={
                         room.type == "group"
                           ? "/img/grav.png"

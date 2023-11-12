@@ -2,11 +2,7 @@ import { TRPCClientError } from "@trpc/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { zRoomType } from "~/types/rooms";
 
 export const roomsRouter = createTRPCRouter({
@@ -213,5 +209,97 @@ export const roomsRouter = createTRPCRouter({
           },
         });
       }
+    }),
+
+  search: protectedProcedure
+    .output(
+      z.object({
+        rooms : z.array(
+          z.object({
+            id: z.number(),
+            type: zRoomType,
+            name: z.string(),
+            _count: z.object({ members: z.number() }),
+            members: z.array(
+              z.object({
+                user: z.object({
+                  id: z.string(),
+                  name: z.string().optional().nullable(),
+                  image: z.string(),
+                }),
+              }),
+            ),
+          }),
+        ),
+      })
+    )
+    .input(
+      z.object({
+        s: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const search = input.s;
+      console.log('s' , search)
+      const userId = ctx.session.user.id;
+      const rooms = await ctx.db.room.findMany({
+        where: {
+          AND: [
+            {
+              members: {
+                some: {
+                  userId: userId,
+                },
+              },
+            },
+            {
+              OR: [
+                {
+                  members: {
+                    some: {
+                      user: {
+                        name: {
+                          contains: search,
+                        },
+                        id : {
+                          not : userId
+                        }
+                      },
+                    },
+                  },
+                },
+                {
+                  name: {
+                    contains: search,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        select: {
+          id: true,
+          name: true,
+          type: true,
+          _count: {
+            select: {
+              members: true,
+            },
+          },
+          members: {
+            take: 5,
+            select: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      return {rooms};
     }),
 });
