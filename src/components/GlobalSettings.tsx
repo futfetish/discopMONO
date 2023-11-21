@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Styles from "~/styles/globalSettings.module.scss";
 import { SettingsProfile, SettingsUniqName } from "./settingsPages";
+import { signOut } from "next-auth/react";
 
 export const GlobalSettings = ({
   callBack,
@@ -22,15 +23,25 @@ export const GlobalSettings = ({
           <div className={Styles.nav_bar_content}>
             <div className={Styles.settings_block}>
               <label>настройки пользователя</label>
-              <a href="#" className={tab === "profile" ? Styles.active : ""}
-              onClick={() => setTab('profile')}
+              <a
+                href="#"
+                className={tab === "profile" ? Styles.active : ""}
+                onClick={() => setTab("profile")}
               >
                 Профиль
               </a>
-              <a href="#" className={tab === "uniqName" ? Styles.active : ""}
-              onClick={() => setTab('uniqName')}
+              <a
+                href="#"
+                className={tab === "uniqName" ? Styles.active : ""}
+                onClick={() => setTab("uniqName")}
               >
                 Уникальное имя
+              </a>
+              <div className={Styles.stickContainer}>
+                <div className={Styles.stick}></div>
+              </div>
+              <a href="#" onClick={() => void signOut()}>
+                <p>Выйти</p> <i className="bi bi-box-arrow-right"></i>
               </a>
             </div>
           </div>
