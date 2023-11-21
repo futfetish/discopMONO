@@ -1,9 +1,8 @@
-import { ZodError, z } from "zod";
+import { z } from "zod";
 
 import {
   createTRPCRouter,
   protectedProcedure,
-  publicProcedure,
 } from "~/server/api/trpc";
 
 export const usersRouter = createTRPCRouter({

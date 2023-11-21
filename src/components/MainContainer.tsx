@@ -19,8 +19,8 @@ export default function MainContainer({
   content: ReactNode;
   top: ReactNode;
   right: ReactNode;
-  title: string;
-  tab: string;
+  title?: string;
+  tab?: string;
 }) {
   const [isSettingsOpen , setIsSettingsOpen] = useState(false)
   const { data: sessionData } = useSession();

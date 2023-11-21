@@ -1,12 +1,8 @@
-import { getSession, signIn, signOut, useSession } from "next-auth/react";
-import Head from "next/head";
-import Link from "next/link";
+import { signIn,  useSession } from "next-auth/react";
 import GroupRight from "~/components/GroupRight";
-import Image from "next/image";
-
 import RoomUntilAdd from "~/components/RoomUntilAdd";
 import ErrorContent from "~/components/errorContent";
-import { GetServerSideProps } from "next";
+import type { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import Styles from "../../styles/room.module.scss";
 import MainContainer from "~/components/MainContainer";
@@ -88,6 +84,7 @@ export default function Room(props: {
   const res = props.data;
   const router = useRouter();
   const { id } = router.query;
+  const { data: sessionData } = useSession();
   if (!id) {
     <MainContainer
       tab="none"
@@ -98,7 +95,6 @@ export default function Room(props: {
     />;
   }
 
-  const { data: sessionData } = useSession();
   if (!sessionData) {
     return <button onClick={() => void signIn()}>signin </button>;
   }
@@ -114,6 +110,7 @@ export default function Room(props: {
       />
     );
   }
+
 
   return (
     <MainContainer

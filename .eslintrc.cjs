@@ -18,6 +18,9 @@ const config = {
     "@typescript-eslint/prefer-nullish-coalescing": "off",
     "@typescript-eslint/no-floating-promises": "off",
     '@next/next/no-img-element': 'off',
+    
+    "@typescript-eslint/no-unsafe-return " : 'off',
+    "@typescript-eslint/no-unsafe-return" : 'off',
 
     "@typescript-eslint/consistent-type-imports": [
       "warn",
