@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Styles from "../../src/styles/friends.module.scss";
-import { FC } from "react";
+import { type FC } from "react";
 
 type TTabs = "all" | "wait" | "add";
 

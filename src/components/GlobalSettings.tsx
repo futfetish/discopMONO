@@ -1,19 +1,21 @@
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 import Styles from "~/styles/globalSettings.module.scss";
 import { SettingsProfile, SettingsUniqName } from "./settingsPages";
 import { signOut } from "next-auth/react";
+
+type userType = {
+  id: string;
+  name: string;
+  uniqName: string | null;
+  image: string;
+}
 
 export const GlobalSettings = ({
   callBack,
   user,
 }: {
   callBack: () => void;
-  user: {
-    id: string;
-    name: string;
-    uniqName: string | null;
-    image: string;
-  };
+  user: userType
 }) => {
   const [tab, setTab] = useState("profile");
   return (
@@ -23,33 +25,29 @@ export const GlobalSettings = ({
           <div className={Styles.nav_bar_content}>
             <div className={Styles.settings_block}>
               <label>настройки пользователя</label>
-              <a
-                href="#"
-                className={tab === "profile" ? Styles.active : ""}
+              <SettingBut
+                text="Профиль"
+                tab={tab === "profile"}
                 onClick={() => setTab("profile")}
-              >
-                Профиль
-              </a>
-              <a
-                href="#"
-                className={tab === "uniqName" ? Styles.active : ""}
+              />
+              <SettingBut
+                text="Уникальное имя"
+                tab={tab === "uniqName"}
                 onClick={() => setTab("uniqName")}
-              >
-                Уникальное имя
-              </a>
-              <div className={Styles.stickContainer}>
-                <div className={Styles.stick}></div>
-              </div>
-              <a href="#" onClick={() => void signOut()}>
-                <p>Выйти</p> <i className="bi bi-box-arrow-right"></i>
-              </a>
+              />
+              <Stick />
+              <SettingBut
+                text="Выйти"
+                onClick={() => void signOut()}
+                tab={false}
+                icon={<i className="bi bi-box-arrow-right"></i>}
+              />
             </div>
           </div>
         </div>
         <div className={Styles.right}>
           <div className={Styles.content}>
-            {tab == "profile" && <SettingsProfile user={user} />}
-            {tab == "uniqName" && <SettingsUniqName user={user} />}
+            <Content tab={tab}  user={user}/>
           </div>
           <div className={Styles.esc}>
             <div className={Styles.esc_anim} onClick={callBack}>
@@ -64,3 +62,39 @@ export const GlobalSettings = ({
     </>
   );
 };
+
+function Stick() {
+  return (
+    <div className={Styles.stickContainer}>
+      <div className={Styles.stick}></div>
+    </div>
+  );
+}
+
+function SettingBut({
+  text,
+  onClick,
+  tab,
+  icon,
+}: {
+  text: string;
+  onClick: () => void;
+  tab: boolean;
+  icon?: ReactNode;
+}) {
+  return (
+    <a href="#" className={tab ? Styles.active : ""} onClick={onClick}>
+      <p>{text}</p>
+      {icon && icon}
+    </a>
+  );
+}
+
+function Content({tab , user} : {tab : string , user : userType}){
+  return(
+    <>
+      {tab == "profile" && <SettingsProfile user={user} />}
+      {tab == "uniqName" && <SettingsUniqName user={user} />}
+    </>
+  )
+}

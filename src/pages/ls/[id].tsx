@@ -1,14 +1,7 @@
-import Head from "next/head";
-import Link from "next/link";
 
-import { GetServerSideProps } from "next";
-import { useRouter } from "next/router";
-import Styles from "../../styles/room.module.scss";
-import MainContainer from "~/components/MainContainer";
-import { api } from "~/utils/api";
+import { type GetServerSideProps } from "next";
 import { db } from "~/server/db";
-import { useState } from "react";
-import { getSession, signIn, useSession } from "next-auth/react";
+import { getSession, } from "next-auth/react";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getSession(ctx);

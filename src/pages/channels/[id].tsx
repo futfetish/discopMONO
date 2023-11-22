@@ -1,4 +1,4 @@
-import { signIn,  useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import GroupRight from "~/components/GroupRight";
 import RoomUntilAdd from "~/components/RoomUntilAdd";
 import ErrorContent from "~/components/errorContent";
@@ -85,7 +85,11 @@ export default function Room(props: {
   const router = useRouter();
   const { id } = router.query;
   const { data: sessionData } = useSession();
-  if (!id) {
+
+  if (!sessionData) {
+    return <button onClick={() => void signIn()}>signin </button>;
+  }
+  if (!id || !res.members.some((u) => u.user.id === sessionData.user.id)) {
     <MainContainer
       tab="none"
       content={<ErrorContent text="вы не являетесь участником этой группы" />}
@@ -94,23 +98,6 @@ export default function Room(props: {
       title={"вы не являетесь участником этой группы"}
     />;
   }
-
-  if (!sessionData) {
-    return <button onClick={() => void signIn()}>signin </button>;
-  }
-  console.log(res.members);
-  if (!res.members.some((u) => u.user.id === sessionData.user.id)) {
-    return (
-      <MainContainer
-        tab="none"
-        content={<ErrorContent text="вы не являетесь участником этой группы" />}
-        top={<div></div>}
-        right={<div></div>}
-        title={"вы не являетесь участником этой группы"}
-      />
-    );
-  }
-
 
   return (
     <MainContainer
@@ -162,11 +149,13 @@ export default function Room(props: {
   );
 }
 
+type room = NonNullable<Awaited<ReturnType<typeof getRoom>>>;
+
 function Content({
   room,
   user,
 }: {
-  room: NonNullable<Awaited<ReturnType<typeof getRoom>>>;
+  room: room;
   user: { id: string; name: string; image: string };
 }) {
   const [input, setInput] = useState("");
@@ -185,37 +174,45 @@ function Content({
     },
   });
 
-  function formatDate(date: Date | string): string {
-    const dateObj = typeof date === "string" ? new Date(date) : date;
+  return (
+    <div className={Styles.container}>
+      <MessageList room={room} />
 
-    if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
-      return "Invalid Date";
-    }
+      <div className={Styles.input_area}>
+        <div className={Styles.input_container}>
+          <input
+            autoComplete="off"
+            type="text"
+            v-model="msg_text"
+            className={Styles.message_input}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                if (input !== "") {
+                  mutate({ text: input, roomId: room.id });
+                }
+              }
+            }}
+            placeholder={
+              "написать " +
+              (room.type == "ls"
+                ? room.members
+                    .map((u) => u.user)
+                    .filter((m) => m.id !== user.id)
+                    .map((m) => m.name)
+                    .join(", ")
+                : room.name)
+            }
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
 
-    const day = (dateObj.getDate() + 1).toString().padStart(2, "0");
-    const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
-    const year = dateObj.getFullYear();
-    const hours = dateObj.getHours().toString().padStart(2, "0");
-    const minutes = dateObj.getMinutes().toString().padStart(2, "0");
-
-    return `${day}.${month}.${year} ${hours}:${minutes}`;
-  }
-
-  function formatTimeDate(date: Date | string): string {
-    const dateObj = typeof date === "string" ? new Date(date) : date;
-
-    if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
-      return "Invalid Date";
-    }
-
-    const hours = dateObj.getHours();
-    const minutes = dateObj.getMinutes();
-
-    const formattedHours = String(hours).padStart(2, "0");
-    const formattedMinutes = String(minutes).padStart(2, "0");
-
-    return `${formattedHours}:${formattedMinutes}`;
-  }
+function MessageList({ room }: { room: room }) {
 
   function isSameDay(date1: Date | string, date2: Date | string): boolean {
     const dateObj1 = typeof date1 === "string" ? new Date(date1) : date1;
@@ -254,85 +251,87 @@ function Content({
   }
 
   return (
-    <div className={Styles.container}>
-      <div className={Styles.chat}>
-        {room.msgs.map(
-          (
-            msg: (typeof room.msgs)[number],
-            i: number,
-            arr: (typeof room.msgs)[number][],
-          ) => (
-            <div
-              key={msg.id}
-              className={[
-                Styles.message,
-                !arr[i - 1] || isNewMessage(msg, arr[i - 1]!)
-                  ? Styles.message_new
-                  : Styles.message_past,
-              ].join(" ")}
-            >
-              <div className={Styles.message__info}>
-                {!arr[i - 1] || isNewMessage(msg, arr[i - 1]!) ? (
-                  <img
-                    src={msg.author.image}
-                    className={Styles.message__author_ava}
-                    alt=""
-                  />
-                ) : null}
-                <div className={Styles.message__author}>
-                  {" "}
-                  {msg.author.name}{" "}
-                </div>
-                {!arr[i - 1] || isNewMessage(msg, arr[i - 1]!) ? (
-                  <div className={Styles.message__date}>
-                    {formatDate(msg.createdAt)}
-                  </div>
-                ) : (
-                  <div className={Styles.message__date}>
-                    {formatTimeDate(msg.createdAt)}
-                  </div>
-                )}
-              </div>
-
-              <div className={Styles.message__text}>{msg.text}</div>
-            </div>
-          ),
-        )}
-      </div>
-      <div className={Styles.input_area}>
-        <div className={Styles.input_container}>
-          <input
-            autoComplete="off"
-            type="text"
-            v-model="msg_text"
-            className={Styles.message_input}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                if (input !== "") {
-                  mutate({ text: input, roomId: room.id });
-                }
-              }
-            }}
-            placeholder={
-              "написать " +
-              (room.type == "ls"
-                ? room.members
-                    .map((u) => u.user)
-                    .filter((m) => m.id !== user.id)
-                    .map((m) => m.name)
-                    .join(", ")
-                : room.name)
-            }
-          />
-        </div>
-      </div>
+    <div className={Styles.chat}>
+      {room.msgs.map(
+        (
+          msg: (typeof room.msgs)[number],
+          i: number,
+          arr: (typeof room.msgs)[number][],
+        ) => (
+          <MessageItem key={msg.id} message={msg} isNewMessage={!arr[i - 1] || isNewMessage(msg , arr[i-1]!)} />
+        ),
+      )}
     </div>
   );
 }
 
+function MessageItem({message , isNewMessage} : {message : room['msgs'][number] , isNewMessage : boolean}) {
+
+  function formatDate(date: Date | string): string {
+    const dateObj = typeof date === "string" ? new Date(date) : date;
+
+    if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
+      return "Invalid Date";
+    }
+
+    const day = (dateObj.getDate() + 1).toString().padStart(2, "0");
+    const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
+    const year = dateObj.getFullYear();
+    const hours = dateObj.getHours().toString().padStart(2, "0");
+    const minutes = dateObj.getMinutes().toString().padStart(2, "0");
+
+    return `${day}.${month}.${year} ${hours}:${minutes}`;
+  }
+
+  function formatTimeDate(date: Date | string): string {
+    const dateObj = typeof date === "string" ? new Date(date) : date;
+
+    if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
+      return "Invalid Date";
+    }
+
+    const hours = dateObj.getHours();
+    const minutes = dateObj.getMinutes();
+
+    const formattedHours = String(hours).padStart(2, "0");
+    const formattedMinutes = String(minutes).padStart(2, "0");
+
+    return `${formattedHours}:${formattedMinutes}`;
+  }
+
+  return (
+    <div
+      className={[
+        Styles.message,
+        isNewMessage
+          ? Styles.message_new
+          : Styles.message_past,
+      ].join(" ")}
+    >
+      <div className={Styles.message__info}>
+        {isNewMessage ? (
+          <img
+            src={message.author.image}
+            className={Styles.message__author_ava}
+            alt=""
+          />
+        ) : null}
+        <div className={Styles.message__author}> {message.author.name} </div>
+        {isNewMessage ? (
+          <div className={Styles.message__date}>
+            {formatDate(message.createdAt)}
+          </div>
+        ) : (
+          <div className={Styles.message__date}>
+            {formatTimeDate(message.createdAt)}
+          </div>
+        )}
+      </div>
+
+      <div className={Styles.message__text}>{message.text}</div>
+    </div>
+  );
+}
 
 function Top({
   room,
@@ -341,8 +340,8 @@ function Top({
   room: NonNullable<Awaited<ReturnType<typeof getRoom>>>;
   user: { id: string; name: string; image: string };
 }) {
-  const [roomName , setRoomName] = useState(room.name)
-  const {mutate : changeRoomName} = api.rooms.changeName.useMutation()
+  const [roomName, setRoomName] = useState(room.name);
+  const { mutate: changeRoomName } = api.rooms.changeName.useMutation();
   return (
     <div className={Styles.self__top}>
       <img
@@ -355,27 +354,30 @@ function Top({
         alt=""
         className={Styles.room_big_ava}
       />
-{room.type === "ls" ? (
-  <p className={Styles.room_title}>
-    {room.members
-      .map((u) => u.user)
-      .filter((m) => m.id !== user.id)
-      .map((m) => m.name)
-      .join(", ")}
-  </p>
-) : (
-  <input type="text" className={[Styles.room_title__input , Styles.room_title].join(' ')} value={roomName}
-  onChange={(e) => setRoomName(e.target.value)}
-  onBlur={() => changeRoomName({roomId : room.id , name : roomName}) }
-  onKeyDown={(e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      e.currentTarget.blur()
-    }
-  }}
-  />
-)}
-      
+      {room.type === "ls" ? (
+        <p className={Styles.room_title}>
+          {room.members
+            .map((u) => u.user)
+            .filter((m) => m.id !== user.id)
+            .map((m) => m.name)
+            .join(", ")}
+        </p>
+      ) : (
+        <input
+          type="text"
+          className={[Styles.room_title__input, Styles.room_title].join(" ")}
+          value={roomName}
+          onChange={(e) => setRoomName(e.target.value)}
+          onBlur={() => changeRoomName({ roomId: room.id, name: roomName })}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              e.currentTarget.blur();
+            }
+          }}
+        />
+      )}
+
       <div className={Styles.top_utils}>
         <RoomUntilAdd
           room={{ id: room.id, members: room.members, type: room.type }}

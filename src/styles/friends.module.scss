@@ -71,18 +71,7 @@
         padding: 12px 0px 6px 0px;
         user-select: none;
     }
-    .friend__user{
-        cursor: pointer;
-        border-radius: 8px;
-        width: 100%;
-        padding:0 10px;
-        .friend__user_container{
-            border-top: rgba(68, 70, 77 , 0.5) solid 1px;
-            padding: 10px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            user-select: none;
+
             .friend__ava{
                 width: 40px;
                 height: 40px;
@@ -163,8 +152,6 @@
                     font-size: 13px;
                     margin-top: 20px ;
                 }
-            }
-        }
         &:hover{
             background-color: rgba(68, 70, 77 , 0.5);
         }

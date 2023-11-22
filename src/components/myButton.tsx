@@ -1,5 +1,5 @@
 import Styles  from  '../../src/styles/myButton.module.scss'
-import React, { forwardRef, ButtonHTMLAttributes  } from 'react';
+import React, { forwardRef, type ButtonHTMLAttributes  } from 'react';
 
 interface MyButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   className?: string;

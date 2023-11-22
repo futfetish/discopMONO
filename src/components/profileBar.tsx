@@ -10,7 +10,7 @@ export default function ProfileBar({
   return (
     <div className={Styles.profile_bar}>
       <div className={Styles.profile_info}>
-        <img src={user.image} className={Styles.ava}></img>
+        <img alt="" src={user.image} className={Styles.ava}></img>
         <div className={Styles.text_info}>
           <p className={[Styles.name, Styles.info].join(" ")}>
             {user.name}

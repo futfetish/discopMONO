@@ -49,38 +49,60 @@ export const RoomsSearch = ({ user }: { user: { id: string } }) => {
               }}
               placeholder="Куда отправимся?"
             />
-            <div className={Styles.rooms}>
-              {rooms.map((room) => (
-                <a
-                  key={room.id}
-                  href={"/channels/" + room.id}
-                  className={Styles.room}
-                >
-                  <img
-                    src={
-                      room.type == "group"
-                        ? "/img/grav.png"
-                        : room.members
-                            .map((u) => u.user)
-                            .find((m) => m.id !== user.id)?.image
-                    }
-                    alt=""
-                    className={Styles.room_ava}
-                  />{" "}
-                  <p>
-                    {" "}
-                    {room.type == "group"
-                      ? room.name
-                      : room.members
-                          .map((u) => u.user)
-                          .find((m) => m.id !== user.id)?.name}{" "}
-                  </p>
-                </a>
-              ))}
-            </div>
+            <RoomsList rooms={rooms} userId={user.id} />
           </div>
         </div>
       )}
     </>
   );
 };
+
+type room = {
+  type: "ls" | "group";
+  name: string;
+  id: number;
+  _count: {
+    members: number;
+  };
+  members: {
+    user: {
+      id: string;
+      image: string;
+      name?: string | null | undefined;
+    };
+  }[];
+};
+
+function RoomsList({ rooms, userId }: { rooms: room[]; userId: string }) {
+  return (
+    <div className={Styles.rooms}>
+      {rooms.map((room) => (
+        <RoomItem key={room.id} room={room} userId={userId} />
+      ))}
+    </div>
+  );
+}
+
+function RoomItem({ room, userId }: { room: room; userId: string }) {
+  return (
+    <a href={"/channels/" + room.id} className={Styles.room}>
+      <img
+        src={
+          room.type == "group"
+            ? "/img/grav.png"
+            : room.members.map((u) => u.user).find((m) => m.id !== userId)
+                ?.image
+        }
+        alt=""
+        className={Styles.room_ava}
+      />{" "}
+      <p>
+        {" "}
+        {room.type == "group"
+          ? room.name
+          : room.members.map((u) => u.user).find((m) => m.id !== userId)
+              ?.name}{" "}
+      </p>
+    </a>
+  );
+}
