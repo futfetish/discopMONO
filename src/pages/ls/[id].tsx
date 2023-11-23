@@ -50,6 +50,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     room = await db.room.create({
       data: {
         type: "ls",
+        name : ''
       },
       include: {
         members: {
