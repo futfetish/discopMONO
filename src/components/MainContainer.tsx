@@ -1,7 +1,7 @@
 import { signIn, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useState, useRef } from "react";
 import Styles from "../styles/MainContainer.module.scss";
 import ProfileBar from "~/components/profileBar";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -38,6 +38,8 @@ export default function MainContainer({
   title?: string;
   tab?: string;
 }) {
+  const settingsContainerRef = useRef<HTMLDivElement | null>(null);
+  const appRef = useRef<HTMLDivElement | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { data: sessionData } = useSession();
   const { data: userRoomsData } = api.rooms.showRoomsJoined.useQuery();
@@ -49,13 +51,37 @@ export default function MainContainer({
   }
 
   function toggleSettings() {
-    setIsSettingsOpen(!isSettingsOpen);
+    const settingsContainer = settingsContainerRef.current;
+    const app = appRef.current;
+    if (settingsContainer && app) {
+      if (isSettingsOpen) {
+        app.style.transform = "scale(1)";
+        app.style.opacity = "1";
+
+        settingsContainer.style.transform = "scale(1.2)";
+        settingsContainer.style.opacity = "0";
+        setTimeout(() => {
+          settingsContainer.style.display = "none";
+          setIsSettingsOpen(!isSettingsOpen);
+        }, 200);
+      } else {
+        app.style.transform = "scale(0.8)";
+        app.style.opacity = "0";
+
+        setIsSettingsOpen(!isSettingsOpen);
+        settingsContainer.style.display = "block";
+        setTimeout(() => {
+          settingsContainer.style.transform = "scale(1)";
+          settingsContainer.style.opacity = "1";
+        }, 0);
+      }
+    }
   }
 
   return (
-    <>
+    <div className={Styles.body}>
       <HeadComponent title={title} />
-      <div className={Styles.app}>
+      <div className={Styles.app} ref={appRef}>
         <div className={Styles.slidebar} id="slidebar">
           <div className={Styles.unread_rooms}></div>
         </div>
@@ -92,12 +118,16 @@ export default function MainContainer({
           </div>
         </div>
       </div>
-      {isSettingsOpen && (
-        <div className={Styles.global_settings_container}>
+
+      <div
+        className={Styles.global_settings_container}
+        ref={settingsContainerRef}
+      >
+        {isSettingsOpen && (
           <GlobalSettings callBack={toggleSettings} user={user} />
-        </div>
-      )}
-    </>
+        )}
+      </div>
+    </div>
   );
 }
 

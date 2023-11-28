@@ -1,4 +1,9 @@
+.body{
+    background-color: #212024;
+}
+
 .app{
+    transition: all  ease-out 0.2s;
     position: relative;
     display: flex;
     width: 100vw;
@@ -226,6 +231,10 @@
 }
 
 .global_settings_container{
+    transition: all  ease-out 0.2s;
+    transform: scale(1.2);
+    opacity: 0;
+    display: none;
     top:0;
     left:0;
     z-index: 10000000;
