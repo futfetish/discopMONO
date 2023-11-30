@@ -3,6 +3,7 @@ import { SessionProvider, getSession } from "next-auth/react";
 import { type AppType } from "next/app";
 import { api } from "~/utils/api";
 
+import "~/styles/global.css";
 import "~/styles/global.scss";
 import { type AppContextType } from "next/dist/shared/lib/utils";
 import { type NextRouter } from "next/router";
@@ -19,7 +20,6 @@ const MyApp: AppType<{ session: Session | null }> = ({
 };
 
 MyApp.getInitialProps = async ({
-  Component,
   ctx,
 }: AppContextType<NextRouter>) => {
   const session = await getSession({ req: ctx.req });
@@ -28,8 +28,7 @@ MyApp.getInitialProps = async ({
     if (ctx.res) {
       ctx.res.writeHead(302, { Location: "/login" });
       ctx.res.end();
-    } else if (typeof window !== "undefined") {
-      // Для клиентского рендеринга
+    } else if (typeof window !== "undefined") { 
       window.location.href = "/login";
     }
   }

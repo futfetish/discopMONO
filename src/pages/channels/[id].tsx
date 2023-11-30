@@ -10,6 +10,36 @@ import { api } from "~/utils/api";
 import { db } from "~/server/db";
 import { useState } from "react";
 
+// class MessageAuthorFlyWeight {
+//   users: Map<string, room["members"][number]["user"]> = new Map<
+//     string,
+//     room["members"][number]["user"]
+//   >();
+//   db : DBtype = db
+
+//   async getUser(id: string): Promise<room["members"][number]["user"]> {
+//     if(!this.users.has(id)){
+//       const newUser = await this.db.user.findUnique({
+//         where  : {
+//           id
+//         },
+//         select: {
+//           id: true,
+//           name: true,
+//           image: true,
+//         }
+//       })
+//       if (newUser){
+//         this.users.set(id , newUser)
+//       }else{
+//         this.users.set(id , {id : id , name : 'unknown' , image:''})
+//       }
+      
+//     }
+//     return this.users.get(id)!
+//   }
+// }
+
 const getRoom = async (id: number) => {
   const res = await db.room.findUnique({
     where: {
@@ -73,15 +103,15 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   return {
     props: {
-      data: res,
+      data: { room : res},
     },
   };
 };
 
-export default function Room(props: {
-  data: NonNullable<Awaited<ReturnType<typeof getRoom>>>;
+export default function RoomC(props: {
+  data: {room  : NonNullable<Awaited<ReturnType<typeof getRoom>>>};
 }) {
-  const res = props.data;
+  const res = props.data.room;
   const router = useRouter();
   const { id } = router.query;
   const { data: sessionData } = useSession();
@@ -213,7 +243,6 @@ function Content({
 }
 
 function MessageList({ room }: { room: room }) {
-
   function isSameDay(date1: Date | string, date2: Date | string): boolean {
     const dateObj1 = typeof date1 === "string" ? new Date(date1) : date1;
     const dateObj2 = typeof date2 === "string" ? new Date(date2) : date2;
@@ -258,15 +287,24 @@ function MessageList({ room }: { room: room }) {
           i: number,
           arr: (typeof room.msgs)[number][],
         ) => (
-          <MessageItem key={msg.id} message={msg} isNewMessage={!arr[i - 1] || isNewMessage(msg , arr[i-1]!)} />
+          <MessageItem
+            key={msg.id}
+            message={msg}
+            isNewMessage={!arr[i - 1] || isNewMessage(msg, arr[i - 1]!)}
+          />
         ),
       )}
     </div>
   );
 }
 
-function MessageItem({message , isNewMessage} : {message : room['msgs'][number] , isNewMessage : boolean}) {
-
+function MessageItem({
+  message,
+  isNewMessage,
+}: {
+  message: room["msgs"][number];
+  isNewMessage: boolean;
+}) {
   function formatDate(date: Date | string): string {
     const dateObj = typeof date === "string" ? new Date(date) : date;
 
@@ -298,14 +336,12 @@ function MessageItem({message , isNewMessage} : {message : room['msgs'][number] 
 
     return `${formattedHours}:${formattedMinutes}`;
   }
-
+  
   return (
     <div
       className={[
         Styles.message,
-        isNewMessage
-          ? Styles.message_new
-          : Styles.message_past,
+        isNewMessage ? Styles.message_new : Styles.message_past,
       ].join(" ")}
     >
       <div className={Styles.message__info}>

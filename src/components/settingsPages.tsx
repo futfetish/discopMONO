@@ -93,7 +93,7 @@ export const SettingsProfile = ({
             <input
               type="file"
               ref={avaInput}
-              className="hidden"
+              className='hidden'
               onChange={() => {
                 avaTake();
                 openNoti();

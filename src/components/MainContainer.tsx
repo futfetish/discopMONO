@@ -80,6 +80,11 @@ export default function MainContainer({
 
   return (
     <div className={Styles.body}>
+      <div className={Styles.blank}>
+        <div className={Styles.nav}></div>
+        <div className={Styles.left}></div>
+        <div className={Styles.right}></div>
+      </div>
       <HeadComponent title={title} />
       <div className={Styles.app} ref={appRef}>
         <div className={Styles.slidebar} id="slidebar">
