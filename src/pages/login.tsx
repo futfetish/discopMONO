@@ -7,6 +7,21 @@ export default function Login() {
   if (sessionData) {
     router.push("/");
   }
+  const { query } = useRouter();
+  const { error } = query;
 
-  return <button onClick={() => signIn()}>login</button>;
+  return (
+    <>
+      <button
+        onClick={() =>
+          signIn("discord", {
+            callbackUrl: "/",
+          })
+        }
+      >
+        login
+      </button>
+      {error !== undefined ? <div>ERROR: {error}</div> : <></>}
+    </>
+  );
 }

@@ -53,82 +53,44 @@ export default function MainContainer({
   const settingsContainer = settingsContainerRef.current;
   const app = appRef.current;
 
-  function appChangeTrue(appElement: HTMLDivElement) {
-    appElement.style.transform = "scale(1)";
-    appElement.style.opacity = "1";
-  }
-
-  function appChangeFalse(appElement: HTMLDivElement) {
-    appElement.style.transform = "scale(0.8)";
-    appElement.style.opacity = "0";
-  }
-
-  function appChange(v: boolean, appElement: HTMLDivElement) {
-    if (v) {
-      appChangeTrue(appElement);
-    } else {
-      appChangeFalse(appElement);
+  function appChange(v: boolean) {
+    if (!app) {
+      return;
     }
-  }
-  function setSettingsContainerFalse(settingsContainerElement: HTMLDivElement) {
-    settingsContainerElement.style.transform = "scale(1.2)";
-    settingsContainerElement.style.opacity = "0";
-  }
-
-  function setSettingsContainerTrue(settingsContainerElement: HTMLDivElement) {
-    settingsContainerElement.style.display = "block";
-    setTimeout(() => {
-      settingsContainerElement.style.transform = "scale(1)";
-      settingsContainerElement.style.opacity = "1";
-    }, 0);
-  }
-
-  function settingsContainerChange(
-    v: boolean,
-    settingsContainerElement: HTMLDivElement,
-  ) {
     if (v) {
-      setSettingsContainerFalse(settingsContainerElement);
+      app.style.transform = "scale(1)";
+      app.style.opacity = "1";
     } else {
-      setSettingsContainerTrue(settingsContainerElement);
+      app.style.transform = "scale(0.8)";
+      app.style.opacity = "0";
     }
   }
 
-  function turnOffContainer(settingsContainerElement: HTMLDivElement) {
-    settingsContainerElement.style.display = "none";
-    setIsSettingsOpen(false);
-  }
-
-  function turnOffContainerTime(
-    time: number,
-    settingsContainer: HTMLDivElement,
-  ) {
-    setTimeout(() => {
-      turnOffContainer(settingsContainer);
-    }, time);
-  }
-
-  function turnOnContainer() {
-    setIsSettingsOpen(true);
-  }
-
-  function switchSettings(
-    v: boolean,
-    time: number,
-    settingsContainerElement: HTMLDivElement,
-  ) {
+  function settingsContainerChange(v: boolean) {
+    if (!settingsContainer) {
+      return;
+    }
     if (v) {
-      turnOffContainerTime(time, settingsContainerElement);
+      settingsContainer.style.transform = "scale(1.2)";
+      settingsContainer.style.opacity = "0";
+      setTimeout(() => {
+        settingsContainer.style.display = "none";
+        setIsSettingsOpen(!isSettingsOpen);
+      }, 200);
     } else {
-      turnOnContainer();
+      setIsSettingsOpen(!isSettingsOpen);
+      settingsContainer.style.display = "block";
+      setTimeout(() => {
+        settingsContainer.style.transform = "scale(1)";
+        settingsContainer.style.opacity = "1";
+      }, 0);
     }
   }
 
   function toggleSettings() {
     if (settingsContainer && app) {
-      appChange(isSettingsOpen, app);
-      settingsContainerChange(isSettingsOpen, settingsContainer);
-      switchSettings(isSettingsOpen, 200, settingsContainer);
+      appChange(isSettingsOpen);
+      settingsContainerChange(!isSettingsOpen);
     }
   }
 
