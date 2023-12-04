@@ -213,7 +213,11 @@ function Content({
   user: { id: string; name: string; image: string };
 }) {
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<(typeof room)["msgs"]>(room.msgs);
+  const [messages, setMessages] = useState<(typeof room)["msgs"]>(room.msgs)
+
+  useEffect(() => {
+    setMessages(room.msgs);
+  }, [room]);
 
   function addMessage(message: (typeof room)["msgs"][number]) {
     setMessages([...messages, message]);
@@ -245,7 +249,6 @@ function Content({
       socket.off("message", onMessage);
     };
   });
-
   return (
     <div className={Styles.container}>
       <MessageList msgs={messages} />
@@ -286,7 +289,6 @@ function Content({
 
 function MessageList({ msgs }: { msgs: roomT["msgs"] }) {
   const messageListRef = useRef<HTMLDivElement | null>(null);
-
   useEffect(() => {
     const messageListObj = messageListRef.current;
     if (messageListObj) {
@@ -429,6 +431,11 @@ function Top({
 }) {
   const [roomName, setRoomName] = useState(room.name);
   const { mutate: changeRoomName } = api.rooms.changeName.useMutation();
+
+  useEffect(() => {
+    setRoomName(room.name);
+  }, [room.msgs]);
+
   return (
     <div className={Styles.self__top}>
       <img
