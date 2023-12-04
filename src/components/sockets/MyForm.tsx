@@ -9,8 +9,9 @@ export function MyForm() {
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsLoading(true);
+    console.log(1)
 
-    socket.timeout(5000).emit("create-something", value, () => {
+    socket.emit("hello", value, () => {
       setIsLoading(false);
     });
   }

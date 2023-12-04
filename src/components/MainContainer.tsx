@@ -8,7 +8,6 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { api } from "~/utils/api";
 import { GlobalSettings } from "./GlobalSettings";
 import { RoomsSearch } from "./roomsSearch";
-import Socket from "./sockets/Socket";
 
 type roomType = {
   type: "ls" | "group";
@@ -135,10 +134,10 @@ export default function MainContainer({
 
   return (
     <div className={Styles.body}>
-      <div>
+      {/* <div>
         <div>lopl</div>
         <Socket />
-      </div>
+      </div> */}
       <div className={Styles.blank}>
         <div className={Styles.nav}></div>
         <div className={Styles.left}></div>

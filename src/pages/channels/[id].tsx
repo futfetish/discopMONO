@@ -8,7 +8,8 @@ import Styles from "../../styles/room.module.scss";
 import MainContainer from "~/components/MainContainer";
 import { api } from "~/utils/api";
 import { db } from "~/server/db";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { socket } from "~/socket";
 
 // class MessageAuthorFlyWeight {
 //   users: Map<string, room["members"][number]["user"]> = new Map<
@@ -34,7 +35,7 @@ import { useState } from "react";
 //       }else{
 //         this.users.set(id , {id : id , name : 'unknown' , image:''})
 //       }
-      
+
 //     }
 //     return this.users.get(id)!
 //   }
@@ -103,18 +104,41 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   return {
     props: {
-      data: { room : res},
+      data: { room: res },
     },
   };
 };
 
 export default function RoomC(props: {
-  data: {room  : NonNullable<Awaited<ReturnType<typeof getRoom>>>};
+  data: { room: NonNullable<Awaited<ReturnType<typeof getRoom>>> };
 }) {
   const res = props.data.room;
   const router = useRouter();
   const { id } = router.query;
   const { data: sessionData } = useSession();
+
+  useEffect(() => {
+    socket.connect();
+    socket.emit("joinRoom", "room" + res.id);
+
+    function onConnect() {
+      console.log("connected");
+    }
+
+    function onDisconnect() {
+      console.log("disconnected");
+    }
+
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+
+      socket.disconnect();
+    };
+  });
 
   if (!sessionData) {
     return <button onClick={() => void signIn()}>signin </button>;
@@ -179,34 +203,52 @@ export default function RoomC(props: {
   );
 }
 
-type room = NonNullable<Awaited<ReturnType<typeof getRoom>>>;
+type roomT = NonNullable<Awaited<ReturnType<typeof getRoom>>>;
 
 function Content({
   room,
   user,
 }: {
-  room: room;
+  room: roomT;
   user: { id: string; name: string; image: string };
 }) {
   const [input, setInput] = useState("");
+  const [messages, setMessages] = useState<(typeof room)["msgs"]>(room.msgs);
+
+  function addMessage(message: (typeof room)["msgs"][number]) {
+    setMessages([...messages, message]);
+  }
 
   const { mutate } = api.message.create.useMutation({
     onSuccess: (data) => {
-      room.msgs.push({
+      const newMessage = {
         authorId: user.id,
         id: data.messageId,
         createdAt: new Date(),
         author: user,
         text: input,
-      });
-      console.log(room.msgs);
+      };
+      addMessage(newMessage);
+      socket.emit("message", { room: "room" + room.id, message: newMessage });
       setInput("");
     },
   });
 
+  useEffect(() => {
+    function onMessage(data: (typeof room)["msgs"][number]) {
+      addMessage(data);
+    }
+
+    socket.on("message", onMessage);
+
+    return () => {
+      socket.off("message", onMessage);
+    };
+  });
+
   return (
     <div className={Styles.container}>
-      <MessageList room={room} />
+      <MessageList msgs={messages} />
 
       <div className={Styles.input_area}>
         <div className={Styles.input_container}>
@@ -242,7 +284,16 @@ function Content({
   );
 }
 
-function MessageList({ room }: { room: room }) {
+function MessageList({ msgs }: { msgs: roomT["msgs"] }) {
+  const messageListRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const messageListObj = messageListRef.current;
+    if (messageListObj) {
+      messageListObj.scrollTop = messageListObj.scrollHeight;
+    }
+  });
+
   function isSameDay(date1: Date | string, date2: Date | string): boolean {
     const dateObj1 = typeof date1 === "string" ? new Date(date1) : date1;
     const dateObj2 = typeof date2 === "string" ? new Date(date2) : date2;
@@ -280,12 +331,12 @@ function MessageList({ room }: { room: room }) {
   }
 
   return (
-    <div className={Styles.chat}>
-      {room.msgs.map(
+    <div className={Styles.chat} ref={messageListRef}>
+      {msgs.map(
         (
-          msg: (typeof room.msgs)[number],
+          msg: (typeof msgs)[number],
           i: number,
-          arr: (typeof room.msgs)[number][],
+          arr: (typeof msgs)[number][],
         ) => (
           <MessageItem
             key={msg.id}
@@ -302,7 +353,7 @@ function MessageItem({
   message,
   isNewMessage,
 }: {
-  message: room["msgs"][number];
+  message: roomT["msgs"][number];
   isNewMessage: boolean;
 }) {
   function formatDate(date: Date | string): string {
@@ -336,7 +387,7 @@ function MessageItem({
 
     return `${formattedHours}:${formattedMinutes}`;
   }
-  
+
   return (
     <div
       className={[

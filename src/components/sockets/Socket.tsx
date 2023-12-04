@@ -11,6 +11,7 @@ export default function Socket() {
 
   useEffect(() => {
     socket.connect();
+    console.warn("CONNECT");
     function onConnect() {
       setIsConnected(true);
     }
@@ -25,7 +26,7 @@ export default function Socket() {
 
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
-    // socket.on("hello", onFooEvent);
+    socket.on("hello", onFooEvent);
 
     return () => {
       console.warn("DISCONNECT");
