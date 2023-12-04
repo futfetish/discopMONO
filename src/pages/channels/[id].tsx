@@ -434,7 +434,7 @@ function Top({
 
   useEffect(() => {
     setRoomName(room.name);
-  }, [room.msgs]);
+  }, [room]);
 
   return (
     <div className={Styles.self__top}>
