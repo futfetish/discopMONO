@@ -261,3 +261,20 @@
     height: 100vh;
     position: absolute;
 }
+
+.red_circle{
+    .core{
+        width: 5px;
+        height: 5px;
+        border-radius: 50% ;
+        background-color: white;
+    }
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content:  center;
+    background-color: red;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+}

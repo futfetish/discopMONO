@@ -1,7 +1,7 @@
 import { signIn, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
-import { type ReactNode, useState, useRef } from "react";
+import { type ReactNode, useState, useRef, useEffect } from "react";
 import Styles from "../styles/MainContainer.module.scss";
 import ProfileBar from "~/components/profileBar";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -45,6 +45,11 @@ export default function MainContainer({
   const { data: userRoomsData } = api.rooms.showRoomsJoined.useQuery();
   const { data: user } = api.users.user.useQuery();
   const userRooms = userRoomsData?.rooms || [];
+  const { data: isHaveReqQ } = api.friends.isHaveReq.useQuery();
+  const [isHaveReq, setIsHaveReq] = useState(isHaveReqQ);
+  useEffect(() => {
+    setIsHaveReq(isHaveReqQ);
+  }, [isHaveReqQ]);
 
   if (!sessionData || !user) {
     return <button onClick={() => void signIn()}>signin </button>;
@@ -163,6 +168,11 @@ export default function MainContainer({
                   <p>
                     <i className="bi bi-people-fill"></i>Друзья
                   </p>
+                  {isHaveReq && (
+                    <div className={Styles.red_circle}>
+                      <div className={Styles.core}></div>
+                    </div>
+                  )}
                 </Link>
               </div>
               <br />

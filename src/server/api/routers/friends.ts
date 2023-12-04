@@ -177,4 +177,25 @@ export const friendRouter = createTRPCRouter({
       });
       return { isSuccess: true };
     }),
+  isHaveReq: protectedProcedure.query(async ({ctx}) => {
+    const request = await ctx.db.user.findFirst({
+      where: {
+        friends: {
+          some: {
+            toId: ctx.session.user.id,
+          },
+        },
+        friendsOf: {
+          none: {
+            fromId: ctx.session.user.id,
+          },
+        },
+      },
+      select : {
+        id : true
+      }
+    })
+    console.log('aaaaaaaaaaaaaaaaaaa' ,request)
+    return request !== null
+  })
 });
