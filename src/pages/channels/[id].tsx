@@ -1,4 +1,4 @@
-import { signIn, useSession } from "next-auth/react";
+import { getSession, signIn, useSession } from "next-auth/react";
 import GroupRight from "~/components/GroupRight";
 import RoomUntilAdd from "~/components/RoomUntilAdd";
 import ErrorContent from "~/components/errorContent";
@@ -101,6 +101,29 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       notFound: true,
     };
   }
+  
+  const session = await getSession(ctx)
+
+  if(!session){
+    return {
+      redirect : {
+        destination: "/login",
+        permanent: false,
+      }
+    }
+  }
+
+  await db.userRooms.update({
+    where : {
+      userId_roomId : {
+        userId : session.user.id,
+        roomId : res.id
+      }
+    },
+    data : {
+      isRead : true
+    }
+  })
 
   return {
     props: {
@@ -214,8 +237,16 @@ function Content({
 }) {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<(typeof room)["msgs"]>(room.msgs)
+  const [ notActiveMembers  , setNotActiveMembers] = useState(new Set( room.members.map((m) => m.user.id ).filter((m) => m !== user.id) ))
+
+  const { mutate : notifyMembers } = api.rooms.userRoomsToUnRead.useMutation({
+    onSuccess : () => {
+      //
+    }
+  })
 
   useEffect(() => {
+    setNotActiveMembers(new Set( room.members.map((m) => m.user.id ).filter((m) => m !== user.id) ))
     setMessages(room.msgs);
   }, [room]);
 
@@ -235,6 +266,7 @@ function Content({
       addMessage(newMessage);
       socket.emit("message", { room: "room" + room.id, message: newMessage });
       setInput("");
+      notifyMembers({userIds : notActiveMembers , roomId : room.id})
     },
   });
 

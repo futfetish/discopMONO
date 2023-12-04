@@ -2,7 +2,11 @@ import { TRPCClientError } from "@trpc/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 import { zRoomType } from "~/types/rooms";
 
 export const roomsRouter = createTRPCRouter({
@@ -214,7 +218,7 @@ export const roomsRouter = createTRPCRouter({
   search: protectedProcedure
     .output(
       z.object({
-        rooms : z.array(
+        rooms: z.array(
           z.object({
             id: z.number(),
             type: zRoomType,
@@ -231,7 +235,7 @@ export const roomsRouter = createTRPCRouter({
             ),
           }),
         ),
-      })
+      }),
     )
     .input(
       z.object({
@@ -240,7 +244,7 @@ export const roomsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const search = input.s;
-      console.log('s' , search)
+      console.log("s", search);
       const userId = ctx.session.user.id;
       const rooms = await ctx.db.room.findMany({
         where: {
@@ -261,9 +265,9 @@ export const roomsRouter = createTRPCRouter({
                         name: {
                           contains: search,
                         },
-                        id : {
-                          not : userId
-                        }
+                        id: {
+                          not: userId,
+                        },
                       },
                     },
                   },
@@ -300,6 +304,85 @@ export const roomsRouter = createTRPCRouter({
           },
         },
       });
-      return {rooms};
+      return { rooms };
+    }),
+  unReadRooms: protectedProcedure
+    .output(
+      z.object({
+        rooms: z.array(
+          z.object({
+            id: z.number(),
+            type: zRoomType,
+            name: z.string(),
+            _count: z.object({ members: z.number() }),
+            members: z.array(
+              z.object({
+                user: z.object({
+                  id: z.string(),
+                  name: z.string().optional().nullable(),
+                  image: z.string(),
+                }),
+              }),
+            ),
+          }),
+        ),
+      }),
+    )
+    .query(async ({ ctx }) => {
+      const unReadUserRooms = await ctx.db.userRooms.findMany({
+        where: {
+          isRead: false,
+          userId: ctx.session.user.id,
+        },
+        select: {
+          room: {
+            select: {
+              id: true,
+              name: true,
+              type: true,
+              _count: {
+                select: {
+                  members: true,
+                },
+              },
+              members: {
+                take: 5,
+                select: {
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                      image: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+      const unReadRooms = unReadUserRooms.map((r) => r.room);
+      return { rooms: unReadRooms };
+    }),
+  userRoomsToUnRead: publicProcedure
+    .input(
+      z.object({
+        userIds: z.set(z.string()),
+        roomId: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const roomId = input.roomId;
+      const userIds = Array.from(input.userIds);
+      await ctx.db.userRooms.updateMany({
+        where: {
+          roomId: roomId,
+          userId: { in: userIds },
+        },
+        data: {
+          isRead: false,
+        },
+      });
+      return { isSuccess: true };
     }),
 });

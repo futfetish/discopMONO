@@ -151,7 +151,7 @@ export default function MainContainer({
       <HeadComponent title={title} />
       <div className={Styles.app} ref={appRef}>
         <div className={Styles.slidebar} id="slidebar">
-          <div className={Styles.unread_rooms}></div>
+          <UnReadRooms userId={user.id} />
         </div>
         <div className={Styles.self}>
           <div className={Styles.self__leftbar}>
@@ -273,5 +273,55 @@ function RoomItem({
           : room.members.map((u) => u.user).find((m) => m.id !== userId)?.name}
       </p>
     </Link>
+  );
+}
+
+function UnReadRooms({ userId }: { userId: string }) {
+  const { data: unReadRoomsQ } = api.rooms.unReadRooms.useQuery();
+  const [unReadRooms, setUnReadRooms] = useState<roomType[]>([]);
+
+  useEffect(() => {
+    if (unReadRoomsQ) {
+      setUnReadRooms(unReadRoomsQ.rooms);
+    }
+  }, [unReadRoomsQ]);
+  
+  return (
+    <div className={Styles.unread_rooms}>
+      {unReadRooms.map((room) => (
+        <div key={room.id} className={Styles.item}>
+          <div className={Styles.item__content}>
+            <Link href={"/channels/" + room.id}>
+              <img
+                alt=""
+                src={
+                  room.type == "group"
+                    ? "/img/grav.png"
+                    : room.members
+                        .map((u) => u.user)
+                        .find((m) => m.id !== userId)?.image
+                }
+              />
+            </Link>
+            <div className={Styles.red_circle}>
+              <div className={Styles.core}></div>
+            </div>
+          </div>
+
+          <div className={Styles.item__white_stick}></div>
+          <div className={Styles.item_info_container}>
+            <div className={Styles.arrow}></div>
+            <div className={Styles.item__info}>
+              <p>
+                {room.type == "group"
+                  ? room.name
+                  : room.members.map((u) => u.user).find((m) => m.id !== userId)
+                      ?.name}
+              </p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
