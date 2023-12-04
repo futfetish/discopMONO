@@ -195,7 +195,6 @@ export const friendRouter = createTRPCRouter({
         id : true
       }
     })
-    console.log('aaaaaaaaaaaaaaaaaaa' ,request)
     return request !== null
   })
 });
