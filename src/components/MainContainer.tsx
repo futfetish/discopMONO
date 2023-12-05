@@ -45,12 +45,26 @@ export default function MainContainer({
   const { data: sessionData } = useSession();
   const { data: userRoomsData } = api.rooms.showRoomsJoined.useQuery();
   const { data: user } = api.users.user.useQuery();
-  const userRooms = userRoomsData?.rooms || [];
+  const [userRooms , setUserRooms] = useState(userRoomsData?.rooms || []) ;
   const { data: isHaveReqQ } = api.friends.isHaveReq.useQuery();
   const [isHaveReq, setIsHaveReq] = useState(isHaveReqQ);
+  const {mutate : addNewRoom }= api.rooms.roomById.useMutation({
+    onSuccess : (data) => {
+      if(data.isSuccess){
+        setUserRooms([...userRooms , data.room!])
+      }
+    }
+  }) 
+
   useEffect(() => {
     setIsHaveReq(isHaveReqQ);
   }, [isHaveReqQ]);
+
+  useEffect(() => {
+    if(userRoomsData){
+      setUserRooms(userRoomsData.rooms)
+    }
+  } , [userRoomsData])
 
   useEffect(() => {
     if (user) {
@@ -67,23 +81,28 @@ export default function MainContainer({
       }
 
       function onFriendReqNotify(){
-        console.log(111)
         setIsHaveReq(true)
+      }
+
+      function onNewChat(data : number){
+        addNewRoom({id : data})
       }
 
       socket.on("connect", onConnect);
       socket.on("disconnect", onDisconnect);
       socket.on('friendReqNotify' , onFriendReqNotify)
+      socket.on('newChat' , onNewChat)
 
       return () => {
         socket.off("connect", onConnect);
         socket.off("disconnect", onDisconnect);
         socket.off('friendReqNotify' , onFriendReqNotify)
+        socket.off('newChat' , onNewChat)
         socket.emit("leaveRoom", roomName);
         socket.disconnect();
       };
     }
-  }, [user]);
+  }, );
 
   if (!sessionData || !user) {
     return <button onClick={() => void signIn()}>signin </button>;

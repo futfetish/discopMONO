@@ -3,10 +3,12 @@ import { api } from "~/utils/api";
 import MyButton from "./myButton";
 import { useState, useRef } from "react";
 import { useRouter } from "next/router";
+import { socket } from "~/socket";
 
 type room = {
   id: number;
   type: string;
+  name : string
   members: {
     user: { id: string; name: string; image: string };
     isAdmin: boolean;
@@ -76,6 +78,9 @@ function Modal({
   const { mutate: createRoom, isLoading: isLoading1 } =
     api.rooms.createNewChat.useMutation({
       onSuccess: (data) => {
+        members.forEach((m) => {
+          socket.emit('newChat' , {room : 'user' + m , message : data.roomId})
+        })
         router.push("/channels/" + data.roomId);
       },
     });
@@ -83,6 +88,11 @@ function Modal({
   const { mutate: addUsers, isLoading: isLoading2 } =
     api.rooms.addUsersToChat.useMutation({
       onSuccess: () => {
+        members.forEach((m) => {
+          if (!room.members.map((m) => m.user.id).includes(m)){
+            socket.emit('newChat' , {room : 'user' + m , message : room.id})
+          }
+        })
         toggleFunc();
       },
     });

@@ -2,6 +2,7 @@
 import { type GetServerSideProps } from "next";
 import { db } from "~/server/db";
 import { getSession, } from "next-auth/react";
+// import { socket } from "~/socket";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getSession(ctx);
@@ -38,10 +39,25 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         },
       },
     },
-    include: {
-      members: {
+    select: {
+      id: true,
+      name: true,
+      type: true,
+      _count: {
         select: {
-          userId: true,
+          members: true,
+        },
+      },
+      members: {
+        take: 5,
+        select: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
         },
       },
     },
@@ -52,9 +68,26 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         type: "ls",
         name : ''
       },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        type: true,
+        _count: {
+          select: {
+            members: true,
+          },
+        },
         members: {
-          select: { userId: true },
+          take: 5,
+          select: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+              },
+            },
+          },
         },
       },
     });
@@ -72,6 +105,9 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         userId: session.user.id,
       },
     });
+    // socket.connect()
+    // socket.emit( 'newChat' ,{room : 'user' + id , message : room})
+    // socket.disconnect()
   }
 
   return {

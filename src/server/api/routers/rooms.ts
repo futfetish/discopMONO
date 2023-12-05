@@ -1,6 +1,6 @@
 import { TRPCClientError } from "@trpc/client";
 import { TRPCError } from "@trpc/server";
-import { z } from "zod";
+import {  z } from "zod";
 
 import {
   createTRPCRouter,
@@ -384,5 +384,45 @@ export const roomsRouter = createTRPCRouter({
         },
       });
       return { isSuccess: true };
+    }),
+  roomById: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const room = await ctx.db.room.findUnique({
+        where: {
+          id: input.id,
+        },
+        select: {
+          id: true,
+          name: true,
+          type: true,
+          _count: {
+            select: {
+              members: true,
+            },
+          },
+          members: {
+            take: 5,
+            select: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      if (room) {
+        return { isSuccess: true, room: room };
+      }else {
+        return {isSuccess : false }
+      }
     }),
 });

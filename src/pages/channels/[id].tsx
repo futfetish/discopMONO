@@ -495,7 +495,7 @@ function Top({
 
       <div className={Styles.top_utils}>
         <RoomUntilAdd
-          room={{ id: room.id, members: room.members, type: room.type }}
+          room={{ id: room.id, members: room.members, type: room.type , name : room.name}}
         />
       </div>
     </div>
