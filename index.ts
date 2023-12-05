@@ -21,11 +21,18 @@ app.get("/", (req, res) => {
   res.send("<h1>Hello world</h1>");
 });
 
+
 io.on("connection", (socket) => {
   console.log("a user connected");
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });
+
+function createHandler(name : string){
+  socket.on(name , (data) => {
+    socket.to(data.room).emit( name, data.message)
+  })
+}
 
   socket.on("joinRoom", (data) => {
     socket.join(data);
@@ -35,15 +42,9 @@ io.on("connection", (socket) => {
     socket.leave(data);
   });
 
-  socket.on("message", (data) => {
-    console.log(data)
-    socket.to(data.room).emit("message", data.message);
-  });
-
-  socket.on("messageNotify", (data) => {
-    console.log(data)
-    socket.to(data.room).emit("messageNotify", data.message);
-  });
+  createHandler('message')
+  createHandler('messageNotify')
+  createHandler('friendReqNotify')
 });
 
 server.listen(3001, () => {
