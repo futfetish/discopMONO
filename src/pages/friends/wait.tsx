@@ -7,6 +7,7 @@ import { useState } from "react";
 
 import { FriendTop } from "~/components/FriendsTop";
 import { FriendList } from "~/components/FriendList";
+import { socket } from "~/socket";
 
 export default function Friends_wait() {
   const { data: sessionData } = useSession();
@@ -47,6 +48,17 @@ function Content() {
       setFriendListFrom(friends.from);
     }
   }, [isLoading, friends]);
+
+  useEffect(() => {
+    function onFriendReqNotify(data : {id : string , name : string , image : string}){
+      if (! friendListFrom.find((f) => f.id === data.id))
+      setFriendListFrom([...friendListFrom , data])
+    }
+    socket.on('friendReqNotify' , onFriendReqNotify)
+    return () => {
+      socket.off('friendReqNotify' , onFriendReqNotify)
+    }
+  })
 
   return (
     <div className={Styles.self__self} id="friends_all_app">
@@ -89,6 +101,7 @@ function Content() {
                 className: Styles.friend__cancel,
                 icon: <i className="bi bi-x-lg"></i>,
                 onClick: (e, friend) => {
+                  e.preventDefault()
                   setFriendListTo(
                     friendListTo.filter((f) => f.id !== friend.id),
                   );

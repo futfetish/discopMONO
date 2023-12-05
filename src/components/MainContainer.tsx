@@ -66,12 +66,19 @@ export default function MainContainer({
         console.log("disconnected");
       }
 
+      function onFriendReqNotify(){
+        console.log(111)
+        setIsHaveReq(true)
+      }
+
       socket.on("connect", onConnect);
       socket.on("disconnect", onDisconnect);
+      socket.on('friendReqNotify' , onFriendReqNotify)
 
       return () => {
         socket.off("connect", onConnect);
         socket.off("disconnect", onDisconnect);
+        socket.off('friendReqNotify' , onFriendReqNotify)
         socket.emit("leaveRoom", roomName);
         socket.disconnect();
       };

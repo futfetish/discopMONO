@@ -5,12 +5,19 @@ import { api } from "~/utils/api";
 import { useState } from "react";
 import MyButton from "../../components/myButton";
 import { FriendTop } from "~/components/FriendsTop";
+import { socket } from "~/socket";
+import { useSession } from "next-auth/react";
+import { type Session } from "next-auth";
 
 export default function Friends_add() {
+  const {data : session} = useSession()
+  if (!session){
+    return <div></div>
+  }
   return (
     <MainContainer
       tab="friends"
-      content={<Content />}
+      content={<Content session={session} />}
       top={<FriendTop tab="add" />}
       right={<div></div>}
       title="friends"
@@ -18,9 +25,15 @@ export default function Friends_add() {
   );
 }
 
-function Content() {
+function Content({session} : {session : Session }) {
   const [checkText, setCheckText] = useState("");
-  const { mutate } = api.friends.add.useMutation();
+  const { mutate } = api.friends.add.useMutation({
+    onSuccess : (data) => {
+      if(data.isSuccess){
+        socket.emit( 'friendReqNotify' ,{room : 'user' + data.user!.id , message : {id : session.user.id , image : session.user.image! , name : session.user.name!} })
+      }
+    }
+  });
   const [input, setInput] = useState("");
 
   // console.log(user)

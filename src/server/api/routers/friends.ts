@@ -70,6 +70,11 @@ export const friendRouter = createTRPCRouter({
           where: {
             uniqName: input.name,
           },
+          select : {
+            id : true,
+            name : true,
+            image : true
+          }
         });
         if (friend) {
           const ID = friend.id;
@@ -81,8 +86,9 @@ export const friendRouter = createTRPCRouter({
               },
             });
           }
+          return { isSuccess: true , user : {id : friend.id} };
         }
-        return { isSuccess: true };
+        return { isSuccess: false };
       } catch (e) {
         return { isSuccess: false };
       }

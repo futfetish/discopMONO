@@ -2,6 +2,7 @@ import Link from "next/link";
 import Styles from "../../src/styles/friends.module.scss";
 import { useState, type FC, useEffect } from "react";
 import { api } from "~/utils/api";
+import { socket } from "~/socket";
 type TTabs = "all" | "wait" | "add";
 
 export const FriendTop: FC<{ tab: TTabs }> = ({ tab }) => {
@@ -11,6 +12,16 @@ export const FriendTop: FC<{ tab: TTabs }> = ({ tab }) => {
   useEffect(() => {
     setIsHaveReq(isHaveReqQ);
   }, [isHaveReqQ]);
+
+  useEffect(() => {
+    function onFriendReqNotify(){
+      setIsHaveReq(true)
+    }
+    socket.on('friendReqNotify' , onFriendReqNotify)
+    return () => {
+      socket.off('friendReqNotify' , onFriendReqNotify)
+    }
+  })
 
   return (
     <div className={Styles.self__top}>
