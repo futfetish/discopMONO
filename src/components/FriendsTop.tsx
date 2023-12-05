@@ -1,10 +1,17 @@
 import Link from "next/link";
 import Styles from "../../src/styles/friends.module.scss";
-import { type FC } from "react";
-
+import { useState, type FC, useEffect } from "react";
+import { api } from "~/utils/api";
 type TTabs = "all" | "wait" | "add";
 
 export const FriendTop: FC<{ tab: TTabs }> = ({ tab }) => {
+  const { data: isHaveReqQ } = api.friends.isHaveReq.useQuery();
+  const [isHaveReq, setIsHaveReq] = useState(isHaveReqQ);
+
+  useEffect(() => {
+    setIsHaveReq(isHaveReqQ);
+  }, [isHaveReqQ]);
+
   return (
     <div className={Styles.self__top}>
       <div className={Styles.top__content}>
@@ -24,6 +31,11 @@ export const FriendTop: FC<{ tab: TTabs }> = ({ tab }) => {
             className={tab == "wait" ? Styles.friend_tab : ""}
           >
             <p>Ожидание</p>
+            {isHaveReq && (
+              <div className={Styles.red_circle}>
+                <div className={Styles.core}></div>
+              </div>
+            )}
           </Link>
           <Link
             href="/friends/add"
