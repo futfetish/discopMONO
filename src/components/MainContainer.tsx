@@ -8,6 +8,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { api } from "~/utils/api";
 import { GlobalSettings } from "./GlobalSettings";
 import { RoomsSearch } from "./roomsSearch";
+import { socket } from "~/socket";
 
 type roomType = {
   type: "ls" | "group";
@@ -50,6 +51,32 @@ export default function MainContainer({
   useEffect(() => {
     setIsHaveReq(isHaveReqQ);
   }, [isHaveReqQ]);
+
+  useEffect(() => {
+    if (user) {
+      const roomName = "user" + user.id;
+      socket.connect();
+      socket.emit("joinRoom", roomName);
+
+      function onConnect() {
+        console.log("connected");
+      }
+
+      function onDisconnect() {
+        console.log("disconnected");
+      }
+
+      socket.on("connect", onConnect);
+      socket.on("disconnect", onDisconnect);
+
+      return () => {
+        socket.off("connect", onConnect);
+        socket.off("disconnect", onDisconnect);
+        socket.emit("leaveRoom", roomName);
+        socket.disconnect();
+      };
+    }
+  }, [user]);
 
   if (!sessionData || !user) {
     return <button onClick={() => void signIn()}>signin </button>;
@@ -139,10 +166,6 @@ export default function MainContainer({
 
   return (
     <div className={Styles.body}>
-      {/* <div>
-        <div>lopl</div>
-        <Socket />
-      </div> */}
       <div className={Styles.blank}>
         <div className={Styles.nav}></div>
         <div className={Styles.left}></div>
@@ -281,11 +304,25 @@ function UnReadRooms({ userId }: { userId: string }) {
   const [unReadRooms, setUnReadRooms] = useState<roomType[]>([]);
 
   useEffect(() => {
+    function onMessageNotify(data: roomType) {
+      console.log(data)
+      if (!unReadRooms.find((r) => r.id == data.id)) {
+        setUnReadRooms([data, ...unReadRooms]);
+      }
+    }
+    socket.on("messageNotify", onMessageNotify);
+
+
+    return () => {
+      socket.off("messageNotify", onMessageNotify);
+    };
+  });
+  useEffect(() => {
     if (unReadRoomsQ) {
       setUnReadRooms(unReadRoomsQ.rooms);
     }
   }, [unReadRoomsQ]);
-  
+
   return (
     <div className={Styles.unread_rooms}>
       {unReadRooms.map((room) => (

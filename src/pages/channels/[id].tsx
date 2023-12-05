@@ -141,25 +141,11 @@ export default function RoomC(props: {
   const { data: sessionData } = useSession();
 
   useEffect(() => {
-    socket.connect();
-    socket.emit("joinRoom", "room" + res.id);
-
-    function onConnect() {
-      console.log("connected");
-    }
-
-    function onDisconnect() {
-      console.log("disconnected");
-    }
-
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
+    const roomName = "room" + res.id
+    socket.emit("joinRoom", roomName );
 
     return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-
-      socket.disconnect();
+      socket.emit('leaveRoom' , roomName)
     };
   });
 
@@ -237,18 +223,22 @@ function Content({
 }) {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<(typeof room)["msgs"]>(room.msgs)
-  const [ notActiveMembers  , setNotActiveMembers] = useState(new Set( room.members.map((m) => m.user.id ).filter((m) => m !== user.id) ))
+  const [ notActiveMembers  , setNotActiveMembers] = useState(new Set( room.members.map((m) => m.user.id ) ))
 
   const { mutate : notifyMembers } = api.rooms.userRoomsToUnRead.useMutation({
     onSuccess : () => {
-      //
+      const myRoom = {id : room.id , type : room.type , _count : { members : 2} , name : room.name , members : room.members.map((r) => ({ user: r.user}))}
+      notActiveMembers.forEach((m) => {
+        console.log(m)
+        socket.emit('messageNotify' , {room : 'user' + m , message: myRoom})
+      })
     }
   })
 
   useEffect(() => {
-    setNotActiveMembers(new Set( room.members.map((m) => m.user.id ).filter((m) => m !== user.id) ))
+    setNotActiveMembers(new Set( room.members.map((m) => m.user.id ) ))
     setMessages(room.msgs);
-  }, [room]);
+  }, [room , user.id]);
 
   function addMessage(message: (typeof room)["msgs"][number]) {
     setMessages([...messages, message]);
@@ -276,7 +266,6 @@ function Content({
     }
 
     socket.on("message", onMessage);
-
     return () => {
       socket.off("message", onMessage);
     };
