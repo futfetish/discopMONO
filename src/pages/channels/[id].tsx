@@ -223,7 +223,7 @@ function Content({
 }) {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<(typeof room)["msgs"]>(room.msgs)
-  const [ notActiveMembers  , setNotActiveMembers] = useState(new Set( room.members.map((m) => m.user.id ) ))
+  const [ notActiveMembers  , setNotActiveMembers] = useState(new Set( room.members.map((m) => m.user.id ).filter((m) => m !== user.id) ))
 
   const { mutate : notifyMembers } = api.rooms.userRoomsToUnRead.useMutation({
     onSuccess : () => {
@@ -236,7 +236,7 @@ function Content({
   })
 
   useEffect(() => {
-    setNotActiveMembers(new Set( room.members.map((m) => m.user.id ) ))
+    setNotActiveMembers(new Set( room.members.map((m) => m.user.id ).filter((m) => m !== user.id) ))
     setMessages(room.msgs);
   }, [room , user.id]);
 
