@@ -62,6 +62,7 @@ function Content() {
                 className: Styles.friend__accept,
                 icon: <i className="bi bi-check2"></i>,
                 onClick: (e, friend) => {
+                  e.preventDefault();
                   setFriendListFrom(
                     friendListFrom.filter((f) => f.id !== friend.id),
                   );
@@ -72,6 +73,7 @@ function Content() {
                 className: Styles.friend__reject,
                 icon: <i className="bi bi-x-lg"></i>,
                 onClick: (e, friend) => {
+                  e.preventDefault();
                   setFriendListFrom(
                     friendListFrom.filter((f) => f.id !== friend.id),
                   );
