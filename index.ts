@@ -45,6 +45,7 @@ function createHandler(name : string){
   createHandler('message')
   createHandler('messageNotify')
   createHandler('friendReqNotify')
+  createHandler('newChat')
 });
 
 server.listen(3001, () => {
