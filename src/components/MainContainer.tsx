@@ -48,7 +48,7 @@ export default function MainContainer({
   const [userRooms , setUserRooms] = useState(userRoomsData?.rooms || []) ;
   const { data: isHaveReqQ } = api.friends.isHaveReq.useQuery();
   const [isHaveReq, setIsHaveReq] = useState(isHaveReqQ);
-  const {mutate : addNewRoom }= api.rooms.roomById.useMutation({
+  const {mutate : addNewRoom }= api.rooms.getById.useMutation({
     onSuccess : (data) => {
       if(data.isSuccess){
         setUserRooms([...userRooms , data.room!])
@@ -330,7 +330,7 @@ function RoomItem({
 function UnReadRooms({ userId }: { userId: string }) {
   const { data: unReadRoomsQ } = api.rooms.unReadRooms.useQuery();
   const [unReadRooms, setUnReadRooms] = useState<roomType[]>([]);
-  const {mutate : addRoomToUnread} = api.rooms.roomById.useMutation({
+  const {mutate : addRoomToUnread} = api.rooms.getById.useMutation({
     onSuccess : (data) => {
       if (data.isSuccess){
         setUnReadRooms([data.room!, ...unReadRooms]);

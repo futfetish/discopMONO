@@ -40,6 +40,11 @@ function Content() {
   const { mutate: reject } = api.friends.rejectReq.useMutation();
   const { mutate: cancel } = api.friends.cancelReq.useMutation();
   const { mutate: accept } = api.friends.acceptReq.useMutation();
+  const {mutate : addNewReq} = api.users.getById.useMutation({
+    onSuccess : (data) => {
+      setFriendListFrom([...friendListFrom , data])
+    }
+  })
 
   useEffect(() => {
     if (!isLoading && friends) {
@@ -50,9 +55,10 @@ function Content() {
   }, [isLoading, friends]);
 
   useEffect(() => {
-    function onFriendReqNotify(data : {id : string , name : string , image : string}){
-      if (! friendListFrom.find((f) => f.id === data.id))
-      setFriendListFrom([...friendListFrom , data])
+    function onFriendReqNotify(data : {id : string}){
+      if (! friendListFrom.find((f) => f.id === data.id)){
+        addNewReq({id : data.id})
+      }
     }
     socket.on('friendReqNotify' , onFriendReqNotify)
     return () => {

@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   createTRPCRouter,
   protectedProcedure,
+  publicProcedure,
 } from "~/server/api/trpc";
 
 export const usersRouter = createTRPCRouter({
@@ -35,7 +36,7 @@ export const usersRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const user = await ctx.db.user.update({
+      await ctx.db.user.update({
         where: {
           id: ctx.session.user.id,
         },
@@ -47,4 +48,19 @@ export const usersRouter = createTRPCRouter({
       });
       return { isSuccess: true };
     }),
+    getById : publicProcedure.input(z.object({
+      id : z.string()
+    })).mutation(async({ctx , input}) => {
+      const user = await ctx.db.user.findUniqueOrThrow({
+        where : {
+          id : input.id
+        },
+        select : {
+          name : true,
+          image : true,
+          id : true,
+        }
+      })
+      return user
+    })
 });

@@ -385,7 +385,7 @@ export const roomsRouter = createTRPCRouter({
       });
       return { isSuccess: true };
     }),
-  roomById: publicProcedure
+  getById: publicProcedure
     .input(
       z.object({
         id: z.number(),

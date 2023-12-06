@@ -30,7 +30,7 @@ function Content({session} : {session : Session }) {
   const { mutate } = api.friends.add.useMutation({
     onSuccess : (data) => {
       if(data.isSuccess){
-        socket.emit( 'friendReqNotify' ,{room : 'user' + data.user!.id , message : {id : session.user.id , image : session.user.image! , name : session.user.name!} })
+        socket.emit( 'friendReqNotify' ,{room : 'user' + data.user!.id , message : {id : session.user.id } })
       }
     }
   });
