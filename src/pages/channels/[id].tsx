@@ -101,29 +101,29 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       notFound: true,
     };
   }
-  
-  const session = await getSession(ctx)
 
-  if(!session){
+  const session = await getSession(ctx);
+
+  if (!session) {
     return {
-      redirect : {
+      redirect: {
         destination: "/login",
         permanent: false,
-      }
-    }
+      },
+    };
   }
 
   await db.userRooms.update({
-    where : {
-      userId_roomId : {
-        userId : session.user.id,
-        roomId : res.id
-      }
+    where: {
+      userId_roomId: {
+        userId: session.user.id,
+        roomId: res.id,
+      },
     },
-    data : {
-      isRead : true
-    }
-  })
+    data: {
+      isRead: true,
+    },
+  });
 
   return {
     props: {
@@ -141,11 +141,13 @@ export default function RoomC(props: {
   const { data: sessionData } = useSession();
 
   useEffect(() => {
-    const roomName = "room" + res.id
-    socket.emit("joinRoom", roomName );
-
+    const roomName = "room" + res.id;
+    socket.emit("joinRoom", roomName);
+    if (sessionData) {
+      socket.emit("reg", { id: sessionData.user.id });
+    }
     return () => {
-      socket.emit('leaveRoom' , roomName)
+      socket.emit("leaveRoom", roomName);
     };
   });
 
@@ -222,26 +224,22 @@ function Content({
   user: { id: string; name: string; image: string };
 }) {
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<(typeof room)["msgs"]>(room.msgs)
-  const [ notActiveMembers  , setNotActiveMembers] = useState(new Set( room.members.map((m) => m.user.id ).filter((m) => m !== user.id) ))
+  const [messages, setMessages] = useState<(typeof room)["msgs"]>(room.msgs);
+  const notActiveMembers = new Set(
+    room.members.map((m) => m.user.id),
+  );
 
-  const { mutate : notifyMembers } = api.rooms.userRoomsToUnRead.useMutation({
-    onSuccess : () => {
-      const myRoom = {id : room.id , type : room.type , _count : { members : 2} , name : room.name , members : room.members.map((r) => ({ user: r.user}))}
+  const { mutate: notifyMembers } = api.rooms.userRoomsToUnRead.useMutation({
+    onSuccess: () => {
       notActiveMembers.forEach((m) => {
-        console.log(m)
-        socket.emit('messageNotify' , {room : 'user' + m , message: myRoom})
-      })
-    }
-  })
-
-  useEffect(() => {
-    setNotActiveMembers(new Set( room.members.map((m) => m.user.id ).filter((m) => m !== user.id) ))
-    setMessages(room.msgs);
-  }, [room , user.id]);
+        console.log(m);
+        socket.emit("messageNotify", { room: "user" + m, message: {id : room.id} });
+      });
+    },
+  });
 
   function addMessage(message: (typeof room)["msgs"][number]) {
-    setMessages([...messages, message]);
+    setMessages((messages) => [...messages, message]);
   }
 
   const { mutate } = api.message.create.useMutation({
@@ -256,9 +254,13 @@ function Content({
       addMessage(newMessage);
       socket.emit("message", { room: "room" + room.id, message: newMessage });
       setInput("");
-      notifyMembers({userIds : notActiveMembers , roomId : room.id})
+      notifyMembers({ userIds: notActiveMembers, roomId: room.id });
     },
   });
+
+  useEffect(() => {
+    setMessages(room.msgs)
+  } , [room])
 
   useEffect(() => {
     function onMessage(data: (typeof room)["msgs"][number]) {
@@ -495,7 +497,12 @@ function Top({
 
       <div className={Styles.top_utils}>
         <RoomUntilAdd
-          room={{ id: room.id, members: room.members, type: room.type , name : room.name}}
+          room={{
+            id: room.id,
+            members: room.members,
+            type: room.type,
+            name: room.name,
+          }}
         />
       </div>
     </div>

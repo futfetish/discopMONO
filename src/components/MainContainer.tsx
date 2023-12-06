@@ -88,6 +88,8 @@ export default function MainContainer({
         addNewRoom({id : data})
       }
 
+      console.log(socket)
+
       socket.on("connect", onConnect);
       socket.on("disconnect", onDisconnect);
       socket.on('friendReqNotify' , onFriendReqNotify)
@@ -328,12 +330,19 @@ function RoomItem({
 function UnReadRooms({ userId }: { userId: string }) {
   const { data: unReadRoomsQ } = api.rooms.unReadRooms.useQuery();
   const [unReadRooms, setUnReadRooms] = useState<roomType[]>([]);
+  const {mutate : addRoomToUnread} = api.rooms.roomById.useMutation({
+    onSuccess : (data) => {
+      if (data.isSuccess){
+        setUnReadRooms([data.room!, ...unReadRooms]);
+      }
+    }
+  })
 
   useEffect(() => {
     function onMessageNotify(data: roomType) {
       console.log(data)
       if (!unReadRooms.find((r) => r.id == data.id)) {
-        setUnReadRooms([data, ...unReadRooms]);
+        addRoomToUnread({id : data.id})
       }
     }
     socket.on("messageNotify", onMessageNotify);
