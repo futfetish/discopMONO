@@ -42,10 +42,21 @@ function createHandler(name : string){
     socket.leave(data);
   });
 
+  socket.on('messageNotify' , (data) => {
+    const allRooms = io.sockets.adapter.rooms
+    const roomName = 'room' + data.message.id
+    if (allRooms.has(roomName) && allRooms.has(data.room)){
+      const privateRoom = allRooms.get(data.room)
+      const chatRoom = allRooms.get(roomName)
+      if (!Array.from(privateRoom!).some(element => chatRoom!.has(element))){
+        socket.to(data.room).emit('messageNotify' , data.message)
+      }
+    }
+  })
+  // createHandler('messageNotify')
   createHandler('message')
-  createHandler('messageNotify')
-  createHandler('friendReqNotify')
   createHandler('newChat')
+  createHandler('friendReqNotify')
 });
 
 server.listen(3001, () => {
