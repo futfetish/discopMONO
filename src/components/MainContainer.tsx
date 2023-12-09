@@ -351,6 +351,9 @@ function UnReadRooms({ userId }: { userId: string }) {
       socket.off("messageNotify", onMessageNotify);
     };
   });
+
+  // TODO: убирать со списка при клике на нее
+
   useEffect(() => {
     if (unReadRoomsQ) {
       setUnReadRooms(unReadRoomsQ.rooms);
