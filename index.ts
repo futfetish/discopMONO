@@ -21,18 +21,17 @@ app.get("/", (req, res) => {
   res.send("<h1>Hello world</h1>");
 });
 
-
 io.on("connection", (socket) => {
   console.log("a user connected");
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });
 
-function createHandler(name : string){
-  socket.on(name , (data) => {
-    socket.to(data.room).emit( name, data.message)
-  })
-}
+  function createHandler(name: string) {
+    socket.on(name, (data) => {
+      socket.to(data.room).emit(name, data.message);
+    });
+  }
 
   socket.on("joinRoom", (data) => {
     socket.join(data);
@@ -42,21 +41,29 @@ function createHandler(name : string){
     socket.leave(data);
   });
 
-  socket.on('messageNotify' , (data) => {
-    const allRooms = io.sockets.adapter.rooms
-    const roomName = 'room' + data.message.id
-    if (allRooms.has(roomName) && allRooms.has(data.room)){
-      const privateRoom = allRooms.get(data.room)
-      const chatRoom = allRooms.get(roomName)
-      if (!Array.from(privateRoom!).some(element => chatRoom!.has(element))){
-        socket.to(data.room).emit('messageNotify' , data.message)
+  socket.on(
+    "messageNotify",
+    (data: {
+      message: {
+        id: number; /// id это Id Комнаты
+      };
+      room: string; /// "user" + id пользователя
+    }) => {
+      const allRooms = io.sockets.adapter.rooms;
+      const roomName = "room" + data.message.id;
+      const privateRoom = allRooms.get(data.room);
+      const chatRoom = allRooms.get(roomName);
+      if (privateRoom && chatRoom) {
+        if (!Array.from(privateRoom).some((element) => chatRoom.has(element))) {
+          socket.to(data.room).emit("messageNotify", data.message);
+        }
       }
     }
-  })
-  // createHandler('messageNotify')
-  createHandler('message')
-  createHandler('newChat')
-  createHandler('friendReqNotify')
+  );
+
+  createHandler("message");
+  createHandler("newChat");
+  createHandler("friendReqNotify");
 });
 
 server.listen(3001, () => {
