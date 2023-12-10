@@ -35,9 +35,16 @@
       width: 300px;
       overflow-x: hidden;
       overflow-y: scroll;
+      &::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+      }
+      &::-webkit-scrollbar-thumb {
+        background-color: transparent; 
+      }
     }
-    // TODO: скрыть скроллбар вообще
     .unread_rooms {
+      
       .item {
         position: relative;
         display: flex;
