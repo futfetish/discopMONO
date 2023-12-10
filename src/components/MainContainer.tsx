@@ -350,13 +350,15 @@ function UnReadRooms({ userId }: { userId: string }) {
     };
   });
 
-  // TODO: убирать со списка при клике на нее
-
   useEffect(() => {
     if (unReadRoomsQ) {
       setUnReadRooms(unReadRoomsQ.rooms);
     }
   }, [unReadRoomsQ]);
+
+  function deleteFromUnReadList(id : number){
+    setUnReadRooms(unReadRooms => unReadRooms.filter((r) => r.id !== id))
+  }
 
   return (
     <div className={Styles.unread_rooms_container}>
@@ -364,7 +366,7 @@ function UnReadRooms({ userId }: { userId: string }) {
         {unReadRooms.map((room) => (
           <div key={room.id} className={Styles.item}>
             <div className={Styles.item__content}>
-              <Link href={"/channels/" + room.id}>
+              <Link href={"/channels/" + room.id} onClick={() => deleteFromUnReadList(room.id)}>
                 <img
                   alt=""
                   src={
