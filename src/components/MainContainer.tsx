@@ -45,26 +45,26 @@ export default function MainContainer({
   const { data: sessionData } = useSession();
   const { data: userRoomsData } = api.rooms.showRoomsJoined.useQuery();
   const { data: user } = api.users.user.useQuery();
-  const [userRooms , setUserRooms] = useState(userRoomsData?.rooms || []) ;
+  const [userRooms, setUserRooms] = useState(userRoomsData?.rooms || []);
   const { data: isHaveReqQ } = api.friends.isHaveReq.useQuery();
   const [isHaveReq, setIsHaveReq] = useState(isHaveReqQ);
-  const {mutate : addNewRoom }= api.rooms.getById.useMutation({
-    onSuccess : (data) => {
-      if(data.isSuccess){
-        setUserRooms([...userRooms , data.room!])
+  const { mutate: addNewRoom } = api.rooms.getById.useMutation({
+    onSuccess: (data) => {
+      if (data.isSuccess) {
+        setUserRooms([...userRooms, data.room!]);
       }
-    }
-  }) 
+    },
+  });
 
   useEffect(() => {
     setIsHaveReq(isHaveReqQ);
   }, [isHaveReqQ]);
 
   useEffect(() => {
-    if(userRoomsData){
-      setUserRooms(userRoomsData.rooms)
+    if (userRoomsData) {
+      setUserRooms(userRoomsData.rooms);
     }
-  } , [userRoomsData])
+  }, [userRoomsData]);
 
   useEffect(() => {
     if (user) {
@@ -80,29 +80,29 @@ export default function MainContainer({
         console.log("disconnected");
       }
 
-      function onFriendReqNotify(){
-        setIsHaveReq(true)
+      function onFriendReqNotify() {
+        setIsHaveReq(true);
       }
 
-      function onNewChat(data : number){
-        addNewRoom({id : data})
+      function onNewChat(data: number) {
+        addNewRoom({ id: data });
       }
 
       socket.on("connect", onConnect);
       socket.on("disconnect", onDisconnect);
-      socket.on('friendReqNotify' , onFriendReqNotify)
-      socket.on('newChat' , onNewChat)
+      socket.on("friendReqNotify", onFriendReqNotify);
+      socket.on("newChat", onNewChat);
 
       return () => {
         socket.off("connect", onConnect);
         socket.off("disconnect", onDisconnect);
-        socket.off('friendReqNotify' , onFriendReqNotify)
-        socket.off('newChat' , onNewChat)
+        socket.off("friendReqNotify", onFriendReqNotify);
+        socket.off("newChat", onNewChat);
         socket.emit("leaveRoom", roomName);
         socket.disconnect();
       };
     }
-  }, );
+  });
 
   if (!sessionData || !user) {
     return <button onClick={() => void signIn()}>signin </button>;
@@ -328,28 +328,30 @@ function RoomItem({
 function UnReadRooms({ userId }: { userId: string }) {
   const { data: unReadRoomsQ } = api.rooms.unReadRooms.useQuery();
   const [unReadRooms, setUnReadRooms] = useState<roomType[]>([]);
-  const {mutate : addRoomToUnread} = api.rooms.getById.useMutation({
-    onSuccess : (data) => {
-      if (data.isSuccess){
+  const { mutate: addRoomToUnread } = api.rooms.getById.useMutation({
+    onSuccess: (data) => {
+      if (data.isSuccess) {
         setUnReadRooms([data.room!, ...unReadRooms]);
       }
-    }
-  })
+    },
+  });
 
   useEffect(() => {
     function onMessageNotify(data: roomType) {
-      console.log(data)
+      console.log(data);
       if (!unReadRooms.find((r) => r.id == data.id)) {
-        addRoomToUnread({id : data.id})
+        addRoomToUnread({ id: data.id });
       }
     }
     socket.on("messageNotify", onMessageNotify);
-
 
     return () => {
       socket.off("messageNotify", onMessageNotify);
     };
   });
+
+  // TODO: убирать со списка при клике на нее
+
   useEffect(() => {
     if (unReadRoomsQ) {
       setUnReadRooms(unReadRoomsQ.rooms);
@@ -357,41 +359,44 @@ function UnReadRooms({ userId }: { userId: string }) {
   }, [unReadRoomsQ]);
 
   return (
-    <div className={Styles.unread_rooms}>
-      {unReadRooms.map((room) => (
-        <div key={room.id} className={Styles.item}>
-          <div className={Styles.item__content}>
-            <Link href={"/channels/" + room.id}>
-              <img
-                alt=""
-                src={
-                  room.type == "group"
-                    ? "/img/grav.png"
+    <div className={Styles.unread_rooms_container}>
+      <div className={Styles.unread_rooms}>
+        {unReadRooms.map((room) => (
+          <div key={room.id} className={Styles.item}>
+            <div className={Styles.item__content}>
+              <Link href={"/channels/" + room.id}>
+                <img
+                  alt=""
+                  src={
+                    room.type == "group"
+                      ? "/img/grav.png"
+                      : room.members
+                          .map((u) => u.user)
+                          .find((m) => m.id !== userId)?.image
+                  }
+                />
+              </Link>
+              <div className={Styles.red_circle}>
+                <div className={Styles.core}></div>
+              </div>
+            </div>
+
+            <div className={Styles.item__white_stick}></div>
+            <div className={Styles.item_info_container}>
+              <div className={Styles.arrow}></div>
+              <div className={Styles.item__info}>
+                <p>
+                  {room.type == "group"
+                    ? room.name
                     : room.members
                         .map((u) => u.user)
-                        .find((m) => m.id !== userId)?.image
-                }
-              />
-            </Link>
-            <div className={Styles.red_circle}>
-              <div className={Styles.core}></div>
+                        .find((m) => m.id !== userId)?.name}
+                </p>
+              </div>
             </div>
           </div>
-
-          <div className={Styles.item__white_stick}></div>
-          <div className={Styles.item_info_container}>
-            <div className={Styles.arrow}></div>
-            <div className={Styles.item__info}>
-              <p>
-                {room.type == "group"
-                  ? room.name
-                  : room.members.map((u) => u.user).find((m) => m.id !== userId)
-                      ?.name}
-              </p>
-            </div>
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

@@ -19,16 +19,14 @@ const MyApp: AppType<{ session: Session | null }> = ({
   );
 };
 
-MyApp.getInitialProps = async ({
-  ctx,
-}: AppContextType<NextRouter>) => {
+MyApp.getInitialProps = async ({ ctx }: AppContextType<NextRouter>) => {
   const session = await getSession({ req: ctx.req });
 
   if (!session && !ctx.req?.url?.startsWith("/login")) {
     if (ctx.res) {
       ctx.res.writeHead(302, { Location: "/login" });
       ctx.res.end();
-    } else if (typeof window !== "undefined") { 
+    } else if (typeof window !== "undefined") {
       window.location.href = "/login";
     }
   }
