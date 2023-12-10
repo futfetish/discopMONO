@@ -48,6 +48,7 @@ export const usersRouter = createTRPCRouter({
       });
       return { isSuccess: true };
     }),
+    
     getById : publicProcedure.input(z.object({
       id : z.string()
     })).mutation(async({ctx , input}) => {

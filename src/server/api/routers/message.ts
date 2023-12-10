@@ -4,7 +4,6 @@ import { TRPCClientError } from "@trpc/client";
 import {
   createTRPCRouter,
   protectedProcedure,
-  publicProcedure,
 } from "~/server/api/trpc";
 
 export const messageRouter = createTRPCRouter({
@@ -25,8 +24,6 @@ export const messageRouter = createTRPCRouter({
         },
       });
       return { status: "OK", messageId: messageCreated.id };
-      // TODO: уведомить участников канала
-      // TODO: Вернуть пользователю статус отправки
     }),
 
   delete : protectedProcedure.input(z.object({

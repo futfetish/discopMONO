@@ -161,7 +161,6 @@ export const SettingsUniqName = ({
   const [uniqNameError, setUniqNameError] = useState<string | null>(null);
   const { mutate: updateUser } = api.users.update.useMutation({
     onError: (error) => {
-      // TODO: uniqName
       setUniqNameError(error.message);
     },
     onSuccess: () => {
@@ -177,9 +176,9 @@ export const SettingsUniqName = ({
           <div className={Styles.edit}>
             <div className={Styles.uniq_name_container}>
               <label>
-                {" "}
-                УНИКАЛЬНОЕ ИМЯ{" "}
-                {uniqNameError !== null ? "- " + uniqNameError : ""}{" "}
+            
+                УНИКАЛЬНОЕ ИМЯ
+                {uniqNameError !== null ? "- " + uniqNameError : ""}
               </label>
               <div className={Styles.help_text}>
                 Уникальное имя нужно для того чтобы другие пользователи могли
