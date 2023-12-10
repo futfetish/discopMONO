@@ -88,8 +88,6 @@ export default function MainContainer({
         addNewRoom({id : data})
       }
 
-      console.log(socket)
-
       socket.on("connect", onConnect);
       socket.on("disconnect", onDisconnect);
       socket.on('friendReqNotify' , onFriendReqNotify)
