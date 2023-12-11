@@ -1,5 +1,5 @@
-import { signIn, useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { type ReactNode, useEffect } from "react";
 import Styles from "../../styles/friends.module.scss";
 import MainContainer from "~/components/MainContainer";
 import { api } from "~/utils/api";
@@ -9,14 +9,19 @@ import { FriendList } from "~/components/FriendList";
 
 export default function Friends_all() {
   const { data: sessionData } = useSession();
+
+  let contentObj: ReactNode;
+
   if (!sessionData) {
-    return <button onClick={() => void signIn()}>signin </button>;
+    contentObj = <div></div>;
+  } else {
+    contentObj = <Content />;
   }
 
   return (
     <MainContainer
       tab="friends"
-      content={<Content />}
+      content={contentObj}
       top={<FriendTop tab="all" />}
       right={<div></div>}
       title="friends"

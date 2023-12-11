@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { type ReactNode, useRef } from "react";
 import Styles from "../../styles/friends.module.scss";
 import MainContainer from "~/components/MainContainer";
 import { api } from "~/utils/api";
@@ -10,14 +10,23 @@ import { useSession } from "next-auth/react";
 import { type Session } from "next-auth";
 
 export default function Friends_add() {
-  const {data : session} = useSession()
-  if (!session){
-    return <div></div>
+  const { data: session } = useSession();
+  if (!session) {
+    return <div></div>;
   }
+
+  let contentObj: ReactNode;
+
+  if (!session) {
+    contentObj = <div></div>;
+  } else {
+    contentObj = <Content session={session} />;
+  }
+
   return (
     <MainContainer
       tab="friends"
-      content={<Content session={session} />}
+      content={contentObj}
       top={<FriendTop tab="add" />}
       right={<div></div>}
       title="friends"
@@ -25,14 +34,17 @@ export default function Friends_add() {
   );
 }
 
-function Content({session} : {session : Session }) {
+function Content({ session }: { session: Session }) {
   const [checkText, setCheckText] = useState("");
   const { mutate } = api.friends.add.useMutation({
-    onSuccess : (data) => {
-      if(data.isSuccess){
-        socket.emit( 'friendReqNotify' ,{room : 'user' + data.user!.id , message : {id : session.user.id } })
+    onSuccess: (data) => {
+      if (data.isSuccess) {
+        socket.emit("friendReqNotify", {
+          room: "user" + data.user!.id,
+          message: { id: session.user.id },
+        });
       }
-    }
+    },
   });
   const [input, setInput] = useState("");
 
@@ -62,7 +74,7 @@ function Content({session} : {session : Session }) {
         />
         <MyButton
           ref={buttonRef}
-          className={[Styles.but].join(' ')}
+          className={[Styles.but].join(" ")}
           onClick={() => {
             if (input !== "") {
               setCheckText(

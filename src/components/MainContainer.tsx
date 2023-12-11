@@ -1,4 +1,4 @@
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { type ReactNode, useState, useRef, useEffect } from "react";
@@ -104,10 +104,6 @@ export default function MainContainer({
     }
   });
 
-  if (!sessionData || !user) {
-    return <button onClick={() => void signIn()}>signin </button>;
-  }
-
   const settingsContainer = settingsContainerRef.current;
   const app = appRef.current;
 
@@ -198,57 +194,63 @@ export default function MainContainer({
         <div className={Styles.right}></div>
       </div>
       <HeadComponent title={title} />
-      <div className={Styles.app} ref={appRef}>
-        <div className={Styles.slidebar} id="slidebar">
-          <UnReadRooms userId={user.id} />
-        </div>
-        <div className={Styles.self}>
-          <div className={Styles.self__leftbar}>
-            <div className={[Styles.self__leftbar_top, Styles.top].join(" ")}>
-              <RoomsSearch user={user} />
+      {user && sessionData && (
+        <>
+          <div className={Styles.app} ref={appRef}>
+            <div className={Styles.slidebar} id="slidebar">
+              <UnReadRooms userId={user.id} />
             </div>
-
-            <div className={Styles.my_rooms__bar} id="my_rooms">
-              <div className={Styles.nav}>
-                <Link
-                  href="/friends"
-                  className={tab === "friends" ? Styles.tab : ""}
+            <div className={Styles.self}>
+              <div className={Styles.self__leftbar}>
+                <div
+                  className={[Styles.self__leftbar_top, Styles.top].join(" ")}
                 >
-                  <p>
-                    <i className="bi bi-people-fill"></i>Друзья
-                  </p>
-                  {isHaveReq && (
-                    <div className={Styles.red_circle}>
-                      <div className={Styles.core}></div>
-                    </div>
-                  )}
-                </Link>
-              </div>
-              <br />
-              <RoomList userId={user.id} userRooms={userRooms} tab={tab} />
-            </div>
-            <ProfileBar user={user} callBack={toggleSettings}></ProfileBar>
-          </div>
-          <div className={Styles.self__content} id="self_content">
-            <div className={[Styles.self__top, Styles.top].join(" ")}>
-              {top}
-            </div>
-            <div className={Styles.self__bot}>
-              <div className={Styles.self__self}>{content}</div>
-              <div className={Styles.self__rightbar}>{right}</div>
-            </div>
-          </div>
-        </div>
-      </div>
+                  <RoomsSearch user={user} />
+                </div>
 
-      <div
-        className={Styles.global_settings_container}
-        ref={settingsContainerRef}
-      >
-        {isSettingsOpen && (
-          <GlobalSettings callBack={toggleSettings} user={user} />
-        )}
-      </div>
+                <div className={Styles.my_rooms__bar} id="my_rooms">
+                  <div className={Styles.nav}>
+                    <Link
+                      href="/friends"
+                      className={tab === "friends" ? Styles.tab : ""}
+                    >
+                      <p>
+                        <i className="bi bi-people-fill"></i>Друзья
+                      </p>
+                      {isHaveReq && (
+                        <div className={Styles.red_circle}>
+                          <div className={Styles.core}></div>
+                        </div>
+                      )}
+                    </Link>
+                  </div>
+                  <br />
+                  <RoomList userId={user.id} userRooms={userRooms} tab={tab} />
+                </div>
+                <ProfileBar user={user} callBack={toggleSettings}></ProfileBar>
+              </div>
+              <div className={Styles.self__content} id="self_content">
+                <div className={[Styles.self__top, Styles.top].join(" ")}>
+                  {top}
+                </div>
+                <div className={Styles.self__bot}>
+                  <div className={Styles.self__self}>{content}</div>
+                  <div className={Styles.self__rightbar}>{right}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            className={Styles.global_settings_container}
+            ref={settingsContainerRef}
+          >
+            {isSettingsOpen && (
+              <GlobalSettings callBack={toggleSettings} user={user} />
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -356,8 +358,8 @@ function UnReadRooms({ userId }: { userId: string }) {
     }
   }, [unReadRoomsQ]);
 
-  function deleteFromUnReadList(id : number){
-    setUnReadRooms(unReadRooms => unReadRooms.filter((r) => r.id !== id))
+  function deleteFromUnReadList(id: number) {
+    setUnReadRooms((unReadRooms) => unReadRooms.filter((r) => r.id !== id));
   }
 
   return (
@@ -366,7 +368,10 @@ function UnReadRooms({ userId }: { userId: string }) {
         {unReadRooms.map((room) => (
           <div key={room.id} className={Styles.item}>
             <div className={Styles.item__content}>
-              <Link href={"/channels/" + room.id} onClick={() => deleteFromUnReadList(room.id)}>
+              <Link
+                href={"/channels/" + room.id}
+                onClick={() => deleteFromUnReadList(room.id)}
+              >
                 <img
                   alt=""
                   src={

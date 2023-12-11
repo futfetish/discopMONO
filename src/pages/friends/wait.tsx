@@ -1,5 +1,5 @@
-import { signIn, useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { type ReactNode, useEffect } from "react";
 import Styles from "../../styles/friends.module.scss";
 import MainContainer from "~/components/MainContainer";
 import { api } from "~/utils/api";
@@ -11,14 +11,19 @@ import { socket } from "~/socket";
 
 export default function Friends_wait() {
   const { data: sessionData } = useSession();
+
+  let contentObj: ReactNode;
+
   if (!sessionData) {
-    return <button onClick={() => void signIn()}>signin </button>;
+    contentObj = <div></div>;
+  } else {
+    contentObj = <Content />;
   }
 
   return (
     <MainContainer
       tab="friends"
-      content={<Content />}
+      content={contentObj}
       top={<FriendTop tab="wait" />}
       right={<div></div>}
       title="friends"
@@ -40,11 +45,11 @@ function Content() {
   const { mutate: reject } = api.friends.rejectReq.useMutation();
   const { mutate: cancel } = api.friends.cancelReq.useMutation();
   const { mutate: accept } = api.friends.acceptReq.useMutation();
-  const {mutate : addNewReq} = api.users.getById.useMutation({
-    onSuccess : (data) => {
-      setFriendListFrom([...friendListFrom , data])
-    }
-  })
+  const { mutate: addNewReq } = api.users.getById.useMutation({
+    onSuccess: (data) => {
+      setFriendListFrom([...friendListFrom, data]);
+    },
+  });
 
   useEffect(() => {
     if (!isLoading && friends) {
@@ -55,16 +60,16 @@ function Content() {
   }, [isLoading, friends]);
 
   useEffect(() => {
-    function onFriendReqNotify(data : {id : string}){
-      if (! friendListFrom.find((f) => f.id === data.id)){
-        addNewReq({id : data.id})
+    function onFriendReqNotify(data: { id: string }) {
+      if (!friendListFrom.find((f) => f.id === data.id)) {
+        addNewReq({ id: data.id });
       }
     }
-    socket.on('friendReqNotify' , onFriendReqNotify)
+    socket.on("friendReqNotify", onFriendReqNotify);
     return () => {
-      socket.off('friendReqNotify' , onFriendReqNotify)
-    }
-  })
+      socket.off("friendReqNotify", onFriendReqNotify);
+    };
+  });
 
   return (
     <div className={Styles.self__self} id="friends_all_app">
@@ -107,7 +112,7 @@ function Content() {
                 className: Styles.friend__cancel,
                 icon: <i className="bi bi-x-lg"></i>,
                 onClick: (e, friend) => {
-                  e.preventDefault()
+                  e.preventDefault();
                   setFriendListTo(
                     friendListTo.filter((f) => f.id !== friend.id),
                   );

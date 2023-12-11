@@ -1,4 +1,4 @@
-import { getSession, signIn, useSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import GroupRight from "~/components/GroupRight";
 import RoomUntilAdd from "~/components/RoomUntilAdd";
 import ErrorContent from "~/components/errorContent";
@@ -8,7 +8,7 @@ import Styles from "../../styles/room.module.scss";
 import MainContainer from "~/components/MainContainer";
 import { api } from "~/utils/api";
 import { db } from "~/server/db";
-import { useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { socket } from "~/socket";
 
 // class MessageAuthorFlyWeight {
@@ -113,18 +113,27 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
 
-  await db.userRooms.update({
+  const userRoomObj = await db.userRooms.findUnique({
     where: {
       userId_roomId: {
         userId: session.user.id,
         roomId: res.id,
       },
     },
-    data: {
-      isRead: true,
-    },
   });
-
+  if (userRoomObj) {
+    await db.userRooms.update({
+      where: {
+        userId_roomId: {
+          userId: session.user.id,
+          roomId: res.id,
+        },
+      },
+      data: {
+        isRead: true,
+      },
+    });
+  }
   return {
     props: {
       data: { room: res },
@@ -151,65 +160,79 @@ export default function RoomC(props: {
     };
   });
 
+  let contentObj: ReactNode;
+  let topObj: ReactNode;
+  let rightObj: ReactNode;
+  let titleObj: string;
+  let tabObj: string
+
   if (!sessionData) {
-    return <button onClick={() => void signIn()}>signin </button>;
-  }
-  if (!id || !res.members.some((u) => u.user.id === sessionData.user.id)) {
-    <MainContainer
-      tab="none"
-      content={<ErrorContent text="вы не являетесь участником этой группы" />}
-      top={<div></div>}
-      right={<div></div>}
-      title={"вы не являетесь участником этой группы"}
-    />;
+    contentObj = <div></div>;
+    topObj = <div></div>;
+    rightObj = <div></div>;
+    titleObj = "";
+    tabObj = ''
+  } else if (
+    !id &&
+    !res.members.some((u) => u.user.id === sessionData.user.id)
+  ) {
+    contentObj = <ErrorContent text="вы не являетесь участником этой группы" />;
+    topObj = <div></div>;
+    rightObj = <div></div>;
+    titleObj = "ERR: вы не являетесь участником этой группы";
+    tabObj = ''
+  } else {
+    contentObj = (
+      <Content
+        room={res}
+        user={{
+          id: sessionData.user.id,
+          image: sessionData.user.image || "",
+          name: sessionData.user.name || "[blank]",
+        }}
+      />
+    );
+    topObj = (
+      <Top
+        room={res}
+        user={{
+          id: sessionData.user.id,
+          image: sessionData.user.image || "",
+          name: sessionData.user.name || "[blank]",
+        }}
+      />
+    );
+    rightObj =
+      res.type == "ls" ? (
+        <Right />
+      ) : (
+        <GroupRight
+          room={res}
+          user={{
+            id: sessionData.user.id,
+            image: sessionData.user.image || "",
+            name: sessionData.user.name || "[blank]",
+          }}
+        />
+      );
+    titleObj =
+      res.type == "ls"
+        ? res.members
+            .map((u) => u.user)
+            .filter((m) => m.id !== sessionData.user.id)
+            .map((m) => m.name)
+            .join(", ")
+        : res.name;
+    tabObj = "room_" + res.id
   }
 
   return (
     <MainContainer
-      tab={"room_" + res.id}
-      content={
-        <Content
-          room={res}
-          user={{
-            id: sessionData.user.id,
-            image: sessionData.user.image || "",
-            name: sessionData.user.name || "[blank]",
-          }}
-        />
-      }
-      top={
-        <Top
-          room={res}
-          user={{
-            id: sessionData.user.id,
-            image: sessionData.user.image || "",
-            name: sessionData.user.name || "[blank]",
-          }}
-        />
-      }
-      right={
-        res.type == "ls" ? (
-          <Right />
-        ) : (
-          <GroupRight
-            room={res}
-            user={{
-              id: sessionData.user.id,
-              image: sessionData.user.image || "",
-              name: sessionData.user.name || "[blank]",
-            }}
-          />
-        )
-      }
-      title={
-        res.type == "ls"
-          ? res.members
-              .map((u) => u.user)
-              .filter((m) => m.id !== sessionData.user.id)
-              .map((m) => m.name)
-              .join(", ")
-          : res.name
-      }
+      tab={tabObj}
+      content={contentObj}
+      top={topObj}
+      right={rightObj}
+      title={titleObj}
     />
   );
 }
@@ -225,15 +248,16 @@ function Content({
 }) {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<(typeof room)["msgs"]>(room.msgs);
-  const notActiveMembers = new Set(
-    room.members.map((m) => m.user.id),
-  );
+  const notActiveMembers = new Set(room.members.map((m) => m.user.id));
 
   const { mutate: notifyMembers } = api.rooms.userRoomsToUnRead.useMutation({
     onSuccess: () => {
       notActiveMembers.forEach((m) => {
         console.log(m);
-        socket.emit("messageNotify", { room: "user" + m, message: {id : room.id} });
+        socket.emit("messageNotify", {
+          room: "user" + m,
+          message: { id: room.id },
+        });
       });
     },
   });
@@ -259,8 +283,8 @@ function Content({
   });
 
   useEffect(() => {
-    setMessages(room.msgs)
-  } , [room])
+    setMessages(room.msgs);
+  }, [room]);
 
   useEffect(() => {
     function onMessage(data: (typeof room)["msgs"][number]) {
