@@ -1,10 +1,32 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Styles from "~/styles/roomSearch.module.scss";
 import { api } from "~/utils/api";
 
+
+type RoomT = {
+  type: "ls" | "group";
+  name: string;
+  id: number;
+  _count: {
+      members: number;
+  };
+  members: {
+      user: {
+          id: string;
+          image: string;
+          name?: string | null | undefined;
+      };
+  }[]
+}
+
 export const RoomsSearch = ({ user }: { user: { id: string } }) => {
   const allRooms = api.rooms.showRoomsJoined.useQuery();
-  const [rooms, setRooms] = useState(allRooms.data!.rooms);
+  const [rooms, setRooms] = useState<RoomT[]>([]);
+  useEffect(() => {
+    if (allRooms.data){
+      setRooms(allRooms.data.rooms)
+    }
+  } , [allRooms.data])
   const [input, setInput] = useState("");
   const { mutate: selectRooms } = api.rooms.search.useMutation({
     onSuccess: (data) => {
