@@ -44,7 +44,7 @@ export default function MainContainer({
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { data: sessionData } = useSession();
   const { data: userRoomsData } = api.rooms.showRoomsJoined.useQuery();
-  const { data: user } = api.users.user.useQuery();
+  const user  = sessionData ?  {id:sessionData.user.id , uniqName : sessionData.user.name! , image : sessionData.user.image! , name : sessionData.user.name!} : null
   const [userRooms, setUserRooms] = useState(userRoomsData?.rooms || []);
   const { data: isHaveReqQ } = api.friends.isHaveReq.useQuery();
   const [isHaveReq, setIsHaveReq] = useState(isHaveReqQ);
