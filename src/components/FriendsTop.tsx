@@ -21,7 +21,7 @@ export const FriendTop: FC<{ tab: TTabs }> = ({ tab }) => {
     return () => {
       socket.off('friendReqNotify' , onFriendReqNotify)
     }
-  })
+  } , [])
 
   return (
     <div className={Styles.self__top}>

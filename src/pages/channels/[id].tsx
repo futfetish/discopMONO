@@ -8,7 +8,7 @@ import Styles from "../../styles/room.module.scss";
 import MainContainer from "~/components/MainContainer";
 import { api } from "~/utils/api";
 import { db } from "~/server/db";
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState, useCallback } from "react";
 import { socket } from "~/socket";
 
 // class MessageAuthorFlyWeight {
@@ -148,7 +148,6 @@ export default function RoomC(props: {
   const router = useRouter();
   const { id } = router.query;
   const { data: sessionData } = useSession();
-
   useEffect(() => {
     const roomName = "room" + res.id;
     socket.emit("joinRoom", roomName);
@@ -262,9 +261,13 @@ function Content({
     },
   });
 
-  function addMessage(message: (typeof room)["msgs"][number]) {
+  // function addMessage(message: (typeof room)["msgs"][number]) {
+  //   setMessages((messages) => [...messages, message]);
+  // }
+
+  const addMessage = useCallback((message : (typeof room)["msgs"][number]) => {
     setMessages((messages) => [...messages, message]);
-  }
+  } , [setMessages])
 
   const { mutate } = api.message.create.useMutation({
     onSuccess: (data) => {
@@ -287,6 +290,7 @@ function Content({
   }, [room]);
 
   useEffect(() => {
+    console.log('rere')
     function onMessage(data: (typeof room)["msgs"][number]) {
       addMessage(data);
     }
@@ -295,7 +299,7 @@ function Content({
     return () => {
       socket.off("message", onMessage);
     };
-  });
+  } , [addMessage]);
   return (
     <div className={Styles.container}>
       <MessageList msgs={messages} />

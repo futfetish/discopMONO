@@ -51,7 +51,9 @@ function Content() {
     },
   });
 
+
   useEffect(() => {
+
     if (!isLoading && friends) {
       // console.log(friends)
       setFriendListTo(friends.to);
@@ -60,6 +62,7 @@ function Content() {
   }, [isLoading, friends]);
 
   useEffect(() => {
+    console.log('wait rere')
     function onFriendReqNotify(data: { id: string }) {
       if (!friendListFrom.find((f) => f.id === data.id)) {
         addNewReq({ id: data.id });
@@ -69,7 +72,7 @@ function Content() {
     return () => {
       socket.off("friendReqNotify", onFriendReqNotify);
     };
-  });
+  } , [addNewReq , friendListFrom]);
 
   return (
     <div className={Styles.self__self} id="friends_all_app">

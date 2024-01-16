@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
-import { type ReactNode, useState, useRef, useEffect } from "react";
+import { type ReactNode, useState, useRef, useEffect, useMemo } from "react";
 import Styles from "../styles/MainContainer.module.scss";
 import ProfileBar from "~/components/profileBar";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -44,7 +44,9 @@ export default function MainContainer({
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { data: sessionData } = useSession();
   const { data: userRoomsData } = api.rooms.showRoomsJoined.useQuery();
-  const user  = sessionData ?  {id:sessionData.user.id , uniqName : sessionData.user.name! , image : sessionData.user.image! , name : sessionData.user.name!} : null
+  const user  = useMemo(() => {
+    return sessionData ?  {id:sessionData.user.id , uniqName : sessionData.user.name! , image : sessionData.user.image! , name : sessionData.user.name!} : null
+  } , [sessionData]) 
   const [userRooms, setUserRooms] = useState(userRoomsData?.rooms || []);
   const { data: isHaveReqQ } = api.friends.isHaveReq.useQuery();
   const [isHaveReq, setIsHaveReq] = useState(isHaveReqQ);
@@ -102,7 +104,7 @@ export default function MainContainer({
         socket.disconnect();
       };
     }
-  });
+  } , [addNewRoom , user]);
 
   const settingsContainer = settingsContainerRef.current;
   const app = appRef.current;
@@ -350,7 +352,7 @@ function UnReadRooms({ userId }: { userId: string }) {
     return () => {
       socket.off("messageNotify", onMessageNotify);
     };
-  });
+  } , [addRoomToUnread , unReadRooms]);
 
   useEffect(() => {
     if (unReadRoomsQ) {
