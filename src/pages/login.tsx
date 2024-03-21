@@ -1,7 +1,6 @@
-import { signIn, useSession } from "next-auth/react";
+import {  useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import MyButton from "~/modules/common/ui/myButton/myButton";
-import Styles from "~/styles/login.module.scss";
+import { LoginPage } from "~/modules/auth/pages/loginPage/loginPage";
 
 export default function Login() {
   const { data: sessionData } = useSession();
@@ -14,19 +13,5 @@ export default function Login() {
   // const { query } = useRouter();
   // const { error } = query;
 
-  return (
-    <div className={Styles.container}>
-      <MyButton
-        className={Styles.but}
-        onClick={() =>
-          signIn("discord", {
-            callbackUrl: "/",
-          })
-        }
-      >
-        login with discord
-      </MyButton>
-      {/* {error !== undefined ? <div>ERROR: {error}</div> : <></>} */}
-    </div>
-  );
+  return <LoginPage />
 }
