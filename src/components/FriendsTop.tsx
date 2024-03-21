@@ -3,9 +3,9 @@ import Styles from "../../src/styles/friends.module.scss";
 import { useState, type FC, useEffect } from "react";
 import { api } from "~/utils/api";
 import { socket } from "~/socket";
-type TTabs = "all" | "wait" | "add";
+type TPage = "all" | "wait" | "add";
 
-export const FriendTop: FC<{ tab: TTabs }> = ({ tab }) => {
+export const FriendTop: FC<{ page: TPage }> = ({ page }) => {
   const { data: isHaveReqQ } = api.friends.isHaveReq.useQuery();
   const [isHaveReq, setIsHaveReq] = useState(isHaveReqQ);
 
@@ -33,13 +33,13 @@ export const FriendTop: FC<{ tab: TTabs }> = ({ tab }) => {
         <div className={[Styles.utils].join(" ")}>
           <Link
             href="/friends/"
-            className={tab == "all" ? Styles.friend_tab : ""}
+            className={page == "all" ? Styles.friend_tab : ""}
           >
             Все
           </Link>
           <Link
             href="/friends/wait"
-            className={tab == "wait" ? Styles.friend_tab : ""}
+            className={page == "wait" ? Styles.friend_tab : ""}
           >
             <p>Ожидание</p>
             {isHaveReq && (
@@ -52,7 +52,7 @@ export const FriendTop: FC<{ tab: TTabs }> = ({ tab }) => {
             href="/friends/add"
             className={[
               Styles.add,
-              tab == "add" ? Styles.friend_tab_add : "",
+              page == "add" ? Styles.friend_tab_add : "",
             ].join(" ")}
           >
             Добавить в Друзья

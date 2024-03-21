@@ -1,27 +1,30 @@
-import { useRef, useState } from "react";
-import Styles from "~/styles/settingPages.module.scss";
-import MyButton from "./myButton";
+import { FC, useRef, useState } from "react";
+import Styles from "./settingPages.module.scss";
+import MyButton from "../../../../components/myButton";
 import { api } from "~/utils/api";
 
-export const SettingsProfile = ({
-  user,
-}: {
+export const SettingsProfile: FC<{
   user: {
     id: string;
     name: string;
     uniqName: string | null;
     image: string;
   };
-}) => {
+}> = ({ user }) => {
   const [name, setName] = useState(user.name);
   const avaInput = useRef<HTMLInputElement>(null);
   const ava = useRef<HTMLImageElement>(null);
   const noti = useRef<HTMLDivElement>(null);
   const [saveReq, setSaveReq] = useState(false);
-  const { mutate: updateUser, isSuccess: mutateIsSuccess, isLoading: mutateIsLoading, isError: mutateIsError } = api.users.update.useMutation({
-    onSuccess: ()=> {
-              closeNoti();
-    }
+  const {
+    mutate: updateUser,
+    isSuccess: mutateIsSuccess,
+    isLoading: mutateIsLoading,
+    isError: mutateIsError,
+  } = api.users.update.useMutation({
+    onSuccess: () => {
+      closeNoti();
+    },
   });
 
   function editAva() {
@@ -93,7 +96,7 @@ export const SettingsProfile = ({
             <input
               type="file"
               ref={avaInput}
-              className='hidden'
+              className="hidden"
               onChange={() => {
                 avaTake();
                 openNoti();
@@ -107,7 +110,7 @@ export const SettingsProfile = ({
                 <div className={Styles.hover_thing}>
                   <i className="bi bi-pencil-fill"></i>
                 </div>
-                <img alt='' ref={ava} src={user.image} />
+                <img alt="" ref={ava} src={user.image} />
               </div>
               <div className={Styles.profile_cart__content}>
                 <div className={Styles.profile_cart__info}>
@@ -135,13 +138,18 @@ export const SettingsProfile = ({
           </button>
           <button
             className={Styles.save}
-            disabled={mutateIsLoading|| mutateIsSuccess}
+            disabled={mutateIsLoading || mutateIsSuccess}
             onClick={() => {
               updateUser({ name: name });
             }}
           >
-           {mutateIsError? "Ошибка" : mutateIsLoading?
-           "Загрузка" : mutateIsSuccess ?"Успех" : "сохранить изменения"}  
+            {mutateIsError
+              ? "Ошибка"
+              : mutateIsLoading
+                ? "Загрузка"
+                : mutateIsSuccess
+                  ? "Успех"
+                  : "сохранить изменения"}
           </button>
         </div>
       </div>
@@ -149,13 +157,13 @@ export const SettingsProfile = ({
   );
 };
 
-export const SettingsUniqName = ({
-  user,
-}: {
+export const SettingsUniqName:FC< {
   user: {
     id: string;
     uniqName: string | null;
   };
+}> = ({
+  user,
 }) => {
   const [uniqName, setUniqName] = useState(user.uniqName ? user.uniqName : "");
   const [uniqNameError, setUniqNameError] = useState<string | null>(null);
@@ -176,7 +184,6 @@ export const SettingsUniqName = ({
           <div className={Styles.edit}>
             <div className={Styles.uniq_name_container}>
               <label>
-            
                 УНИКАЛЬНОЕ ИМЯ
                 {uniqNameError !== null ? "- " + uniqNameError : ""}
               </label>

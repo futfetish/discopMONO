@@ -1,0 +1,33 @@
+.my_rooms__bar {
+    padding: 10px;
+    flex: 1 1 0;
+    label {
+      color: #b5b3b3;
+      padding: 12px 12px 6px 12px;
+    }
+    a {
+      user-select: none;
+      i {
+        padding: 4px;
+        font-size: 20px;
+        margin-right: 6px;
+      }
+      position: relative;
+      border-radius: 4px;
+      align-items: center;
+      display: flex;
+      padding: 5px;
+      color: white;
+      text-decoration: none;
+      p {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex: 1 1 0;
+      }
+  
+      &:hover {
+        background-color: #2f3136;
+      }
+    }
+  }

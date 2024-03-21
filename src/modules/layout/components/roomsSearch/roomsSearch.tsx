@@ -1,32 +1,19 @@
-import { useEffect, useState } from "react";
-import Styles from "~/styles/roomSearch.module.scss";
+import { FC, useEffect, useState } from "react";
+import Styles from "./roomSearch.module.scss";
 import { api } from "~/utils/api";
+import { roomType } from "~/types/rooms";
 
 
-type RoomT = {
-  type: "ls" | "group";
-  name: string;
-  id: number;
-  _count: {
-      members: number;
-  };
-  members: {
-      user: {
-          id: string;
-          image: string;
-          name?: string | null | undefined;
-      };
-  }[]
-}
 
-export const RoomsSearch = ({ user }: { user: { id: string } }) => {
+
+export const RoomsSearch: FC<{ user: { id: string } }> = ({ user }) => {
   const allRooms = api.rooms.showRoomsJoined.useQuery();
-  const [rooms, setRooms] = useState<RoomT[]>([]);
+  const [rooms, setRooms] = useState<roomType[]>([]);
   useEffect(() => {
-    if (allRooms.data){
-      setRooms(allRooms.data.rooms)
+    if (allRooms.data) {
+      setRooms(allRooms.data.rooms);
     }
-  } , [allRooms.data])
+  }, [allRooms.data]);
   const [input, setInput] = useState("");
   const { mutate: selectRooms } = api.rooms.search.useMutation({
     onSuccess: (data) => {
@@ -79,23 +66,11 @@ export const RoomsSearch = ({ user }: { user: { id: string } }) => {
   );
 };
 
-type room = {
-  type: "ls" | "group";
-  name: string;
-  id: number;
-  _count: {
-    members: number;
-  };
-  members: {
-    user: {
-      id: string;
-      image: string;
-      name?: string | null | undefined;
-    };
-  }[];
-};
 
-function RoomsList({ rooms, userId }: { rooms: room[]; userId: string }) {
+const RoomsList: FC<{ rooms: roomType[]; userId: string }> = ({
+  rooms,
+  userId,
+}) => {
   return (
     <div className={Styles.rooms}>
       {rooms.map((room) => (
@@ -103,9 +78,9 @@ function RoomsList({ rooms, userId }: { rooms: room[]; userId: string }) {
       ))}
     </div>
   );
-}
+};
 
-function RoomItem({ room, userId }: { room: room; userId: string }) {
+const RoomItem: FC<{ room: roomType; userId: string }> = ({ room, userId }) => {
   return (
     <a href={"/channels/" + room.id} className={Styles.room}>
       <img
@@ -127,4 +102,4 @@ function RoomItem({ room, userId }: { room: room; userId: string }) {
       </p>
     </a>
   );
-}
+};

@@ -5,11 +5,17 @@ import ErrorContent from "~/components/errorContent";
 import type { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import Styles from "../../styles/room.module.scss";
-import MainContainer from "~/components/MainContainer";
 import { api } from "~/utils/api";
 import { db } from "~/server/db";
-import { type ReactNode, useEffect, useRef, useState, useCallback } from "react";
+import {
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
 import { socket } from "~/socket";
+import { Layout } from "~/modules/layout/pages/layout/layout";
 
 // class MessageAuthorFlyWeight {
 //   users: Map<string, room["members"][number]["user"]> = new Map<
@@ -163,14 +169,14 @@ export default function RoomC(props: {
   let topObj: ReactNode;
   let rightObj: ReactNode;
   let titleObj: string;
-  let tabObj: string
+  let pageObj: string;
 
   if (!sessionData) {
     contentObj = <div></div>;
     topObj = <div></div>;
     rightObj = <div></div>;
     titleObj = "";
-    tabObj = ''
+    pageObj = "";
   } else if (
     !id &&
     !res.members.some((u) => u.user.id === sessionData.user.id)
@@ -179,7 +185,7 @@ export default function RoomC(props: {
     topObj = <div></div>;
     rightObj = <div></div>;
     titleObj = "ERR: вы не являетесь участником этой группы";
-    tabObj = ''
+    pageObj = "";
   } else {
     contentObj = (
       <Content
@@ -222,12 +228,12 @@ export default function RoomC(props: {
             .map((m) => m.name)
             .join(", ")
         : res.name;
-    tabObj = "room_" + res.id
+    pageObj = "room_" + res.id;
   }
 
   return (
-    <MainContainer
-      tab={tabObj}
+    <Layout
+      page={pageObj}
       content={contentObj}
       top={topObj}
       right={rightObj}
@@ -265,9 +271,12 @@ function Content({
   //   setMessages((messages) => [...messages, message]);
   // }
 
-  const addMessage = useCallback((message : (typeof room)["msgs"][number]) => {
-    setMessages((messages) => [...messages, message]);
-  } , [setMessages])
+  const addMessage = useCallback(
+    (message: (typeof room)["msgs"][number]) => {
+      setMessages((messages) => [...messages, message]);
+    },
+    [setMessages],
+  );
 
   const { mutate } = api.message.create.useMutation({
     onSuccess: (data) => {
@@ -290,7 +299,7 @@ function Content({
   }, [room]);
 
   useEffect(() => {
-    console.log('rere')
+    console.log("rere");
     function onMessage(data: (typeof room)["msgs"][number]) {
       addMessage(data);
     }
@@ -299,7 +308,7 @@ function Content({
     return () => {
       socket.off("message", onMessage);
     };
-  } , [addMessage]);
+  }, [addMessage]);
   return (
     <div className={Styles.container}>
       <MessageList msgs={messages} />

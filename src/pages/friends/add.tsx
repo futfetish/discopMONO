@@ -1,6 +1,6 @@
 import { type ReactNode, useRef } from "react";
 import Styles from "../../styles/friends.module.scss";
-import MainContainer from "~/components/MainContainer";
+import { Layout } from "~/modules/layout/pages/layout/layout";
 import { api } from "~/utils/api";
 import { useState } from "react";
 import MyButton from "../../components/myButton";
@@ -24,10 +24,10 @@ export default function Friends_add() {
   }
 
   return (
-    <MainContainer
-      tab="friends"
+    <Layout
+      page="friends"
       content={contentObj}
-      top={<FriendTop tab="add" />}
+      top={<FriendTop page="add" />}
       right={<div></div>}
       title="friends"
     />

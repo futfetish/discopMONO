@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
 import { type ReactNode, useEffect } from "react";
 import Styles from "../../styles/friends.module.scss";
-import MainContainer from "~/components/MainContainer";
+import { Layout } from "~/modules/layout/pages/layout/layout";
 import { api } from "~/utils/api";
 import { useState } from "react";
 import { FriendTop } from "~/components/FriendsTop";
@@ -19,10 +19,10 @@ export default function Friends_all() {
   }
 
   return (
-    <MainContainer
-      tab="friends"
+    <Layout
+      page="friends"
       content={contentObj}
-      top={<FriendTop tab="all" />}
+      top={<FriendTop page="all" />}
       right={<div></div>}
       title="friends"
     />
