@@ -1,6 +1,6 @@
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import MyButton from "~/components/myButton";
+import MyButton from "~/modules/common/ui/myButton/myButton";
 import Styles from "~/styles/login.module.scss";
 
 export default function Login() {

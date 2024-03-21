@@ -1,6 +1,6 @@
 import { FC, useRef, useState } from "react";
 import Styles from "./settingPages.module.scss";
-import MyButton from "../../../../components/myButton";
+import MyButton from "../../../common/ui/myButton/myButton";
 import { api } from "~/utils/api";
 
 export const SettingsProfile: FC<{

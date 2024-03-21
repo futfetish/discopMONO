@@ -4,8 +4,8 @@ import { userDTO } from "~/types/user";
 import { FriendTop } from "../../features/friendsTop/FriendsTop";
 import { api } from "~/utils/api";
 import { socket } from "~/socket";
-import Styles from './friendsAddPage.module.scss'
-import MyButton from "~/components/myButton";
+import Styles from "./friendsAddPage.module.scss";
+import { MyButton } from "~/modules/common/ui/myButton/myButton";
 
 export const FriendsAddPage: FC<{ user: userDTO }> = ({ user }) => {
   return (
