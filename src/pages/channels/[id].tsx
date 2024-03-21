@@ -1,7 +1,7 @@
 import { getSession, useSession } from "next-auth/react";
 import GroupRight from "~/components/GroupRight";
 import RoomUntilAdd from "~/components/RoomUntilAdd";
-import ErrorContent from "~/components/errorContent";
+import ErrorContent from "~/modules/error/features/errorContent";
 import type { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
 import Styles from "../../styles/room.module.scss";
