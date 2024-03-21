@@ -1,23 +1,15 @@
-import Styles from "~/styles/GroupRight.module.scss";
+import Styles from "./GroupRight.module.scss";
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { ChannelType } from "~/types/rooms";
 
-type member = {
-  user: { id: string; name: string; image: string };
-  isAdmin: boolean;
-};
-
-type room = {
-  id: number;
-  members: member[];
-};
 
 export default function GroupRight({
   room,
   user,
 }: {
-  room: room;
+  room: ChannelType;
   user: { id: string; name: string; image: string };
 }) {
   return (
@@ -32,7 +24,7 @@ export default function GroupRight({
   );
 }
 
-function MembersList({ room, selfAdmin }: { room: room; selfAdmin: boolean }) {
+function MembersList({ room, selfAdmin }: { room: ChannelType; selfAdmin: boolean }) {
   const [usersObjs, setUObjs] = useState(room.members);
   const { mutate: delUser } = api.rooms.kickUser.useMutation();
   return (
@@ -57,7 +49,7 @@ function MemberItem({
   callback,
   selfAdmin,
 }: {
-  member: member;
+  member: ChannelType['members'][number];
   callback: () => void;
   selfAdmin: boolean;
 }) {
@@ -82,7 +74,7 @@ function MemberItem({
   );
 }
 
-function ActionsList({ room }: { room: room }) {
+function ActionsList({ room }: { room: ChannelType }) {
   const router = useRouter();
   const { mutate: leave } = api.rooms.leave.useMutation({
     onSuccess: () => {

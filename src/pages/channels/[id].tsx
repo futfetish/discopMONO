@@ -1,21 +1,13 @@
 import { getSession, useSession } from "next-auth/react";
-import GroupRight from "~/components/GroupRight";
-import RoomUntilAdd from "~/components/RoomUntilAdd";
-import ErrorContent from "~/modules/error/features/errorContent";
 import type { GetServerSideProps } from "next";
 import { useRouter } from "next/router";
-import Styles from "../../styles/room.module.scss";
-import { api } from "~/utils/api";
 import { db } from "~/server/db";
-import {
-  type ReactNode,
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-} from "react";
+import { useEffect } from "react";
 import { socket } from "~/socket";
-import { Layout } from "~/modules/layout/pages/layout/layout";
+import { ChannelType } from "~/types/rooms";
+import { LoadingPage } from "~/modules/validationPages/pages/loadingPage/loadingPage";
+import { ErrorPage } from "~/modules/validationPages/pages/errorPage/errorPage";
+import { ChannelPage } from "~/modules/chat/pages/channelPage/channelPage";
 
 // class MessageAuthorFlyWeight {
 //   users: Map<string, room["members"][number]["user"]> = new Map<
@@ -147,9 +139,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   };
 };
 
-export default function RoomC(props: {
-  data: { room: NonNullable<Awaited<ReturnType<typeof getRoom>>> };
-}) {
+export default function RoomC(props: { data: { room: ChannelType } }) {
   const res = props.data.room;
   const router = useRouter();
   const { id } = router.query;
@@ -165,31 +155,17 @@ export default function RoomC(props: {
     };
   });
 
-  let contentObj: ReactNode;
-  let topObj: ReactNode;
-  let rightObj: ReactNode;
-  let titleObj: string;
-  let pageObj: string;
-
   if (!sessionData) {
-    contentObj = <div></div>;
-    topObj = <div></div>;
-    rightObj = <div></div>;
-    titleObj = "";
-    pageObj = "";
+    return <LoadingPage />;
   } else if (
     !id &&
     !res.members.some((u) => u.user.id === sessionData.user.id)
   ) {
-    contentObj = <ErrorContent text="вы не являетесь участником этой группы" />;
-    topObj = <div></div>;
-    rightObj = <div></div>;
-    titleObj = "ERR: вы не являетесь участником этой группы";
-    pageObj = "";
+    return <ErrorPage text="вы не являетесь участником этой группы" />;
   } else {
-    contentObj = (
-      <Content
-        room={res}
+    return (
+      <ChannelPage
+        channel={res}
         user={{
           id: sessionData.user.id,
           image: sessionData.user.image || "",
@@ -197,355 +173,5 @@ export default function RoomC(props: {
         }}
       />
     );
-    topObj = (
-      <Top
-        room={res}
-        user={{
-          id: sessionData.user.id,
-          image: sessionData.user.image || "",
-          name: sessionData.user.name || "[blank]",
-        }}
-      />
-    );
-    rightObj =
-      res.type == "ls" ? (
-        <Right />
-      ) : (
-        <GroupRight
-          room={res}
-          user={{
-            id: sessionData.user.id,
-            image: sessionData.user.image || "",
-            name: sessionData.user.name || "[blank]",
-          }}
-        />
-      );
-    titleObj =
-      res.type == "ls"
-        ? res.members
-            .map((u) => u.user)
-            .filter((m) => m.id !== sessionData.user.id)
-            .map((m) => m.name)
-            .join(", ")
-        : res.name;
-    pageObj = "room_" + res.id;
   }
-
-  return (
-    <Layout
-      page={pageObj}
-      content={contentObj}
-      top={topObj}
-      right={rightObj}
-      title={titleObj}
-    />
-  );
-}
-
-type roomT = NonNullable<Awaited<ReturnType<typeof getRoom>>>;
-
-function Content({
-  room,
-  user,
-}: {
-  room: roomT;
-  user: { id: string; name: string; image: string };
-}) {
-  const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<(typeof room)["msgs"]>(room.msgs);
-  const notActiveMembers = new Set(room.members.map((m) => m.user.id));
-
-  const { mutate: notifyMembers } = api.rooms.userRoomsToUnRead.useMutation({
-    onSuccess: () => {
-      notActiveMembers.forEach((m) => {
-        console.log(m);
-        socket.emit("messageNotify", {
-          room: "user" + m,
-          message: { id: room.id },
-        });
-      });
-    },
-  });
-
-  // function addMessage(message: (typeof room)["msgs"][number]) {
-  //   setMessages((messages) => [...messages, message]);
-  // }
-
-  const addMessage = useCallback(
-    (message: (typeof room)["msgs"][number]) => {
-      setMessages((messages) => [...messages, message]);
-    },
-    [setMessages],
-  );
-
-  const { mutate } = api.message.create.useMutation({
-    onSuccess: (data) => {
-      const newMessage = {
-        authorId: user.id,
-        id: data.messageId,
-        createdAt: new Date(),
-        author: user,
-        text: input,
-      };
-      addMessage(newMessage);
-      socket.emit("message", { room: "room" + room.id, message: newMessage });
-      setInput("");
-      notifyMembers({ userIds: notActiveMembers, roomId: room.id });
-    },
-  });
-
-  useEffect(() => {
-    setMessages(room.msgs);
-  }, [room]);
-
-  useEffect(() => {
-    console.log("rere");
-    function onMessage(data: (typeof room)["msgs"][number]) {
-      addMessage(data);
-    }
-
-    socket.on("message", onMessage);
-    return () => {
-      socket.off("message", onMessage);
-    };
-  }, [addMessage]);
-  return (
-    <div className={Styles.container}>
-      <MessageList msgs={messages} />
-
-      <div className={Styles.input_area}>
-        <div className={Styles.input_container}>
-          <input
-            autoComplete="off"
-            type="text"
-            v-model="msg_text"
-            className={Styles.message_input}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                if (input !== "") {
-                  mutate({ text: input, roomId: room.id });
-                }
-              }
-            }}
-            placeholder={
-              "написать " +
-              (room.type == "ls"
-                ? room.members
-                    .map((u) => u.user)
-                    .filter((m) => m.id !== user.id)
-                    .map((m) => m.name)
-                    .join(", ")
-                : room.name)
-            }
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MessageList({ msgs }: { msgs: roomT["msgs"] }) {
-  const messageListRef = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    const messageListObj = messageListRef.current;
-    if (messageListObj) {
-      messageListObj.scrollTop = messageListObj.scrollHeight;
-    }
-  });
-
-  function isSameDay(date1: Date | string, date2: Date | string): boolean {
-    const dateObj1 = typeof date1 === "string" ? new Date(date1) : date1;
-    const dateObj2 = typeof date2 === "string" ? new Date(date2) : date2;
-
-    if (
-      !(dateObj1 instanceof Date) ||
-      !(dateObj2 instanceof Date) ||
-      isNaN(dateObj1.getTime()) ||
-      isNaN(dateObj2.getTime())
-    ) {
-      return false;
-    }
-
-    return (
-      dateObj1.getFullYear() === dateObj2.getFullYear() &&
-      dateObj1.getMonth() === dateObj2.getMonth() &&
-      dateObj1.getDate() === dateObj2.getDate()
-    );
-  }
-
-  function isNewMessage(
-    message: {
-      authorId: string;
-      createdAt: Date | string;
-    },
-    pastMessage: {
-      authorId: string;
-      createdAt: Date | string;
-    },
-  ) {
-    return (
-      (message && pastMessage && message.authorId !== pastMessage.authorId) ||
-      !isSameDay(message.createdAt, pastMessage.createdAt)
-    );
-  }
-
-  return (
-    <div className={Styles.chat} ref={messageListRef}>
-      {msgs.map(
-        (
-          msg: (typeof msgs)[number],
-          i: number,
-          arr: (typeof msgs)[number][],
-        ) => (
-          <MessageItem
-            key={msg.id}
-            message={msg}
-            isNewMessage={!arr[i - 1] || isNewMessage(msg, arr[i - 1]!)}
-          />
-        ),
-      )}
-    </div>
-  );
-}
-
-function MessageItem({
-  message,
-  isNewMessage,
-}: {
-  message: roomT["msgs"][number];
-  isNewMessage: boolean;
-}) {
-  function formatDate(date: Date | string): string {
-    const dateObj = typeof date === "string" ? new Date(date) : date;
-
-    if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
-      return "Invalid Date";
-    }
-
-    const day = (dateObj.getDate() + 1).toString().padStart(2, "0");
-    const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
-    const year = dateObj.getFullYear();
-    const hours = dateObj.getHours().toString().padStart(2, "0");
-    const minutes = dateObj.getMinutes().toString().padStart(2, "0");
-
-    return `${day}.${month}.${year} ${hours}:${minutes}`;
-  }
-
-  function formatTimeDate(date: Date | string): string {
-    const dateObj = typeof date === "string" ? new Date(date) : date;
-
-    if (!(dateObj instanceof Date) || isNaN(dateObj.getTime())) {
-      return "Invalid Date";
-    }
-
-    const hours = dateObj.getHours();
-    const minutes = dateObj.getMinutes();
-
-    const formattedHours = String(hours).padStart(2, "0");
-    const formattedMinutes = String(minutes).padStart(2, "0");
-
-    return `${formattedHours}:${formattedMinutes}`;
-  }
-
-  return (
-    <div
-      className={[
-        Styles.message,
-        isNewMessage ? Styles.message_new : Styles.message_past,
-      ].join(" ")}
-    >
-      <div className={Styles.message__info}>
-        {isNewMessage ? (
-          <img
-            src={message.author.image}
-            className={Styles.message__author_ava}
-            alt=""
-          />
-        ) : null}
-        <div className={Styles.message__author}> {message.author.name} </div>
-        {isNewMessage ? (
-          <div className={Styles.message__date}>
-            {formatDate(message.createdAt)}
-          </div>
-        ) : (
-          <div className={Styles.message__date}>
-            {formatTimeDate(message.createdAt)}
-          </div>
-        )}
-      </div>
-
-      <div className={Styles.message__text}>{message.text}</div>
-    </div>
-  );
-}
-
-function Top({
-  room,
-  user,
-}: {
-  room: NonNullable<Awaited<ReturnType<typeof getRoom>>>;
-  user: { id: string; name: string; image: string };
-}) {
-  const [roomName, setRoomName] = useState(room.name);
-  const { mutate: changeRoomName } = api.rooms.changeName.useMutation();
-
-  useEffect(() => {
-    setRoomName(room.name);
-  }, [room]);
-
-  return (
-    <div className={Styles.self__top}>
-      <img
-        src={
-          room.type == "ls"
-            ? room.members.map((u) => u.user).filter((m) => m.id !== user.id)[0]
-                ?.image
-            : "/img/grav.png"
-        }
-        alt=""
-        className={Styles.room_big_ava}
-      />
-      {room.type === "ls" ? (
-        <p className={Styles.room_title}>
-          {room.members
-            .map((u) => u.user)
-            .filter((m) => m.id !== user.id)
-            .map((m) => m.name)
-            .join(", ")}
-        </p>
-      ) : (
-        <input
-          type="text"
-          className={[Styles.room_title__input, Styles.room_title].join(" ")}
-          value={roomName}
-          onChange={(e) => setRoomName(e.target.value)}
-          onBlur={() => changeRoomName({ roomId: room.id, name: roomName })}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              e.currentTarget.blur();
-            }
-          }}
-        />
-      )}
-
-      <div className={Styles.top_utils}>
-        <RoomUntilAdd
-          room={{
-            id: room.id,
-            members: room.members,
-            type: room.type,
-            name: room.name,
-          }}
-        />
-      </div>
-    </div>
-  );
-}
-
-function Right() {
-  return <h1>right</h1>;
 }

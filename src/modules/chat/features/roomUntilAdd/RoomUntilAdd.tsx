@@ -1,21 +1,14 @@
-import Styles from "~/styles/RoomUntilAdd.module.scss";
+import Styles from "./RoomUntilAdd.module.scss";
 import { api } from "~/utils/api";
-import MyButton from "./myButton";
+import MyButton from "../../../../components/myButton";
 import { useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { socket } from "~/socket";
+import { roomType } from "~/types/rooms";
 
-type room = {
-  id: number;
-  type: string;
-  name : string
-  members: {
-    user: { id: string; name: string; image: string };
-    isAdmin: boolean;
-  }[];
-};
 
-export default function RoomUntilAdd({ room }: { room: room }) {
+
+export default function RoomUntilAdd({ room }: { room: roomType }) {
   const [open, setOpen] = useState(false);
 
   function toggleModal() {
@@ -49,7 +42,7 @@ function Modal({
   toggleFunc,
 }: {
   open: boolean;
-  room: room;
+  room: roomType;
   toggleFunc: () => void;
 }) {
   const { data } = api.friends.all.useQuery();

@@ -4,3 +4,9 @@ export type userType = {
     uniqName: string | null;
     image: string;
   };
+
+  export type userDTO = {
+    id: string;
+    name: string;
+    image: string;
+  };
