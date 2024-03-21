@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Styles from "../../src/styles/friends.module.scss";
+import Styles from './friendsTop.module.scss'
 import { useState, type FC, useEffect } from "react";
 import { api } from "~/utils/api";
 import { socket } from "~/socket";

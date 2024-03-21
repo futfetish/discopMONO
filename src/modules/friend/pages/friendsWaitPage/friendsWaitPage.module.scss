@@ -1,0 +1,31 @@
+.self__self{
+    width: 100%;  
+    display: flex;
+    flex-direction: column;
+    padding: 20px 30px;
+    label{
+        width: 100%;
+        color: #b5b3b3;;
+        padding: 12px 0px 6px 0px;
+    }
+}
+
+.friend__accept{
+    background-color: #00a629;
+    &:after{
+        content: 'Принять';
+    }
+}
+.friend__reject{
+    background-color: #a60000;
+    &:after{
+        content: 'Отклонить';
+    }
+}
+.friend__cancel{
+    white-space: nowrap;
+    background-color: #a60000;
+    &:after{
+        content: 'Отмена';
+    }
+}

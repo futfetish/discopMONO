@@ -1,0 +1,75 @@
+.self__top{
+    display: flex;
+    color : white;
+    align-items: center;
+    height: 100%;
+    .top__content{
+        flex-grow: 1;
+        align-items: center;
+        display: flex;
+        .label{
+            user-select: none;
+            margin: 0 20px;
+            display: flex;
+            align-items: center;
+            i{
+                font-size: 20px;
+                color: #b5b3b3;
+                margin-right: 6px;
+            }
+        }
+        .stick{
+            height: 30px;
+            width: 1px;
+            background-color: rgba(68, 70, 77 , 0.8);
+        }
+        .utils{
+            margin-left: 10px;
+            display: flex;
+            a{
+                font-size: 15px;
+                margin: 0 6px;
+                border-radius: 4px;
+                align-items: center ;
+                display: flex;
+                padding: 4px 10px;
+                color:white;
+                text-decoration: none;
+                &:hover{
+                    background-color: rgba(68, 70, 77 , 0.5);
+                }
+                
+                .red_circle{
+                    margin-left: 5px;
+                    .core{
+                        width: 5px;
+                        height: 5px;
+                        border-radius: 50% ;
+                        background-color: white;
+                    }
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content:  center;
+                    background-color: red;
+                    width: 15px;
+                    height: 15px;
+                    border-radius: 50%;
+                }
+            }
+            .friend_tab{
+                background-color: rgba(68, 70, 77 , 0.7) !important;
+            }
+            .friend_tab_add{
+                background-color: transparent !important;
+                color : #42d66b !important;
+            }
+            .add{
+                background-color: #00a629;
+                &:hover{
+                    background-color:#00a629 ; 
+                }
+            }
+        }
+    }
+}

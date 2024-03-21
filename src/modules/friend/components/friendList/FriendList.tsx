@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { type ReactNode } from "react";
-import Styles from "~/styles/friendList.module.scss";
+import Styles from "./friendList.module.scss";
 
 interface FriendType {
   name: string;
