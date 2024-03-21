@@ -1,12 +1,10 @@
 import Styles from "./RoomUntilAdd.module.scss";
 import { api } from "~/utils/api";
-import MyButton from "../../../common/ui/myButton/myButton";
+import { MyButton } from "../../../common/ui/myButton/myButton";
 import { useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { socket } from "~/socket";
 import { roomType } from "~/types/rooms";
-
-
 
 export default function RoomUntilAdd({ room }: { room: roomType }) {
   const [open, setOpen] = useState(false);
@@ -34,7 +32,6 @@ export default function RoomUntilAdd({ room }: { room: roomType }) {
     </div>
   );
 }
-
 
 function Modal({
   open,
@@ -72,8 +69,8 @@ function Modal({
     api.rooms.createNewChat.useMutation({
       onSuccess: (data) => {
         members.forEach((m) => {
-          socket.emit('newChat' , {room : 'user' + m , message : data.roomId})
-        })
+          socket.emit("newChat", { room: "user" + m, message: data.roomId });
+        });
         router.push("/channels/" + data.roomId);
       },
     });
@@ -82,10 +79,10 @@ function Modal({
     api.rooms.addUsersToChat.useMutation({
       onSuccess: () => {
         members.forEach((m) => {
-          if (!room.members.map((m) => m.user.id).includes(m)){
-            socket.emit('newChat' , {room : 'user' + m , message : room.id})
+          if (!room.members.map((m) => m.user.id).includes(m)) {
+            socket.emit("newChat", { room: "user" + m, message: room.id });
           }
-        })
+        });
         toggleFunc();
       },
     });

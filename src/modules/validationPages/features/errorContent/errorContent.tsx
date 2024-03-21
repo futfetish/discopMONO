@@ -1,4 +1,4 @@
-import Styles from "~/styles/error.module.scss";
+import Styles from "./errorContent.module.scss";
 
 export default function ErrorContent({ text }: { text: string }) {
   return (

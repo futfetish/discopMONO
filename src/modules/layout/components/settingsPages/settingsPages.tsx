@@ -1,6 +1,6 @@
 import { FC, useRef, useState } from "react";
 import Styles from "./settingPages.module.scss";
-import MyButton from "../../../common/ui/myButton/myButton";
+import { MyButton } from "../../../common/ui/myButton/myButton";
 import { api } from "~/utils/api";
 
 export const SettingsProfile: FC<{
@@ -157,14 +157,12 @@ export const SettingsProfile: FC<{
   );
 };
 
-export const SettingsUniqName:FC< {
+export const SettingsUniqName: FC<{
   user: {
     id: string;
     uniqName: string | null;
   };
-}> = ({
-  user,
-}) => {
+}> = ({ user }) => {
   const [uniqName, setUniqName] = useState(user.uniqName ? user.uniqName : "");
   const [uniqNameError, setUniqNameError] = useState<string | null>(null);
   const { mutate: updateUser } = api.users.update.useMutation({
