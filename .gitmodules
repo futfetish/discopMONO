@@ -1,0 +1,6 @@
+[submodule "mainWebService"]
+	path = mainWebService
+	url = https://github.com/futfff/dis_cop
+[submodule "webSocketService"]
+	path = webSocketService
+	url = https://github.com/futfff/dis_cop-ws
