@@ -29,6 +29,7 @@ io.on("connection", (socket) => {
 
   function createHandler(name: string) {
     socket.on(name, (data) => {
+      console.log(data);
       socket.to(data.room).emit(name, data.message);
     });
   }
