@@ -35,4 +35,4 @@ const start = (services) => {
   console.log("Все сервисы запущены");
 };
 
-start(services);
+start(services)
