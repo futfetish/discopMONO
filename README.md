@@ -1,1 +1,1 @@
-`node start.js` for start application
+`node start.js` to launch the application
