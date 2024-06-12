@@ -7,7 +7,3 @@
 	path = webSocketService
 	url = https://github.com/futfff/dis_cop-ws
 	branch = main
-[submodule "mainW"]
-	path = mainW
-	url = https://github.com/futfff/dis_cop.git
-	branch = main
