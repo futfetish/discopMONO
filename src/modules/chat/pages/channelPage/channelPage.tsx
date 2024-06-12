@@ -18,6 +18,7 @@ export const ChannelPage: FC<{ channel: ChannelType; user: userDTO }> = ({
       top={<Top channel={channel} user={user} />}
       right={<Right channel={channel} user={user} />}
       content={<Content channel={channel} user={user} />}
+      page={'room_' + channel.id}
       title={
         channel.type == "ls"
           ? channel.members
