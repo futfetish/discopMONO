@@ -61,8 +61,14 @@ export const Layout: FC<{
     }
   }, [user]);
 
-  const settingsContainer = settingsContainerRef.current;
-  const app = appRef.current;
+
+  const [settingsContainer, setSettingsContainer] = useState(settingsContainerRef.current);
+  const [app, setApp] = useState(appRef.current);
+
+  useEffect(() => {
+    setSettingsContainer(settingsContainerRef.current);
+    setApp(appRef.current);
+  }, []);
 
   function appChangeTrue(appElement: HTMLDivElement) {
     appElement.style.transform = "scale(1)";
@@ -136,6 +142,7 @@ export const Layout: FC<{
   }
 
   function toggleSettings() {
+    console.log( settingsContainer != null ,  app != null , settingsContainerRef.current != null , appRef != null )
     if (settingsContainer && app) {
       appChange(isSettingsOpen, app);
       settingsContainerChange(isSettingsOpen, settingsContainer);
