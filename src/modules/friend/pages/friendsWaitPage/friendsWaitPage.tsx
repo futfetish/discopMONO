@@ -42,7 +42,6 @@ const Content : FC = () => {
     }, [isLoading, friends]);
   
     useEffect(() => {
-      console.log('wait rere')
       function onFriendReqNotify(data: { id: string }) {
         if (!friendListFrom.find((f) => f.id === data.id)) {
           addNewReq({ id: data.id });

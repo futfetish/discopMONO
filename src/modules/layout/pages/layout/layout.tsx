@@ -142,7 +142,6 @@ export const Layout: FC<{
   }
 
   function toggleSettings() {
-    console.log( settingsContainer != null ,  app != null , settingsContainerRef.current != null , appRef != null )
     if (settingsContainer && app) {
       appChange(isSettingsOpen, app);
       settingsContainerChange(isSettingsOpen, settingsContainer);

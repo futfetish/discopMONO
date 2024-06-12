@@ -43,7 +43,6 @@ const Content: FC<{ channel: ChannelType; user: userDTO }> = ({
   const { mutate: notifyMembers } = api.rooms.userRoomsToUnRead.useMutation({
     onSuccess: () => {
       notActiveMembers.forEach((m) => {
-        console.log(m);
         socket.emit("messageNotify", {
           room: "user" + m,
           message: { id: channel.id },
@@ -84,7 +83,6 @@ const Content: FC<{ channel: ChannelType; user: userDTO }> = ({
   }, [channel]);
 
   useEffect(() => {
-    console.log("rere");
     function onMessage(data: (typeof channel)["msgs"][number]) {
       addMessage(data);
     }

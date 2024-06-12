@@ -244,7 +244,6 @@ export const roomsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const search = input.s;
-      console.log("s", search);
       const userId = ctx.session.user.id;
       const rooms = await ctx.db.room.findMany({
         where: {
