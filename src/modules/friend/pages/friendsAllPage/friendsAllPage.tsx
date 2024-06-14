@@ -5,11 +5,19 @@ import { userDTO } from "~/types/user";
 import { FriendList } from "~/modules/friend/components/friendList/FriendList";
 import { Layout } from "~/modules/layout/pages/layout/layout";
 import { FriendTop } from "~/modules/friend/features/friendsTop/FriendsTop";
+import { globalSlice } from "~/store/reducers/globalReducer";
+import { useAppDispatch } from "~/hooks/redux";
 
 export const FriendsAllPage: FC = () => {
+
+  
+  const {setPage} = globalSlice.actions
+  const dispatch = useAppDispatch()
+
+  dispatch(setPage('friends'))
+
   return (
     <Layout
-      page="friends"
       content={ <Content /> }
       top={<FriendTop page="all" />}
       right={<div></div>}

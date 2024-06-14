@@ -6,10 +6,18 @@ import { userDTO } from "~/types/user";
 import { socket } from "~/socket";
 import { FriendList } from "../../components/friendList/FriendList";
 import Styles from './friendsWaitPage.module.scss'
+import { globalSlice } from "~/store/reducers/globalReducer";
+import { useAppDispatch } from "~/hooks/redux";
 
 export const FriendsWaitPage : FC = () => {
+
+  
+  const {setPage} = globalSlice.actions
+  const dispatch = useAppDispatch()
+
+  dispatch(setPage('friends'))
+
     return <Layout
-    page="friends"
     content={<Content />}
     top={<FriendTop page="wait" />}
     right={<div></div>}

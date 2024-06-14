@@ -8,17 +8,24 @@ import RoomUntilAdd from "~/modules/chat/features/roomUntilAdd/RoomUntilAdd";
 import GroupRight from "~/modules/chat/features/groupRight/GroupRight";
 import { socket } from "~/socket";
 import { MessageList } from "../../components/messageList/messageList";
+import { useAppDispatch } from "~/hooks/redux";
+import { globalSlice } from "~/store/reducers/globalReducer";
 
 export const ChannelPage: FC<{ channel: ChannelType; user: userDTO }> = ({
   channel,
   user,
 }) => {
+
+  const {setPage} = globalSlice.actions
+  const dispatch = useAppDispatch()
+
+  dispatch(setPage('room_' + channel.id))
+
   return (
     <Layout
       top={<Top channel={channel} user={user} />}
       right={<Right channel={channel} user={user} />}
       content={<Content channel={channel} user={user} />}
-      page={'room_' + channel.id}
       title={
         channel.type == "ls"
           ? channel.members

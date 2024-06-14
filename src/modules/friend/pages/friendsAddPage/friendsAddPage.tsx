@@ -6,11 +6,18 @@ import { api } from "~/utils/api";
 import { socket } from "~/socket";
 import Styles from "./friendsAddPage.module.scss";
 import { MyButton } from "~/modules/common/ui/myButton/myButton";
+import { globalSlice } from "~/store/reducers/globalReducer";
+import { useAppDispatch } from "~/hooks/redux";
 
 export const FriendsAddPage: FC<{ user: userDTO }> = ({ user }) => {
+
+  const {setPage} = globalSlice.actions
+  const dispatch = useAppDispatch()
+
+  dispatch(setPage('friends'))
+
   return (
     <Layout
-      page="friends"
       content={<Content user={user} />}
       top={<FriendTop page="add" />}
       right={<div></div>}

@@ -8,14 +8,14 @@ import { PageTitle } from "~/modules/layout/components/pageTitle/pageTitle";
 import { UnReadRooms } from "../../features/unreadRooms/unreadRooms";
 import { LeftBar } from "../../features/leftBar/leftBar";
 import { Content } from "../../features/content/content";
+import { useAppSelector } from "~/hooks/redux";
 
 export const Layout: FC<{
   content: ReactNode;
   top: ReactNode;
   right: ReactNode;
   title?: string;
-  page?: string;
-}> = ({ content, top, right, title = "dis", page = "" }) => {
+}> = ({ content, top, right, title = "dis" }) => {
   const settingsContainerRef = useRef<HTMLDivElement | null>(null);
   const appRef = useRef<HTMLDivElement | null>(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -149,6 +149,8 @@ export const Layout: FC<{
     }
   }
 
+  const page = useAppSelector(state => state.global.page)
+  
   return (
     <div className={Styles.body}>
       <Blank />

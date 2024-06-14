@@ -2,11 +2,14 @@ import { type Session } from "next-auth";
 import { SessionProvider, getSession } from "next-auth/react";
 import { type AppType } from "next/app";
 import { api } from "~/utils/api";
-
 import "~/styles/global.css";
 import "~/styles/global.scss";
 import { type AppContextType } from "next/dist/shared/lib/utils";
 import { type NextRouter } from "next/router";
+import { Provider as ReduxProvider } from "react-redux";
+import { setupStore } from "~/store/store";
+
+const store = setupStore();
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -14,7 +17,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <Component {...pageProps} />
+      <ReduxProvider store={store}>
+        <Component {...pageProps} />
+      </ReduxProvider>
     </SessionProvider>
   );
 };
