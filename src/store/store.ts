@@ -1,12 +1,14 @@
-import { configureStore } from "@reduxjs/toolkit"
+import { combineReducers, configureStore } from "@reduxjs/toolkit"
 import { globalSlice } from "./reducers/globalReducer"
 
+const rootReducer = combineReducers({
+    global : globalSlice.reducer
+})
 
-export const setupStore = () => {
+export const setupStore = (preloadedState : Partial<typeof rootReducer>) => {
     return configureStore({
-        reducer : {
-            global : globalSlice.reducer
-        }
+        reducer : rootReducer,
+        preloadedState
     })
 }
 

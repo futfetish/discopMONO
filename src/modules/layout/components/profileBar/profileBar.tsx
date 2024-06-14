@@ -1,10 +1,11 @@
 import { FC } from "react";
 import Styles from "./profileBar.module.scss";
+import { useAppSelector } from "~/hooks/redux";
 
 export const ProfileBar: FC<{
-  user: { id: string; name: string; image: string };
   callBack: () => void;
-}> = ({ user, callBack }) => {
+}> = ({ callBack }) => {
+  const user = useAppSelector(state => state.global.user)
   return (
     <div className={Styles.profile_bar}>
       <div className={Styles.profile_info}>

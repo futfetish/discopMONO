@@ -6,10 +6,6 @@ import "~/styles/global.css";
 import "~/styles/global.scss";
 import { type AppContextType } from "next/dist/shared/lib/utils";
 import { type NextRouter } from "next/router";
-import { Provider as ReduxProvider } from "react-redux";
-import { setupStore } from "~/store/store";
-
-const store = setupStore();
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -17,9 +13,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <ReduxProvider store={store}>
-        <Component {...pageProps} />
-      </ReduxProvider>
+      <Component {...pageProps} />
     </SessionProvider>
   );
 };

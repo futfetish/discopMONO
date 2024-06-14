@@ -9,18 +9,9 @@ import { globalSlice } from "~/store/reducers/globalReducer";
 import { useAppDispatch } from "~/hooks/redux";
 
 export const FriendsAllPage: FC = () => {
-
-  
-  const {setPage} = globalSlice.actions
-  const dispatch = useAppDispatch()
-
-  useEffect(() => {
-    dispatch(setPage('friends'))
- }, [dispatch , setPage]);
-
   return (
     <Layout
-      content={ <Content /> }
+      content={<Content />}
       top={<FriendTop page="all" />}
       right={<div></div>}
       title="friends"
@@ -29,6 +20,13 @@ export const FriendsAllPage: FC = () => {
 };
 
 const Content = () => {
+  const { setPage } = globalSlice.actions;
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(setPage("friends"));
+  }, [dispatch, setPage]);
+
   const { mutate } = api.friends.del.useMutation();
 
   const { data: friends, isLoading } = api.friends.all.useQuery();

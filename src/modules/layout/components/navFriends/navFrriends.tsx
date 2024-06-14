@@ -3,8 +3,10 @@ import { FC, useEffect, useState } from "react";
 import Styles from "./navFriends.module.scss";
 import { socket } from "~/socket";
 import { api } from "~/utils/api";
+import { useAppSelector } from "~/hooks/redux";
 
-export const NavFriends: FC<{ page: string }> = ({ page }) => {
+export const NavFriends: FC = () => {
+  const page = useAppSelector((state) => state.global.page);
   const { data: isHaveReqQ } = api.friends.isHaveReq.useQuery();
   const [isHaveReq, setIsHaveReq] = useState(isHaveReqQ);
 

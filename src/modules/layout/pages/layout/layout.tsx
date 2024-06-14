@@ -9,16 +9,18 @@ import { UnReadRooms } from "../../features/unreadRooms/unreadRooms";
 import { LeftBar } from "../../features/leftBar/leftBar";
 import { Content } from "../../features/content/content";
 import { useAppSelector } from "~/hooks/redux";
+import { Provider as ReduxProvider } from "react-redux";
+import { setupStore } from "~/store/store";
+import { userType } from "~/types/user";
 
-export const Layout: FC<{
+interface LayoutI {
   content: ReactNode;
   top: ReactNode;
   right: ReactNode;
-  title?: string;
-}> = ({ content, top, right, title = "dis" }) => {
-  const settingsContainerRef = useRef<HTMLDivElement | null>(null);
-  const appRef = useRef<HTMLDivElement | null>(null);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  title?: string | ((user: userType) => string);
+}
+
+export const Layout: FC<LayoutI> = ({ ...props }) => {
   const { data: sessionData } = useSession();
   const user = useMemo(() => {
     return sessionData
@@ -30,6 +32,26 @@ export const Layout: FC<{
         }
       : null;
   }, [sessionData]);
+
+  const store = setupStore({
+    global: {
+      user,
+    },
+  });
+
+  return (
+    <ReduxProvider store={store}>
+      <LayoutContent {...props} />
+    </ReduxProvider>
+  );
+};
+
+export const LayoutContent: FC<LayoutI> = ({ content, top, right, title = "dis" }) => {
+  const settingsContainerRef = useRef<HTMLDivElement | null>(null);
+  const appRef = useRef<HTMLDivElement | null>(null);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  const user = useAppSelector((state) => state.global.user);
 
   useEffect(() => {
     if (user) {
@@ -61,8 +83,9 @@ export const Layout: FC<{
     }
   }, [user]);
 
-
-  const [settingsContainer, setSettingsContainer] = useState(settingsContainerRef.current);
+  const [settingsContainer, setSettingsContainer] = useState(
+    settingsContainerRef.current,
+  );
   const [app, setApp] = useState(appRef.current);
 
   useEffect(() => {
@@ -149,24 +172,18 @@ export const Layout: FC<{
     }
   }
 
-  const page = useAppSelector(state => state.global.page)
-  
   return (
     <div className={Styles.body}>
       <Blank />
-      <PageTitle title={title} />
-      {user && sessionData && (
+      <PageTitle title={typeof title == 'string'  ?  title : title(user)} />
+      {user && (
         <>
           <div className={Styles.app} ref={appRef}>
             <div className={Styles.slidebar} id="slidebar">
-              <UnReadRooms userId={user.id} />
+              <UnReadRooms />
             </div>
             <div className={Styles.self}>
-              <LeftBar
-                user={user}
-                toggleSettingsF={toggleSettings}
-                page={page}
-              />
+              <LeftBar toggleSettingsF={toggleSettings} />
               <Content top={top} content={content} right={right} />
             </div>
           </div>
@@ -175,9 +192,7 @@ export const Layout: FC<{
             className={Styles.global_settings_container}
             ref={settingsContainerRef}
           >
-            {isSettingsOpen && (
-              <GlobalSettings callBack={toggleSettings} user={user} />
-            )}
+            {isSettingsOpen && <GlobalSettings callBack={toggleSettings} />}
           </div>
         </>
       )}

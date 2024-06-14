@@ -5,22 +5,19 @@ import {
   SettingsUniqName,
 } from "../../components/settingsPages/settingsPages";
 import { signOut } from "next-auth/react";
-import { userType } from "~/types/user";
 
 export const GlobalSettings: FC<{
   callBack: () => void;
-  user: userType;
-}> = ({ callBack, user }) => {
+}> = ({ callBack }) => {
   const [page, setPage] = useState("profile");
   return (
-    
     <div className={Styles.global_settings}>
       <div className={Styles.nav_bar} id="settings_nav">
         <SettingsNav page={page} setPage={setPage} />
       </div>
       <div className={Styles.right}>
         <div className={Styles.content}>
-          <Content page={page} user={user} />
+          <Content page={page} />
         </div>
         <div className={Styles.esc}>
           <SettingClose callBack={callBack} />
@@ -113,11 +110,11 @@ const SettingBut: FC<{
   );
 };
 
-const Content: FC<{ page: string; user: userType }> = ({ page, user }) => {
+const Content: FC<{ page: string }> = ({ page }) => {
   return (
     <>
-      {page == "profile" && <SettingsProfile user={user} />}
-      {page == "uniqName" && <SettingsUniqName user={user} />}
+      {page == "profile" && <SettingsProfile />}
+      {page == "uniqName" && <SettingsUniqName />}
     </>
   );
 };

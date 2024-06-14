@@ -1,17 +1,14 @@
 import Styles from "./GroupRight.module.scss";
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { FC, useState } from "react";
 import { ChannelType } from "~/types/rooms";
+import { useAppSelector } from "~/hooks/redux";
 
-
-export default function GroupRight({
-  room,
-  user,
-}: {
+export const GroupRight: FC<{
   room: ChannelType;
-  user: { id: string; name: string; image: string };
-}) {
+}> = ({ room }) => {
+  const user = useAppSelector((state) => state.global.user);
   return (
     <div className={Styles.container}>
       <label> участники - {room.members.length} </label>
@@ -22,9 +19,15 @@ export default function GroupRight({
       <ActionsList room={room} />
     </div>
   );
-}
+};
 
-function MembersList({ room, selfAdmin }: { room: ChannelType; selfAdmin: boolean }) {
+function MembersList({
+  room,
+  selfAdmin,
+}: {
+  room: ChannelType;
+  selfAdmin: boolean;
+}) {
   const [usersObjs, setUObjs] = useState(room.members);
   const { mutate: delUser } = api.rooms.kickUser.useMutation();
   return (
@@ -49,7 +52,7 @@ function MemberItem({
   callback,
   selfAdmin,
 }: {
-  member: ChannelType['members'][number];
+  member: ChannelType["members"][number];
   callback: () => void;
   selfAdmin: boolean;
 }) {

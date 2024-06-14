@@ -2,11 +2,13 @@ import { FC, useEffect, useState } from "react";
 import Styles from "./roomSearch.module.scss";
 import { api } from "~/utils/api";
 import { roomType } from "~/types/rooms";
+import { useAppSelector } from "~/hooks/redux";
 
 
 
 
-export const RoomsSearch: FC<{ user: { id: string } }> = ({ user }) => {
+export const RoomsSearch: FC = () => {
+  const user = useAppSelector(state => state.global.user)
   const allRooms = api.rooms.showRoomsJoined.useQuery();
   const [rooms, setRooms] = useState<roomType[]>([]);
   useEffect(() => {

@@ -4,11 +4,12 @@ import Link from "next/link";
 import { FC, useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import { socket } from "~/socket";
+import { useAppSelector } from "~/hooks/redux";
 
-export const RoomList: FC<{
-  userId: string;
-  page: string;
-}> = ({ page, userId }) => {
+export const RoomList: FC = () => {
+
+  const user = useAppSelector(state => state.global.user)
+  const page = useAppSelector(state => state.global.page)
 
   const { data: userRoomsData } = api.rooms.showRoomsJoined.useQuery();
   const { mutate: addNewRoom } = api.rooms.getById.useMutation({
@@ -47,7 +48,7 @@ export const RoomList: FC<{
         <RoomItem
           key={room.id}
           room={room}
-          userId={userId}
+          userId={user.id}
           active={page === "room_" + room.id}
         />
       ))}

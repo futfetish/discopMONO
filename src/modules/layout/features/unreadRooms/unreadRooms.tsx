@@ -4,8 +4,10 @@ import { roomType } from "~/types/rooms";
 import { api } from "~/utils/api";
 import Styles from "./unreadRooms.module.scss";
 import Link from "next/link";
+import { useAppSelector } from "~/hooks/redux";
 
-export const UnReadRooms: FC<{ userId: string }> = ({ userId }) => {
+export const UnReadRooms: FC = () => {
+  const user = useAppSelector(state => state.global.user)
   const { data: unReadRoomsQ } = api.rooms.unReadRooms.useQuery();
   const [unReadRooms, setUnReadRooms] = useState<roomType[]>([]);
   const { mutate: addRoomToUnread } = api.rooms.getById.useMutation({
@@ -51,13 +53,13 @@ export const UnReadRooms: FC<{ userId: string }> = ({ userId }) => {
             image={
               room.type == "group"
                 ? "/img/grav.png"
-                : room.members.map((u) => u.user).find((m) => m.id !== userId)
+                : room.members.map((u) => u.user).find((m) => m.id !== user.id)
                     ?.image || ''
             }
             name={
               (room.type == "group"
                 ? room.name
-                : room.members.map((u) => u.user).find((m) => m.id !== userId)
+                : room.members.map((u) => u.user).find((m) => m.id !== user.id)
                     ?.name) || '[blank]'
             }
           />

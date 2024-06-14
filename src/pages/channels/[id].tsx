@@ -166,11 +166,6 @@ export default function RoomC(props: { data: { room: ChannelType } }) {
     return (
       <ChannelPage
         channel={res}
-        user={{
-          id: sessionData.user.id,
-          image: sessionData.user.image || "",
-          name: sessionData.user.name || "[blank]",
-        }}
       />
     );
   }

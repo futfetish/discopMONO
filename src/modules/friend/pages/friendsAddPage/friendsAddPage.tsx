@@ -1,26 +1,17 @@
 import { FC, useEffect, useRef, useState } from "react";
 import { Layout } from "~/modules/layout/pages/layout/layout";
-import { userDTO } from "~/types/user";
 import { FriendTop } from "../../features/friendsTop/FriendsTop";
 import { api } from "~/utils/api";
 import { socket } from "~/socket";
 import Styles from "./friendsAddPage.module.scss";
 import { MyButton } from "~/modules/common/ui/myButton/myButton";
 import { globalSlice } from "~/store/reducers/globalReducer";
-import { useAppDispatch } from "~/hooks/redux";
+import { useAppDispatch, useAppSelector } from "~/hooks/redux";
 
-export const FriendsAddPage: FC<{ user: userDTO }> = ({ user }) => {
-
-  const {setPage} = globalSlice.actions
-  const dispatch = useAppDispatch()
-
-  useEffect(() => {
-    dispatch(setPage('friends'))
- }, [dispatch , setPage]);
-
+export const FriendsAddPage: FC = () => {
   return (
     <Layout
-      content={<Content user={user} />}
+      content={<Content />}
       top={<FriendTop page="add" />}
       right={<div></div>}
       title="friends"
@@ -28,7 +19,15 @@ export const FriendsAddPage: FC<{ user: userDTO }> = ({ user }) => {
   );
 };
 
-const Content: FC<{ user: userDTO }> = ({ user }) => {
+const Content: FC = () => {
+  const { setPage } = globalSlice.actions;
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(setPage("friends"));
+  }, [dispatch, setPage]);
+
+  const user = useAppSelector((state) => state.global.user);
   const [checkText, setCheckText] = useState("");
   const { mutate } = api.friends.add.useMutation({
     onSuccess: (data) => {

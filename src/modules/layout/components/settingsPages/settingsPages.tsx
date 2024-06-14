@@ -2,15 +2,10 @@ import { FC, useRef, useState } from "react";
 import Styles from "./settingPages.module.scss";
 import { MyButton } from "../../../common/ui/myButton/myButton";
 import { api } from "~/utils/api";
+import { useAppSelector } from "~/hooks/redux";
 
-export const SettingsProfile: FC<{
-  user: {
-    id: string;
-    name: string;
-    uniqName: string | null;
-    image: string;
-  };
-}> = ({ user }) => {
+export const SettingsProfile: FC = () => {
+  const user = useAppSelector(state => state.global.user)
   const [name, setName] = useState(user.name);
   const avaInput = useRef<HTMLInputElement>(null);
   const ava = useRef<HTMLImageElement>(null);
@@ -157,12 +152,8 @@ export const SettingsProfile: FC<{
   );
 };
 
-export const SettingsUniqName: FC<{
-  user: {
-    id: string;
-    uniqName: string | null;
-  };
-}> = ({ user }) => {
+export const SettingsUniqName: FC = () => {
+  const user = useAppSelector(state => state.global.user)
   const [uniqName, setUniqName] = useState(user.uniqName ? user.uniqName : "");
   const [uniqNameError, setUniqNameError] = useState<string | null>(null);
   const { mutate: updateUser } = api.users.update.useMutation({

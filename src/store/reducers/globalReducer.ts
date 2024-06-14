@@ -1,11 +1,14 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { userType } from "~/types/user";
 
 interface GlobalState {
     page : string;
+    user : userType;
 }
 
 const initialState : GlobalState = {
-    page : ''
+    page : '',
+    user : {name : '' , uniqName : '' , image : '' , id : ''}
 }
 
 export const globalSlice = createSlice({

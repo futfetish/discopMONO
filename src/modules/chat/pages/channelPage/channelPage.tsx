@@ -1,36 +1,22 @@
 import { FC, useCallback, useEffect, useState } from "react";
 import { Layout } from "~/modules/layout/pages/layout/layout";
 import { ChannelType } from "~/types/rooms";
-import { userDTO } from "~/types/user";
 import Styles from "./channelPage.module.scss";
 import { api } from "~/utils/api";
 import RoomUntilAdd from "~/modules/chat/features/roomUntilAdd/RoomUntilAdd";
-import GroupRight from "~/modules/chat/features/groupRight/GroupRight";
+import { GroupRight } from "~/modules/chat/features/groupRight/GroupRight";
 import { socket } from "~/socket";
 import { MessageList } from "../../components/messageList/messageList";
-import { useAppDispatch } from "~/hooks/redux";
+import { useAppDispatch, useAppSelector } from "~/hooks/redux";
 import { globalSlice } from "~/store/reducers/globalReducer";
 
-export const ChannelPage: FC<{ channel: ChannelType; user: userDTO }> = ({
-  channel,
-  user,
-}) => {
-
-  const {setPage} = globalSlice.actions
-  const dispatch = useAppDispatch()
-
-  useEffect(() => {
-   dispatch(setPage('room_' + channel.id))
-}, [dispatch , channel.id , setPage]);
-
-  
-
+export const ChannelPage: FC<{ channel: ChannelType }> = ({ channel }) => {
   return (
     <Layout
-      top={<Top channel={channel} user={user} />}
-      right={<Right channel={channel} user={user} />}
-      content={<Content channel={channel} user={user} />}
-      title={
+      top={<Top channel={channel} />}
+      right={<Right channel={channel} />}
+      content={<Content channel={channel} />}
+      title={ (user)  =>
         channel.type == "ls"
           ? channel.members
               .map((u) => u.user)
@@ -43,12 +29,19 @@ export const ChannelPage: FC<{ channel: ChannelType; user: userDTO }> = ({
   );
 };
 
-const Content: FC<{ channel: ChannelType; user: userDTO }> = ({
-  channel,
-  user,
-}) => {
+const Content: FC<{ channel: ChannelType }> = ({ channel }) => {
+  const user = useAppSelector((state) => state.global.user);
+  const { setPage } = globalSlice.actions
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(setPage("room_" + channel.id));
+  }, [dispatch, channel.id, setPage]);
+
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<(typeof channel)["msgs"]>(channel.msgs);
+  const [messages, setMessages] = useState<(typeof channel)["msgs"]>(
+    channel.msgs,
+  );
   const notActiveMembers = new Set(channel.members.map((m) => m.user.id));
 
   const { mutate: notifyMembers } = api.rooms.userRoomsToUnRead.useMutation({
@@ -83,7 +76,10 @@ const Content: FC<{ channel: ChannelType; user: userDTO }> = ({
         text: input,
       };
       addMessage(newMessage);
-      socket.emit("message", { room: "room" + channel.id, message: newMessage });
+      socket.emit("message", {
+        room: "room" + channel.id,
+        message: newMessage,
+      });
       setInput("");
       notifyMembers({ userIds: notActiveMembers, roomId: channel.id });
     },
@@ -141,11 +137,8 @@ const Content: FC<{ channel: ChannelType; user: userDTO }> = ({
   );
 };
 
-
-const Top: FC<{ channel: ChannelType; user: userDTO }> = ({
-  channel,
-  user,
-}) => {
+const Top: FC<{ channel: ChannelType }> = ({ channel }) => {
+  const user = useAppSelector((state) => state.global.user);
   const [roomName, setRoomName] = useState(channel.name);
   const { mutate: changeRoomName } = api.rooms.changeName.useMutation();
 
@@ -204,21 +197,9 @@ const Top: FC<{ channel: ChannelType; user: userDTO }> = ({
   );
 };
 
-const Right: FC<{ channel: ChannelType; user: userDTO }> = ({
-  channel,
-  user,
-}) => {
+const Right: FC<{ channel: ChannelType }> = ({ channel }) => {
   if (channel.type == "group") {
-    return (
-      <GroupRight
-        room={channel}
-        user={{
-          id: user.id,
-          image: user.image || "",
-          name: user.name || "[blank]",
-        }}
-      />
-    );
+    return <GroupRight room={channel} />;
   }
 
   return <h1>right</h1>;
