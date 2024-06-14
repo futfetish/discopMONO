@@ -14,7 +14,9 @@ export const FriendsAllPage: FC = () => {
   const {setPage} = globalSlice.actions
   const dispatch = useAppDispatch()
 
-  dispatch(setPage('friends'))
+  useEffect(() => {
+    dispatch(setPage('friends'))
+ }, [dispatch , setPage]);
 
   return (
     <Layout

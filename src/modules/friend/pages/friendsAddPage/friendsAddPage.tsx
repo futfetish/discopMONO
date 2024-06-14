@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { Layout } from "~/modules/layout/pages/layout/layout";
 import { userDTO } from "~/types/user";
 import { FriendTop } from "../../features/friendsTop/FriendsTop";
@@ -14,7 +14,9 @@ export const FriendsAddPage: FC<{ user: userDTO }> = ({ user }) => {
   const {setPage} = globalSlice.actions
   const dispatch = useAppDispatch()
 
-  dispatch(setPage('friends'))
+  useEffect(() => {
+    dispatch(setPage('friends'))
+ }, [dispatch , setPage]);
 
   return (
     <Layout

@@ -19,7 +19,11 @@ export const ChannelPage: FC<{ channel: ChannelType; user: userDTO }> = ({
   const {setPage} = globalSlice.actions
   const dispatch = useAppDispatch()
 
-  dispatch(setPage('room_' + channel.id))
+  useEffect(() => {
+   dispatch(setPage('room_' + channel.id))
+}, [dispatch , channel.id , setPage]);
+
+  
 
   return (
     <Layout
