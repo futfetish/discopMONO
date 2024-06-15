@@ -9,6 +9,7 @@ import { socket } from "~/socket";
 import { MessageList } from "../../components/messageList/messageList";
 import { useAppDispatch, useAppSelector } from "~/hooks/redux";
 import { setPage } from "~/store/reducers/globalReducer";
+import { MessageInput } from "../../features/messageInput/messageInput";
 
 export const ChannelPage: FC<{ channel: ChannelType }> = ({ channel }) => {
   return (
@@ -30,33 +31,15 @@ export const ChannelPage: FC<{ channel: ChannelType }> = ({ channel }) => {
 };
 
 const Content: FC<{ channel: ChannelType }> = ({ channel }) => {
-  const user = useAppSelector((state) => state.global.user);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(setPage("room_" + channel.id));
   }, [dispatch, channel.id]);
 
-  const [input, setInput] = useState("");
   const [messages, setMessages] = useState<(typeof channel)["msgs"]>(
     channel.msgs,
   );
-  const notActiveMembers = new Set(channel.members.map((m) => m.user.id));
-
-  const { mutate: notifyMembers } = api.rooms.userRoomsToUnRead.useMutation({
-    onSuccess: () => {
-      notActiveMembers.forEach((m) => {
-        socket.emit("messageNotify", {
-          room: "user" + m,
-          message: { id: channel.id },
-        });
-      });
-    },
-  });
-
-  // function addMessage(message: (typeof room)["msgs"][number]) {
-  //   setMessages((messages) => [...messages, message]);
-  // }
 
   const addMessage = useCallback(
     (message: (typeof channel)["msgs"][number]) => {
@@ -65,24 +48,6 @@ const Content: FC<{ channel: ChannelType }> = ({ channel }) => {
     [setMessages],
   );
 
-  const { mutate } = api.message.create.useMutation({
-    onSuccess: (data) => {
-      const newMessage = {
-        authorId: user.id,
-        id: data.messageId,
-        createdAt: new Date(),
-        author: user,
-        text: input,
-      };
-      addMessage(newMessage);
-      socket.emit("message", {
-        room: "room" + channel.id,
-        message: newMessage,
-      });
-      setInput("");
-      notifyMembers({ userIds: notActiveMembers, roomId: channel.id });
-    },
-  });
 
   useEffect(() => {
     setMessages(channel.msgs);
@@ -102,35 +67,12 @@ const Content: FC<{ channel: ChannelType }> = ({ channel }) => {
   return (
     <div className={Styles.container}>
       <MessageList msgs={messages} />
-
+      
       <div className={Styles.input_area}>
         <div className={Styles.input_container}>
-          <input
-            autoComplete="off"
-            type="text"
-            v-model="msg_text"
-            className={Styles.message_input}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                if (input !== "") {
-                  mutate({ text: input, roomId: channel.id });
-                }
-              }
-            }}
-            placeholder={
-              "написать " +
-              (channel.type == "ls"
-                ? channel.members
-                    .map((u) => u.user)
-                    .filter((m) => m.id !== user.id)
-                    .map((m) => m.name)
-                    .join(", ")
-                : channel.name)
-            }
-          />
+          <MessageInput channel={channel} addMessage={(message : ChannelType['msgs'][number]) => {
+             addMessage(message)
+          }} />
         </div>
       </div>
     </div>
