@@ -1,7 +1,7 @@
 import Styles from "./GroupRight.module.scss";
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { ChannelType } from "~/types/rooms";
 import { useAppSelector } from "~/hooks/redux";
 
@@ -28,7 +28,10 @@ function MembersList({
   room: ChannelType;
   selfAdmin: boolean;
 }) {
-  const [usersObjs, setUObjs] = useState(room.members);
+  const [usersObjs, setUObjs] = useState<typeof room.members>([]);
+  useEffect(() => {
+    setUObjs(room.members)
+  } , [room.members])
   const { mutate: delUser } = api.rooms.kickUser.useMutation();
   return (
     <div className={Styles.room_members}>
