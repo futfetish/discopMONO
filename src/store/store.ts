@@ -1,8 +1,9 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit"
-import { globalSlice } from "./reducers/globalReducer"
+import { globalReducer } from "./reducers/globalReducer"
+
 
 const rootReducer = combineReducers({
-    global : globalSlice.reducer
+    global : globalReducer
 })
 
 export const setupStore = (preloadedState : Partial<typeof rootReducer>) => {
@@ -12,6 +13,6 @@ export const setupStore = (preloadedState : Partial<typeof rootReducer>) => {
     })
 }
 
-export type AppState = ReturnType<ReturnType<typeof setupStore>['getState']>
+export type AppState = ReturnType<typeof rootReducer>
 export type AppStore = ReturnType<typeof setupStore>
 export type AppDispatch = AppStore['dispatch']

@@ -5,8 +5,8 @@ import { api } from "~/utils/api";
 import { socket } from "~/socket";
 import Styles from "./friendsAddPage.module.scss";
 import { MyButton } from "~/modules/common/ui/myButton/myButton";
-import { globalSlice } from "~/store/reducers/globalReducer";
 import { useAppDispatch, useAppSelector } from "~/hooks/redux";
+import { setPage } from "~/store/reducers/globalReducer";
 
 export const FriendsAddPage: FC = () => {
   return (
@@ -20,14 +20,13 @@ export const FriendsAddPage: FC = () => {
 };
 
 const Content: FC = () => {
-  const { setPage } = globalSlice.actions;
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(setPage("friends"));
-  }, [dispatch, setPage]);
+  }, [dispatch]);
 
-  const user = useAppSelector((state) => state.global.user);
+  const user = useAppSelector(state => state.global.user);
   const [checkText, setCheckText] = useState("");
   const { mutate } = api.friends.add.useMutation({
     onSuccess: (data) => {

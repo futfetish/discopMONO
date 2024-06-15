@@ -11,7 +11,7 @@ const initialState : GlobalState = {
     user : {name : '' , uniqName : '' , image : '' , id : ''}
 }
 
-export const globalSlice = createSlice({
+const globalSlice = createSlice({
     name : 'global',
     initialState,
     reducers : {
@@ -20,3 +20,6 @@ export const globalSlice = createSlice({
         }
     }
 }) 
+
+export const globalReducer = globalSlice.reducer
+export const { setPage } = globalSlice.actions

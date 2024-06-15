@@ -6,8 +6,8 @@ import { userDTO } from "~/types/user";
 import { socket } from "~/socket";
 import { FriendList } from "../../components/friendList/FriendList";
 import Styles from "./friendsWaitPage.module.scss";
-import { globalSlice } from "~/store/reducers/globalReducer";
 import { useAppDispatch } from "~/hooks/redux";
+import { setPage } from "~/store/reducers/globalReducer";
 
 export const FriendsWaitPage: FC = () => {
   return (
@@ -21,12 +21,11 @@ export const FriendsWaitPage: FC = () => {
 };
 
 const Content: FC = () => {
-  const { setPage } = globalSlice.actions;
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(setPage("friends"));
-  }, [dispatch, setPage]);
+  }, [dispatch]);
   const { data: friends, isLoading } = api.friends.requests.useQuery();
 
   const [friendListTo, setFriendListTo] = useState<userDTO[]>([]);

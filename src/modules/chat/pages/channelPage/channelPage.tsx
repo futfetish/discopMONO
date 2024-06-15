@@ -8,7 +8,7 @@ import { GroupRight } from "~/modules/chat/features/groupRight/GroupRight";
 import { socket } from "~/socket";
 import { MessageList } from "../../components/messageList/messageList";
 import { useAppDispatch, useAppSelector } from "~/hooks/redux";
-import { globalSlice } from "~/store/reducers/globalReducer";
+import { setPage } from "~/store/reducers/globalReducer";
 
 export const ChannelPage: FC<{ channel: ChannelType }> = ({ channel }) => {
   return (
@@ -16,7 +16,7 @@ export const ChannelPage: FC<{ channel: ChannelType }> = ({ channel }) => {
       top={<Top channel={channel} />}
       right={<Right channel={channel} />}
       content={<Content channel={channel} />}
-      title={ (user)  =>
+      title={(user) =>
         channel.type == "ls"
           ? channel.members
               .map((u) => u.user)
@@ -31,12 +31,11 @@ export const ChannelPage: FC<{ channel: ChannelType }> = ({ channel }) => {
 
 const Content: FC<{ channel: ChannelType }> = ({ channel }) => {
   const user = useAppSelector((state) => state.global.user);
-  const { setPage } = globalSlice.actions
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(setPage("room_" + channel.id));
-  }, [dispatch, channel.id, setPage]);
+  }, [dispatch, channel.id]);
 
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<(typeof channel)["msgs"]>(
@@ -99,6 +98,7 @@ const Content: FC<{ channel: ChannelType }> = ({ channel }) => {
       socket.off("message", onMessage);
     };
   }, [addMessage]);
+
   return (
     <div className={Styles.container}>
       <MessageList msgs={messages} />
@@ -204,3 +204,4 @@ const Right: FC<{ channel: ChannelType }> = ({ channel }) => {
 
   return <h1>right</h1>;
 };
+

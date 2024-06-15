@@ -5,8 +5,9 @@ import { userDTO } from "~/types/user";
 import { FriendList } from "~/modules/friend/components/friendList/FriendList";
 import { Layout } from "~/modules/layout/pages/layout/layout";
 import { FriendTop } from "~/modules/friend/features/friendsTop/FriendsTop";
-import { globalSlice } from "~/store/reducers/globalReducer";
+
 import { useAppDispatch } from "~/hooks/redux";
+import { setPage } from "~/store/reducers/globalReducer";
 
 export const FriendsAllPage: FC = () => {
   return (
@@ -20,12 +21,12 @@ export const FriendsAllPage: FC = () => {
 };
 
 const Content = () => {
-  const { setPage } = globalSlice.actions;
+
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(setPage("friends"));
-  }, [dispatch, setPage]);
+  }, [dispatch]);
 
   const { mutate } = api.friends.del.useMutation();
 
