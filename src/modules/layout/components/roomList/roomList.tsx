@@ -1,7 +1,7 @@
 import { roomType } from "~/types/rooms";
 import Styles from "./roomList.module.scss";
 import Link from "next/link";
-import { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import { socket } from "~/socket";
 import { useAppSelector } from "~/hooks/redux";
@@ -60,7 +60,7 @@ const RoomItem: FC<{
   room: roomType;
   userId: string;
   active: boolean;
-}> = ({ room, userId, active }) => {
+}> =  React.memo( ({ room, userId, active }) => {
   return (
     <Link
       className={active ? Styles.tab : ""}
@@ -84,4 +84,7 @@ const RoomItem: FC<{
       </p>
     </Link>
   );
-};
+}
+)
+
+RoomItem.displayName = 'RoomItem'
