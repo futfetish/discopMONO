@@ -1,4 +1,4 @@
-import React, { type ReactNode, useState, FC } from "react";
+import React, { type ReactNode, useState, FC, useEffect, useRef } from "react";
 import Styles from "./globalSettings.module.scss";
 import {
   SettingsProfile,
@@ -76,10 +76,28 @@ const SettingsNav: FC<{ page: string; setPage: (page: string) => void }> = ({
 };
 
 const SettingClose: FC<{ callBack: () => void }> = ({ callBack }) => {
+  const escButtonRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (escButtonRef.current !== null) {
+        if (event.key === "Escape") {
+          escButtonRef.current.click();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleEsc);
+
+    return () => {
+      window.removeEventListener("keydown", handleEsc);
+    };
+  }, []);
+
   return (
     <>
-      <div className={Styles.esc_anim} onClick={callBack}>
-        <div className={Styles.esc_but} id="settings_esc_but">
+      <div className={Styles.esc_anim} ref={escButtonRef} onClick={callBack}>
+        <div className={Styles.esc_but}>
           <i className="bi bi-x"></i>
         </div>
       </div>
