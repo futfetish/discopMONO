@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef } from "react";
+import React, { FC, useEffect, useRef } from "react";
 import { ChannelType } from "~/types/rooms";
 import Styles from "./messageList.module.scss";
 
@@ -69,7 +69,9 @@ export const MessageList: FC<{ msgs: ChannelType["msgs"] }> = ({ msgs }) => {
 const MessageItem: FC<{
   message: ChannelType["msgs"][number];
   isNewMessage: boolean;
-}> = ({ message, isNewMessage }) => {
+}> = React.memo(
+  ({ message, isNewMessage }) => {
+  console.log(`rerender message : ${message.id}`)
   function formatDate(date: Date | string): string {
     const dateObj = typeof date === "string" ? new Date(date) : date;
 
@@ -132,4 +134,7 @@ const MessageItem: FC<{
       <div className={Styles.message__text}>{message.text}</div>
     </div>
   );
-};
+}
+)
+
+MessageItem.displayName = 'MessageItem'
