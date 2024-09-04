@@ -3,7 +3,7 @@ import Styles from "./globalSettings.module.scss";
 import {
   SettingsProfile,
   SettingsUniqName,
-} from "../../components/settingsPages/settingsPages";
+} from "../settingsPages/settingsPages";
 import { signOut } from "next-auth/react";
 
 export const GlobalSettings: FC<{
@@ -57,7 +57,7 @@ const SettingsNav: FC<{ page: string; setPage: (page: string) => void }> = ({
             {"name" in item && "key" in item && (
               <SettingBut
                 text={item.name}
-                page={page === item.key}
+                active={page === item.key}
                 onClick={() => setPage(item.key)}
               />
             )}
@@ -67,7 +67,7 @@ const SettingsNav: FC<{ page: string; setPage: (page: string) => void }> = ({
         <SettingBut
           text="Выйти"
           onClick={() => void signOut()}
-          page={false}
+          active={false}
           icon={<i className="bi bi-box-arrow-right"></i>}
         />
       </div>
@@ -117,11 +117,11 @@ const Stick: FC = () => {
 const SettingBut: FC<{
   text: string;
   onClick: () => void;
-  page: boolean;
+  active: boolean;
   icon?: ReactNode;
-}> = ({ text, onClick, page, icon }) => {
+}> = ({ text, onClick, active, icon }) => {
   return (
-    <a href="#" className={page ? Styles.active : ""} onClick={onClick}>
+    <a href="#" className={active ? Styles.active : ""} onClick={onClick}>
       <p>{text}</p>
       {icon && icon}
     </a>
