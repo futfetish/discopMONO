@@ -5,7 +5,7 @@ import { api } from "~/utils/api";
 import { useAppSelector } from "~/hooks/redux";
 
 export const SettingsProfile: FC = () => {
-  const user = useAppSelector(state => state.global.user)
+  const user = useAppSelector((state) => state.global.user);
   const [name, setName] = useState(user.name);
   const avaInput = useRef<HTMLInputElement>(null);
   const ava = useRef<HTMLImageElement>(null);
@@ -107,11 +107,10 @@ export const SettingsProfile: FC = () => {
                 </div>
                 <img alt="" ref={ava} src={user.image} />
               </div>
-              <div className={Styles.profile_cart__content}>
-                <div className={Styles.profile_cart__info}>
-                  <div className={[Styles.name, Styles.info].join(" ")}>
-                    {name}
-                  </div>
+
+              <div className={Styles.profile_cart__info}>
+                <div className={[Styles.name, Styles.info].join(" ")}>
+                  {name}
                 </div>
               </div>
             </div>
@@ -153,7 +152,7 @@ export const SettingsProfile: FC = () => {
 };
 
 export const SettingsUniqName: FC = () => {
-  const user = useAppSelector(state => state.global.user)
+  const user = useAppSelector((state) => state.global.user);
   const [uniqName, setUniqName] = useState(user.uniqName ? user.uniqName : "");
   const [uniqNameError, setUniqNameError] = useState<string | null>(null);
   const { mutate: updateUser } = api.users.update.useMutation({

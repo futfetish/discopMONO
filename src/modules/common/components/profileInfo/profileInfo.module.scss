@@ -1,0 +1,78 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+  .additionalPaddingTop {
+    background-color: #695767;
+    width: 100%;
+  }
+  .profile_info {
+    color: white;
+    background-image: linear-gradient(#695767, #695767);
+    background-size: 100% 63px;
+    background-repeat: no-repeat;
+    display: flex;
+    padding: 15px;
+    background-color: #1c1c1c;
+    flex-grow: 1;
+    height: 100%;
+    flex-direction: column;
+    gap: 8px;
+    .ava {
+      overflow: hidden;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: #1c1c1c solid 4px;
+      position: relative;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+      &:hover {
+        .hover_thing {
+          opacity: 1;
+        }
+      }
+    }
+    .info {
+      padding-left: 0px;
+      .name {
+        text-overflow: ellipsis;
+        font-size: 20px;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      .unique_name {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        font-size: 16px;
+        white-space: nowrap;
+      }
+    }
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      background-color: #2a2c30;
+      padding: 6px;
+      border-radius: 5px;
+      gap: 4px;
+      .button {
+        color: #e2e2e2;
+        display: flex;
+        align-items: center;
+        min-height: 40px;
+        border-radius: 2px;
+        padding: 8px;
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.05);
+          color: white;
+        }
+        &:active {
+          background-color: #5f64e9;
+        }
+      }
+    }
+  }
+}
