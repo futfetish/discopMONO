@@ -200,7 +200,7 @@ export const friendRouter = createTRPCRouter({
     });
     return request !== null;
   }),
-  FriendStatus: protectedProcedure
+  status: protectedProcedure
     .input(
       z.object({
         id: z.string(),
