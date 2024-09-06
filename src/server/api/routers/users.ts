@@ -51,7 +51,7 @@ export const usersRouter = createTRPCRouter({
     
     getById : publicProcedure.input(z.object({
       id : z.string()
-    })).mutation(async({ctx , input}) => {
+    })).query(async({ctx , input}) => {
       const user = await ctx.db.user.findUniqueOrThrow({
         where : {
           id : input.id

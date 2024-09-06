@@ -33,11 +33,12 @@ const Content: FC = () => {
   const { mutate: reject } = api.friends.rejectReq.useMutation();
   const { mutate: cancel } = api.friends.cancelReq.useMutation();
   const { mutate: accept } = api.friends.acceptReq.useMutation();
-  const { mutate: addNewReq } = api.users.getById.useMutation({
-    onSuccess: (data) => {
-      setFriendListFrom([...friendListFrom, data]);
-    },
-  });
+
+  // const { mutate: addNewReq } = api.users.getById.useMutation({
+  //   onSuccess: (data) => {
+  //     setFriendListFrom([...friendListFrom, data]);
+  //   },
+  // });
 
   useEffect(() => {
     if (!isLoading && friends) {
@@ -53,11 +54,19 @@ const Content: FC = () => {
         addNewReq({ id: data.id });
       }
     }
+
+    const addNewReq = ({ id }: { id: string }) => {
+      const { data: user } = api.users.getById.useQuery({ id });
+      if (user) {
+        setFriendListFrom([...friendListFrom, user]);
+      }
+    };
+    
     socket.on("friendReqNotify", onFriendReqNotify);
     return () => {
       socket.off("friendReqNotify", onFriendReqNotify);
     };
-  }, [addNewReq, friendListFrom]);
+  }, [friendListFrom]);
 
   return (
     <div className={Styles.self__self} id="friends_all_app">
