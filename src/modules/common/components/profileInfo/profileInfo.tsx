@@ -7,7 +7,6 @@ export interface ProfileCardButton {
   href: string;
   title?: string;
   onClick?: () => void;
-  
 }
 
 export interface ProfileInfoProps {
@@ -16,12 +15,17 @@ export interface ProfileInfoProps {
   additionalPaddingTop?: number;
 }
 
-export const ProfileInfo: FC<ProfileInfoProps> = ({ user, buttons, additionalPaddingTop }) => {
+export const ProfileInfo: FC<ProfileInfoProps> = ({
+  user,
+  buttons,
+  additionalPaddingTop,
+}) => {
   return (
-    <div className={Styles.container} >
-      <div className={Styles.additionalPaddingTop} style={{height : `${additionalPaddingTop}px`}} >
-
-      </div>
+    <div className={Styles.container}>
+      <div
+        className={Styles.additionalPaddingTop}
+        style={{ height: `${additionalPaddingTop}px` }}
+      ></div>
       <div className={Styles.profile_info}>
         <div className={Styles.ava}>
           <img alt="" src={user.image} />
@@ -32,21 +36,22 @@ export const ProfileInfo: FC<ProfileInfoProps> = ({ user, buttons, additionalPad
             {user.name}
           </div>
         </div>
-
-        <div className={Styles.content}>
-          <div className={Styles.buttons}>
-            { buttons?.map((button, index) => (
-              <Link
-                className={Styles.button}
-                href={button.href ? button.href : "#"}
-                key={index}
-                onClick={() => button.onClick && button.onClick()}
-              >
-                {button.title}
-              </Link>
-            ))}
+        {buttons.length > 0 && (
+          <div className={Styles.content}>
+            <div className={Styles.buttons}>
+              {buttons.map((button, index) => (
+                <Link
+                  className={Styles.button}
+                  href={button.href ? button.href : "#"}
+                  key={index}
+                  onClick={() => button.onClick && button.onClick()}
+                >
+                  {button.title}
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
