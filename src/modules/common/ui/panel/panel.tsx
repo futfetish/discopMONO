@@ -45,7 +45,7 @@ export const Panel: React.FC<PanelProps> = ({
   }, [setIsOpen]);
 
   return (
-    <div style={{ position: "absolute" }}>
+    <div style={{ position: "absolute" , zIndex : '100' }}>
       {isOpen && (
         <div ref={panelRef} {...divProps}>
           {children}
