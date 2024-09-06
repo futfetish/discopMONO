@@ -3,22 +3,24 @@ import Styles from "./profileInfo.module.scss";
 import { userDTO } from "~/types/user";
 import Link from "next/link";
 
-export interface ProfileCardButton {
-  href: string;
-  title?: string;
+export interface ProfileInfoButton {
+  href?: string;
+  title: string;
   onClick?: () => void;
 }
 
 export interface ProfileInfoProps {
   user: userDTO;
-  buttons: ProfileCardButton[];
+  buttons?: ProfileInfoButton[];
   additionalPaddingTop?: number;
+  isFriend? : boolean
 }
 
 export const ProfileInfo: FC<ProfileInfoProps> = ({
   user,
-  buttons,
+  buttons = [],
   additionalPaddingTop,
+  isFriend = false
 }) => {
   return (
     <div className={Styles.container}>
@@ -33,7 +35,12 @@ export const ProfileInfo: FC<ProfileInfoProps> = ({
 
         <div className={Styles.info}>
           <div className={[Styles.name, Styles.info].join(" ")}>
-            {user.name}
+            <p>
+               {user.name}
+            </p>
+           { isFriend && <p>
+            <i className="bi bi-person-fill-check"></i>
+           </p>}
           </div>
         </div>
         {buttons.length > 0 && (

@@ -43,6 +43,8 @@
         font-size: 20px;
         white-space: nowrap;
         overflow: hidden;
+        display: flex;
+        gap: 8px;
       }
       .unique_name {
         text-overflow: ellipsis;
