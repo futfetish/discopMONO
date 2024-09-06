@@ -1,36 +1,33 @@
 import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 
 export const friendRouter = createTRPCRouter({
   all: protectedProcedure.query(({ ctx }) => {
-      const ID = ctx.session.user.id;
-      return ctx.db.user.findMany({
-        where: {
-          id: {
-            not: ID,
-          },
-          friends: {
-            some: {
-              toId: ID,
-            },
-          },
-          friendsOf: {
-            some: {
-              fromId: ID,
-            },
+    const ID = ctx.session.user.id;
+    return ctx.db.user.findMany({
+      where: {
+        id: {
+          not: ID,
+        },
+        friends: {
+          some: {
+            toId: ID,
           },
         },
-        select: {
-          id: true,
-          name: true,
-          image: true,
+        friendsOf: {
+          some: {
+            fromId: ID,
+          },
         },
-      });
-    }),
+      },
+      select: {
+        id: true,
+        name: true,
+        image: true,
+      },
+    });
+  }),
   del: protectedProcedure
     .input(
       z.object({
@@ -70,11 +67,11 @@ export const friendRouter = createTRPCRouter({
           where: {
             uniqName: input.name,
           },
-          select : {
-            id : true,
-            name : true,
-            image : true
-          }
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
         });
         if (friend) {
           const ID = friend.id;
@@ -86,7 +83,7 @@ export const friendRouter = createTRPCRouter({
               },
             });
           }
-          return { isSuccess: true , user : {id : friend.id} };
+          return { isSuccess: true, user: { id: friend.id } };
         }
         return { isSuccess: false };
       } catch (e) {
@@ -183,7 +180,7 @@ export const friendRouter = createTRPCRouter({
       });
       return { isSuccess: true };
     }),
-  isHaveReq: protectedProcedure.query(async ({ctx}) => {
+  isHaveReq: protectedProcedure.query(async ({ ctx }) => {
     const request = await ctx.db.user.findFirst({
       where: {
         friends: {
@@ -197,10 +194,37 @@ export const friendRouter = createTRPCRouter({
           },
         },
       },
-      select : {
-        id : true
-      }
-    })
-    return request !== null
-  })
+      select: {
+        id: true,
+      },
+    });
+    return request !== null;
+  }),
+  FriendStatus: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const fromStatus = await ctx.db.friends.findUnique({
+        where: {
+          fromId_toId: {
+            fromId: input.id,
+            toId: ctx.session.user.id,
+          },
+        },
+      });
+
+      const toStatus = await ctx.db.friends.findUnique({
+        where: {
+          fromId_toId: {
+            fromId: ctx.session.user.id,
+            toId: input.id,
+          },
+        },
+      });
+
+      return { from : !!fromStatus , to : !!toStatus }
+    }),
 });
