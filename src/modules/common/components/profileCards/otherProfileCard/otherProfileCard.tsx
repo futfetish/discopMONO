@@ -1,14 +1,12 @@
 import { FC, useEffect, useState } from "react";
 import { ProfileCardMaket } from "../profileCardMaket/profileCardMaket";
-import { userDTO } from "~/types/user";
 import { ProfileInfoButton } from "../../profileInfo/profileInfo";
 import { api } from "~/utils/api";
+import { ProfileCardProps } from "../profileCard/profileCard";
 
-interface OtherProfileCardProps {
-  user: userDTO;
-}
 
-export const OtherProfileCard: FC<OtherProfileCardProps> = ({ user }) => {
+
+export const OtherProfileCard: FC<ProfileCardProps> = ({ user }) => {
   const { data: friendStatus, isLoading } = api.friends.status.useQuery({
     id: user.id,
   });
