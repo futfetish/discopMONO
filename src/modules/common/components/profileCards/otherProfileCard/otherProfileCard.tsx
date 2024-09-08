@@ -25,6 +25,11 @@ export const OtherProfileCard: FC<ProfileCardProps> = ({ user }) => {
 
   const buttons: ProfileInfoButton[] = [];
 
+  buttons.push({
+    title : 'Написать сообщение',
+    href : `/ls/${user.id}`
+  })
+
   if (toStatus && fromStatus) {
     buttons.push({
       title: "Удалить из друзей",
