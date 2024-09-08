@@ -85,12 +85,12 @@ export const Panel: React.FC<PanelProps> = ({
 
   useEffect(() => {
     if (parentRef.current) {
-      const rect = parentRef.current.getBoundingClientRect(); 
+      const rect = parentRef.current.getBoundingClientRect();
       setPosition({
         top: rect.top,
         left: rect.left,
         bottom: window.innerHeight - rect.bottom,
-        right: window.innerHeight - rect.right,
+        right: window.innerWidth - rect.right,
       });
 
       setParentDimensions({
@@ -142,7 +142,7 @@ export const Panel: React.FC<PanelProps> = ({
     };
   }, []);
 
-  console.log(position , panelDimensions)
+  console.log(position, panelDimensions);
 
   useEffect(() => {
     if (panelRef.current) {
@@ -163,6 +163,15 @@ export const Panel: React.FC<PanelProps> = ({
       }
     }
   }, [isOpen, animationDuration]);
+
+  console.log(window.innerWidth)
+
+  console.log(
+    position.right + rightPx + parentDimensions.width * (rightPercentage / 100),
+    WINDOWS_PADDING,
+
+    window.innerWidth - panelDimensions.width - WINDOWS_PADDING,
+  );
 
   return ReactDOM.createPortal(
     <div
