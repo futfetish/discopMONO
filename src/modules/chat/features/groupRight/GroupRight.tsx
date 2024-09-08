@@ -1,9 +1,11 @@
 import Styles from "./GroupRight.module.scss";
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { ChannelType } from "~/types/rooms";
 import { useAppSelector } from "~/hooks/redux";
+import { Panel } from "~/modules/common/ui/panel/panel";
+import { ProfileCard } from "~/modules/common/components/profileCards/profileCard/profileCard";
 
 export const GroupRight: FC<{
   room: ChannelType;
@@ -30,8 +32,8 @@ function MembersList({
 }) {
   const [usersObjs, setUObjs] = useState<typeof room.members>([]);
   useEffect(() => {
-    setUObjs(room.members)
-  } , [room.members])
+    setUObjs(room.members);
+  }, [room.members]);
   const { mutate: delUser } = api.rooms.kickUser.useMutation();
   return (
     <div className={Styles.room_members}>
@@ -59,9 +61,27 @@ function MemberItem({
   callback: () => void;
   selfAdmin: boolean;
 }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLAnchorElement>(null);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const togglePanel = () => {
+    setIsPanelOpen(!isPanelOpen);
+  };
   return (
-    <div className={Styles.room_member} key={member.user.id}>
-      <a href="#">
+    <div ref={containerRef} className={Styles.room_member} key={member.user.id}>
+      <Panel
+        useLeft={false}
+        useTop={true}
+        offsetPx={{ right: 16 }}
+        offsetPercentage={{ right: 100 }}
+        parentRef={containerRef}
+        buttonRef={buttonRef}
+        isOpen={isPanelOpen}
+        setIsOpen={setIsPanelOpen}
+      >
+        <ProfileCard user={member.user} />
+      </Panel>
+      <a onClick={() => togglePanel()} ref={buttonRef} href="#">
         <img alt="" src={member.user.image} className={Styles.member__ava} />
         <p>{member.user.name} </p>
         <span>

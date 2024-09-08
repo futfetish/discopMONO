@@ -1,68 +1,76 @@
-.profile_bar{
+.profile_bar {
+    // .profile_card{
+    //     bottom: calc(100% + 16px);
+    //     left: -16px;
+    // }
+  position: relative;
+
+  .content {
     user-select: none;
-    position: relative;
     display: flex;
     padding: 8px;
     background-color: #26252b;
-    color :white;
-    .profile_cart{
-        display: none;
-        position: absolute;
-        bottom: 80px;
-        left: -10px;
+    color: white;
+    .profile_cart {
+      display: none;
+      position: absolute;
+      bottom: 80px;
+      left: -10px;
     }
-    .profile_info{
-        padding: 3px;
-        flex : 1 1 0;
-        border-radius: 3px;
+    .profile_info {
+      padding: 3px;
+      flex: 1 1 0;
+      border-radius: 3px;
+      display: flex;
+      margin-right: 15px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+      .ava {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        margin-right: 8px;
+      }
+      .text_info {
+        width: 121px;
+        height: 100%;
         display: flex;
-        margin-right: 15px;
-        
-        &:hover{
-            background-color: rgba(255 , 255 , 255 , 0.2);
+        flex-direction: column;
+        font-family: "raleway", sans-serif;
+
+        .name {
+          display: flex;
+          align-items: center;
+          text-overflow: ellipsis;
+          max-width: 100%;
+          overflow: hidden;
+          font-size: 15px;
+          font-weight: 600;
+          white-space: nowrap;
         }
-        .ava{
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            margin-right: 8px;
-        }
-        .text_info{
-            width: 121px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            font-family: 'raleway', sans-serif;
-            
-           .name{
-                display: flex   ;
-                align-items: center;
-                text-overflow: ellipsis;
-                max-width: 100%;
-                overflow: hidden;
-                font-size: 15px;
-                font-weight: 600;
-                white-space: nowrap;
-            }
-        }
-        
-        .info{
-            flex : 1 1 0;
-        }
+      }
+
+      .info {
+        flex: 1 1 0;
+      }
     }
-    .utils{
-        padding: 3px;
-        .util{
-            width: 33px;
-            display: flex;
-            height: 33px;
-            justify-content: center;
-            align-items: center ;
-            border-radius: 3px;
-            &:hover{
-                background-color: rgba(255 , 255 , 255 , 0.2);
-            }
-            color :  #b5b3b3;
+    .utils {
+      padding: 3px;
+      .util {
+        width: 33px;
+        display: flex;
+        height: 33px;
+        justify-content: center;
+        align-items: center;
+        border-radius: 3px;
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.2);
         }
+        color: #b5b3b3;
+      }
     }
+  }
 }

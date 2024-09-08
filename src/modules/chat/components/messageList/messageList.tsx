@@ -1,6 +1,8 @@
-import React, { FC, useEffect, useRef } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { ChannelType } from "~/types/rooms";
 import Styles from "./messageList.module.scss";
+import { ProfileCard } from "~/modules/common/components/profileCards/profileCard/profileCard";
+import { Panel } from "~/modules/common/ui/panel/panel";
 
 export const MessageList: FC<{ msgs: ChannelType["msgs"] }> = ({ msgs }) => {
   const messageListRef = useRef<HTMLDivElement | null>(null);
@@ -69,9 +71,16 @@ export const MessageList: FC<{ msgs: ChannelType["msgs"] }> = ({ msgs }) => {
 const MessageItem: FC<{
   message: ChannelType["msgs"][number];
   isNewMessage: boolean;
-}> = React.memo(
-  ({ message, isNewMessage }) => {
-  console.log(`rerender message : ${message.id}`)
+}> = React.memo(({ message, isNewMessage }) => {
+  console.log(`rerender message : ${message.id}`);
+  const nameRef = useRef<HTMLDivElement>(null);
+  const authorRef = useRef<HTMLDivElement>(null);
+  const [ isPanelOpen , setIsPanelOpen ] = useState(false)
+
+  const togglePanel = () => {
+    setIsPanelOpen(!isPanelOpen)
+  }
+
   function formatDate(date: Date | string): string {
     const dateObj = typeof date === "string" ? new Date(date) : date;
 
@@ -119,7 +128,15 @@ const MessageItem: FC<{
             alt=""
           />
         ) : null}
-        <div className={Styles.message__author}> {message.author.name} </div>
+        {isNewMessage && (
+          <div ref={authorRef} className={Styles.message__author}>
+            <p ref={nameRef} onClick={() => togglePanel()} className={Styles.message__author_name}>{message.author.name}</p>
+            <Panel animationDuration={50} useLeft={true} useTop={true} offsetPx={{left : 10, top:-10} } offsetPercentage={{left : 100}} parentRef={authorRef} className={Styles.panel} isOpen={isPanelOpen} setIsOpen={setIsPanelOpen} buttonRef={nameRef} >
+              <ProfileCard user={message.author} />
+            </Panel>
+          </div>
+        )}
+
         {isNewMessage ? (
           <div className={Styles.message__date}>
             {formatDate(message.createdAt)}
@@ -134,7 +151,6 @@ const MessageItem: FC<{
       <div className={Styles.message__text}>{message.text}</div>
     </div>
   );
-}
-)
+});
 
-MessageItem.displayName = 'MessageItem'
+MessageItem.displayName = "MessageItem";
