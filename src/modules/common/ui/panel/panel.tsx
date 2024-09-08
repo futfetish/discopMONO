@@ -119,14 +119,30 @@ export const Panel: React.FC<PanelProps> = ({
   }, [setIsOpen]);
 
   useEffect(() => {
+    const handleResize = () => {
+      if (panelRef.current) {
+        const rect = panelRef.current.getBoundingClientRect();
+        setPanelDimensions({
+          width: rect.width,
+          height: rect.height,
+        });
+      }
+    };
+
+    const resizeObserver = new ResizeObserver(handleResize);
     if (panelRef.current) {
-      const rect = panelRef.current.getBoundingClientRect();
-      setPanelDimensions({
-        width: rect.width,
-        height: rect.height,
-      });
+      resizeObserver.observe(panelRef.current);
     }
-  }, [show]);
+
+    // Cleanup on unmount
+    return () => {
+      if (panelRef.current) {
+        resizeObserver.unobserve(panelRef.current);
+      }
+    };
+  }, []);
+
+  console.log(position , panelDimensions)
 
   useEffect(() => {
     if (panelRef.current) {
