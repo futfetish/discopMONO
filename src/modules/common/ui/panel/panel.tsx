@@ -31,6 +31,8 @@ interface PanelProps extends HTMLAttributes<HTMLDivElement> {
   };
   useLeft?: boolean;
   useTop?: boolean;
+  xCenter?: boolean;
+  yCenter?: boolean;
 }
 
 export const Panel: React.FC<PanelProps> = ({
@@ -44,9 +46,11 @@ export const Panel: React.FC<PanelProps> = ({
   offsetPercentage = {},
   useLeft = true,
   useTop = true,
+  xCenter = false,
+  yCenter = false,
   ...divProps
 }) => {
-  animationDuration = Math.max(animationDuration , 1)
+  animationDuration = Math.max(animationDuration, 1);
   const WINDOWS_PADDING = 8; //px
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -161,7 +165,7 @@ export const Panel: React.FC<PanelProps> = ({
           closeTimer.current = setTimeout(() => {
             setShow(false);
           }, animationDuration);
-        } else{
+        } else {
           setShow(false);
         }
       }
@@ -185,9 +189,11 @@ export const Panel: React.FC<PanelProps> = ({
         top: useTop
           ? `calc(${Math.min(
               Math.max(
-                position.top +
-                  topPx +
-                  parentDimensions.height * (topPercentage / 100),
+                yCenter
+                  ? parentDimensions.height / 2 + position.top - panelDimensions.height / 2
+                  : position.top +
+                      topPx +
+                      parentDimensions.height * (topPercentage / 100),
                 WINDOWS_PADDING,
               ),
               window.innerHeight - panelDimensions.height - WINDOWS_PADDING,
@@ -196,9 +202,11 @@ export const Panel: React.FC<PanelProps> = ({
         left: useLeft
           ? `calc(${Math.min(
               Math.max(
-                position.left +
-                  leftPx +
-                  parentDimensions.width * (leftPercentage / 100),
+                xCenter
+                  ? parentDimensions.width / 2 + position.left - panelDimensions.width / 2
+                  : position.left +
+                      leftPx +
+                      parentDimensions.width * (leftPercentage / 100),
                 WINDOWS_PADDING,
               ),
               window.innerWidth - panelDimensions.width - WINDOWS_PADDING,
@@ -207,9 +215,11 @@ export const Panel: React.FC<PanelProps> = ({
         bottom: !useTop
           ? `calc(${Math.min(
               Math.max(
-                position.bottom +
-                  bottomPx +
-                  parentDimensions.height * (bottomPercentage / 100),
+                yCenter
+                  ? parentDimensions.height / 2 + position.bottom - panelDimensions.height / 2
+                  : position.bottom +
+                      bottomPx +
+                      parentDimensions.height * (bottomPercentage / 100),
                 WINDOWS_PADDING,
               ),
               window.innerHeight - panelDimensions.height - WINDOWS_PADDING,
@@ -218,9 +228,11 @@ export const Panel: React.FC<PanelProps> = ({
         right: !useLeft
           ? `calc(${Math.min(
               Math.max(
-                position.right +
-                  rightPx +
-                  parentDimensions.width * (rightPercentage / 100),
+                xCenter
+                  ? parentDimensions.height / 2 + position.right - panelDimensions.height / 2
+                  : position.right +
+                      rightPx +
+                      parentDimensions.width * (rightPercentage / 100),
                 WINDOWS_PADDING,
               ),
               window.innerWidth - panelDimensions.width - WINDOWS_PADDING,
