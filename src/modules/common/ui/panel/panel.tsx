@@ -38,7 +38,7 @@ export const Panel: React.FC<PanelProps> = ({
   setIsOpen,
   children,
   buttonRef,
-  animationDuration = 0,
+  animationDuration = 1,
   parentRef,
   offsetPx = {},
   offsetPercentage = {},
@@ -46,6 +46,7 @@ export const Panel: React.FC<PanelProps> = ({
   useTop = true,
   ...divProps
 }) => {
+  animationDuration = Math.max(animationDuration , 1)
   const WINDOWS_PADDING = 8; //px
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -156,15 +157,18 @@ export const Panel: React.FC<PanelProps> = ({
         panelRef.current.style.opacity = "1";
       } else {
         panelRef.current.style.opacity = "0";
-
-        closeTimer.current = setTimeout(() => {
+        if (animationDuration) {
+          closeTimer.current = setTimeout(() => {
+            setShow(false);
+          }, animationDuration);
+        } else{
           setShow(false);
-        }, animationDuration);
+        }
       }
     }
   }, [isOpen, animationDuration]);
 
-  console.log(window.innerWidth)
+  console.log(window.innerWidth);
 
   console.log(
     position.right + rightPx + parentDimensions.width * (rightPercentage / 100),
