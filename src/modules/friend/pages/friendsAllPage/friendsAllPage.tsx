@@ -50,7 +50,7 @@ const Content = () => {
           friends={friendList}
           btns={[
             {
-              className: Styles.friend__del,
+              type : 'delete',
               icon: <i className="bi bi-x-lg"></i>,
               onClick: (e, friend) => {
                 e.preventDefault();

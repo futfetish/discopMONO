@@ -79,7 +79,7 @@ const Content: FC = () => {
             friends={friendListFrom}
             btns={[
               {
-                className: Styles.friend__accept,
+                type : 'accept',
                 icon: <i className="bi bi-check2"></i>,
                 onClick: (e, friend) => {
                   e.preventDefault();
@@ -90,7 +90,7 @@ const Content: FC = () => {
                 },
               },
               {
-                className: Styles.friend__reject,
+                type : 'reject',
                 icon: <i className="bi bi-x-lg"></i>,
                 onClick: (e, friend) => {
                   e.preventDefault();
@@ -106,7 +106,7 @@ const Content: FC = () => {
             friends={friendListTo}
             btns={[
               {
-                className: Styles.friend__cancel,
+                type : 'cancel',
                 icon: <i className="bi bi-x-lg"></i>,
                 onClick: (e, friend) => {
                   e.preventDefault();

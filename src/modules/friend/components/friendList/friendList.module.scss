@@ -1,117 +1,102 @@
-.friend__user{
-    cursor: pointer;
-    border-radius: 8px;
-    width: 100%;
-    padding:0 10px;
-    .friend__user_container{
-        border-top: rgba(68, 70, 77 , 0.5) solid 1px;
-        padding: 10px 0;
+.friend__user {
+  cursor: pointer;
+  border-radius: 8px;
+  width: 100%;
+  padding: 0 10px;
+  overflow: hidden auto;
+  display: flex;
+  flex-direction: column;
+  .friend__user_container {
+    border-top: rgba(68, 70, 77, 0.5) solid 1px;
+    padding: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    .friend__ava {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    .friend__user_info {
+      flex-grow: 1;
+      .friend__name {
+        color: white;
+        font-size: 18px;
+      }
+      .friend__some {
+        color: #b5b3b3;
+        font-size: 15px;
+      }
+    }
+    .friend__ava {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    .friend__user_info {
+      flex-grow: 1;
+      .friend__name {
+        color: white;
+        font-size: 18px;
+      }
+      .friend__some {
+        color: #b5b3b3;
+        font-size: 15px;
+      }
+    }
+    .button__container {
+      .friend__accept {
+        background-color: #00a629;
+      }
+      .friend__reject {
+        background-color: #a60000;
+      }
+      .friend__del {
+        white-space: nowrap;
+        background-color: #a60000;
+      }
+      .friend__cancel {
+        white-space: nowrap;
+        background-color: #a60000;
+      }
+      .friend__but {
+        position: relative;
+        font-size: 20px;
+        margin-right: 5px;
         display: flex;
-        align-items: center;
+        flex-direction: column;
         justify-content: center;
-        user-select: none;
-        .friend__ava{
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
+        align-items: center;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        &:hover {
+          cursor: pointer;
+          // &:after{
+          //     z-index: 3;
+          //     opacity: 1;
+          //     transform: scale(1);
+          // }
         }
-        .friend__user_info{
-            flex-grow: 1;
-            .friend__name{
-                color: white;
-                font-size: 18px;
-            }
-            .friend__some{
-                color:#b5b3b3;
-                font-size: 15px;
-            }
-
-        }
-        .friend__ava{
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-        .friend__user_info{
-            flex-grow: 1;
-            .friend__name{
-                color: white;
-                font-size: 18px;
-            }
-            .friend__some{
-                color:#b5b3b3;
-                font-size: 15px;
-            }
-
-        }
-        .friend__accept{
-            background-color: #00a629;
-            &:after{
-                content: 'Принять';
-            }
-        }
-        .friend__reject{
-            background-color: #a60000;
-            &:after{
-                content: 'Отклонить';
-            }
-        }
-        .friend__del{  
-            
-            white-space: nowrap;
-            background-color: #a60000;
-            &:after{
-                content: 'Удалить из друзей';
-            }
-        }
-        .friend__cancel{
-            white-space: nowrap;
-            background-color: #a60000;
-            &:after{
-                content: 'Отмена';
-            }
-        }
-        .friend__but{
-            position: relative;
-            font-size: 20px;
-            margin-right: 5px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            &:hover{
-                cursor: pointer;
-                &:after{
-                    z-index: 3;
-                    opacity: 1;
-                    transform: scale(1);
-                }
-            }
-            &:after{
-                z-index: -100;
-                box-shadow: -2px 2px 10px rgba(0 , 0 , 0 , 0.3);    
-                transition: transform ease-in-out 0.05s;
-                display: block;
-                opacity: 0;
-                transform: scale(0.97);
-                position: absolute;
-                bottom:48px;
-                padding: 5px 10px;
-                background-color: black;
-                color:white;
-                border-radius: 5px;
-                font-size: 13px;
-                margin-top: 20px ;
-            }
-        }
+      }
     }
-    &:hover{
-        background-color: rgba(68, 70, 77 , 0.5);
-    }
-
+  }
+  &:hover {
+    background-color: rgba(68, 70, 77, 0.5);
+  }
+}
+.helper {
+  box-shadow: -2px 2px 10px rgba(0, 0, 0, 0.3);
+ text-wrap: nowrap;
+  display: block;
+  // opacity: 0;
+  // transform: scale(0.97);
+  padding: 5px 10px;
+  background-color: black;
+  color: white;
+  border-radius: 5px;
+  font-size: 13px;
 }

@@ -11,11 +11,3 @@
         user-select: none;
     }
 }
-.friend__del{  
-                
-    white-space: nowrap;
-    background-color: #a60000;
-    &:after{
-        content: 'Удалить из друзей';
-    }
-}
