@@ -1,0 +1,26 @@
+.self__content {
+    display: flex;
+    width: 100%;
+    max-width: calc(100% - 240px);
+
+    flex-direction: column;
+    .self__top {
+      background-color: #2f3136;
+      height: 48px;
+      border-bottom: rgba(0, 0, 0, 0.3) solid 1px;
+    }
+    .self__bot {
+      display: flex;
+      background-color: #2f3136;
+      flex: 1 1 0;
+      .self__self {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+      }
+      .self__rightbar {
+        flex: 0 0 auto;
+        background-color: #2a2c30;
+      }
+    }
+  }

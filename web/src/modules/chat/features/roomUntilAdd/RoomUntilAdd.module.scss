@@ -1,0 +1,155 @@
+.util{
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    color : #c2c2c2;
+    margin: 0 3px;
+    font-size: 25px;
+    z-index: 4;
+    i{
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        &:after{
+            z-index: 1000;
+            font-style: normal;
+            white-space: nowrap;
+            display: none;
+            position: absolute;
+            top:15px;
+            padding: 5px 10px;
+            background-color: black;
+            color:white;
+            border-radius: 5px;
+            font-size: 13px;
+            margin-top: 20px ;
+            box-shadow: -2px 2px 10px rgba(0 , 0 , 0 , 0.3);
+        }
+        &:hover{
+            color : #dbd9d9;
+            &:after{
+                display: block;
+            }
+        } 
+    }
+}
+
+.utils_add{
+    i{
+        &:after{
+        content: 'добавить друзей в беседу';
+    }
+    }
+    .utils_add_func_init{
+        right : -20px;
+        overflow: visible;
+        display: flex;
+        align-items: end;
+        position: absolute;
+        top : 30px;
+        .utils_add_func{
+            z-index: 3;
+            border-radius: 5px;
+            border :    rgba(0,0,0,0.3) solid 1px;
+            box-shadow: -2px 2px 1px rgba(0,0,0,0.1);
+
+            // display: none;
+            flex-direction: column;
+            width: 350px;
+            background-color: #2f3136;
+            padding: 15px 0px 15px 15px;
+            h1{
+
+                font-size: 20px;
+                color: white;
+                margin-bottom: 10px ;
+            }
+            .input_containter{
+                padding-right: 15px ;
+                display: flex;
+                margin-bottom: 10px;
+                input{
+                    flex : 1;
+                    font-family: 'Raleway', sans-serif;
+                    border-radius: 3px;
+                    border: none;
+                    height: 28px;
+                    padding: 4px 10px;
+                    font-size: 15px;
+                    color: white;
+                    background-color: #212024;
+                    &:focus-visible{
+                        outline: none;
+                    }
+                    }
+            }
+            .friends{
+                margin-bottom: 10px ;
+                overflow-y: scroll; 
+                overflow-x: hidden;
+                
+                display: flex;
+                flex-direction: column;
+                max-height: 300px;
+                box-sizing: border-box;
+                .friend_obj{
+                    flex: 1;
+                    padding: 8px ;
+                    text-decoration: none;
+                    display: flex;
+                    border-radius: 5px;
+                   
+                    align-items:  center;
+                    .friend__ava{
+                        width: 30px;
+                        height: 30px;
+                        border-radius: 50%;
+                        margin-right: 8px;
+                        }
+                    p{
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        display: flex;
+                        align-items: center;
+                        flex-grow: 1;
+                        font-size: 18px;
+                        color: white;
+                    }
+                    .mark{
+                        width: 20px;
+                        height: 20px;
+                        border:#c2c2c2 solid 1px;
+                        border-radius: 5px;
+                    }
+                    .in{
+                        background-color: #6368ff;
+                    }
+                    &:hover{
+                        background-color: rgba(68, 70, 77 , 0.5);
+                    }
+                }
+            }
+            .create_group{
+                text-decoration: none;
+                justify-content: center;
+                align-items: center;
+                flex:1;
+                display: flex;
+                margin-right: 15px;
+                color : white;
+                font-family: 'Raleway', sans-serif;
+                border-radius: 5px;
+                font-size: 20px;
+                height: 45px;
+                background-color: #6368ff;
+                transition: all ease-in-out 0.1s;
+                &:hover{
+                    background-color: #565adb;
+                }
+            }
+        }
+    }
+}

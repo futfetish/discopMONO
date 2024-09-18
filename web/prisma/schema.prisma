@@ -1,0 +1,110 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+// Necessary for Next auth
+model Account {
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String? // @db.Text
+    access_token      String? // @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? // @db.Text
+    session_state     String?
+    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}
+
+model User {
+    accounts      Account[]
+    sessions      Session[]
+    email         String?   @unique
+    emailVerified DateTime?
+    name          String
+    image         String    @default("https://cdn.discordapp.com/embed/avatars/0.png")
+
+    id       String      @id @default(cuid())
+    msgs     Message[]
+    rooms    UserRooms[]
+    uniqName String?     @unique
+
+    friends   Friends[] @relation("FriendsFrom")
+    friendsOf Friends[] @relation("FriendsTo")
+}
+
+model Friends {
+    from   User   @relation("FriendsFrom", fields: [fromId], references: [id], onDelete: Cascade)
+    fromId String
+
+    to   User   @relation("FriendsTo", fields: [toId], references: [id], onDelete: Cascade)
+    toId String
+
+    @@id([fromId, toId])
+}
+
+enum Room_types {
+    ls
+    group
+}
+
+model Room {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+
+    name    String      @default("новый канал")
+    type    Room_types
+    msgs    Message[]
+    members UserRooms[]
+}
+
+model Message {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+
+    text     String @db.Text
+    author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+    authorId String
+    room     Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+    roomId   Int
+}
+
+model UserRooms {
+    user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId  String
+    room    Room    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+    roomId  Int
+    isRead  Boolean @default(false)
+    isAdmin Boolean @default(false)
+
+    @@id([userId, roomId])
+}

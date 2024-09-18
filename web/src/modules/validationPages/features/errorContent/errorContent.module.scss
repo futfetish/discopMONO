@@ -1,0 +1,19 @@
+
+.error{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 60px;
+    margin-top : 00px;
+    flex-direction: column;
+    color : #595959;
+    font-family: 'Raleway', sans-serif; 
+    .icon{
+        font-size: 300px;
+    }
+    .text{
+        max-width: 1200px;
+        text-align: center;
+    }
+}

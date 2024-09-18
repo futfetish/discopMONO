@@ -1,0 +1,14 @@
+.message_input{
+    flex-grow: 1;
+    height: 42px;
+    font-family: 'Raleway', sans-serif;
+    border-radius: 8px;
+    border: none;
+    padding: 12px 4px 12px 10px;
+    font-size: 15px;
+    color: white;
+    background-color: rgba(68, 70, 77 , 0.5);
+    &:focus-visible{
+        outline: none;
+    }
+}

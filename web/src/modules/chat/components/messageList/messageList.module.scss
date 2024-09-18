@@ -1,0 +1,94 @@
+.chat {
+  flex: 1 0 0;
+  overflow: hidden auto;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 20px;
+  .message {
+    position: relative;
+
+    padding: 4px 15px;
+    width: 100%;
+    word-wrap: break-word;
+    display: flex;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    .message__info {
+      display: flex;
+      align-items: flex-end;
+      .message__author_ava {
+        z-index: 10;
+        user-select: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        position: absolute;
+        left: 10px;
+        top: 8px;
+      }
+      .message__author {
+        margin-right: 10px;
+        position: relative;
+        // .panel{
+        //     left: calc(100% + 10px );
+        //     top: -10px;
+        // }
+
+        .message__author_name {
+          font-family: "Raleway", sans-serif;
+          text-shadow: 0 0 1px white;
+          cursor: pointer;
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+      .message__date {
+        display: flex;
+        text-align: center;
+        margin-bottom: 1px;
+        margin-top: 3px;
+        font-family: "REM", sans-serif;
+        font-size: 12px;
+        color: #b5b3b3;
+        font-weight: 300;
+      }
+    }
+
+    .message__text {
+      height: auto;
+      vertical-align: baseline;
+      text-align: left;
+      font-weight: 400;
+      overflow-wrap: break-word;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    &:hover {
+      background-color: rgba(42, 44, 48, 0.5);
+    }
+  }
+  .message_new {
+    margin-top: 10px;
+    padding-left: 65px;
+    min-width: 56px;
+  }
+  .message_past {
+    flex-direction: row;
+    align-items: start;
+    .message__author {
+      display: none;
+    }
+    .message__date {
+      width: 50px;
+      opacity: 0;
+    }
+    &:hover {
+      .message__date {
+        opacity: 1;
+      }
+    }
+  }
+}

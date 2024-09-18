@@ -1,0 +1,85 @@
+.container{
+    width: 200px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    .room_members{
+        overflow: auto;
+        display: flex;
+        flex-direction: column                                                              ;
+        max-height: calc(100% - 55px);
+        a{
+            .member__ava{
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                margin-right: 5px;
+            }
+            p{
+                white-space: nowrap;
+                overflow: hidden;
+                flex-grow: 1;
+                text-overflow: ellipsis;
+            }
+            .deleteUser{
+                border-radius: 5px;
+                background-color: #ff4545;
+                width: 30px;
+                height: 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                font-size: 10px;
+                &:hover{
+                    cursor: pointer;
+                    background-color: #ff2e2e;
+                }
+                &:active{
+                    transform: scale(0.95);
+                }
+            }
+            user-select: none;
+            i{
+                padding: 4px;
+                font-size: 20px;
+
+            }
+            border-radius: 4px;
+            align-items: center ;
+            display: flex;
+            padding: 5px;
+            color:white;
+            text-decoration: none;
+            &:hover{
+                background-color: #2f3136;
+            }
+            }
+    }
+    label{
+        color: #b5b3b3;;
+        padding: 12px 12px 6px 12px;
+    }
+    .actions{
+        button{
+            width: 100%;
+            margin-top: 20px ;
+            padding: 0 10px;
+            color : white;
+            font-family: 'Raleway', sans-serif;
+            border-radius: 5px;
+            font-size: 15px;
+            height: 35px;
+            box-shadow : none;
+            border : none;
+            transition: all ease-in-out 0.1s;
+            
+        }
+        .leave{
+            background-color: #ff4545;
+            &:hover{
+                background-color: #ff2e2e;
+            }
+        }
+    }
+}

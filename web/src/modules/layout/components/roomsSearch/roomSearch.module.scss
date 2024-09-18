@@ -1,0 +1,86 @@
+.rooms__top{
+    padding: 10px;
+    display: flex;
+    flex-grow: 1;
+    .rooms__top_content{
+        user-select: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+        font-family: 'Raleway', sans-serif;
+        border-radius: 3px;
+        border: none;
+        padding: 4px 10px;
+        font-size: 15px;
+        color: gray;
+        background-color: #212024;  
+    }
+}
+
+
+.rooms_search{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top:0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0 , 0,0,0.7);
+    z-index: 99991;
+        .block{
+            display: flex;
+            flex-direction: column;
+            width: 500px;
+            padding: 30px;
+            border-radius: 10px;
+            height: 300px;
+            background-color: #2f3136;
+            input{
+                font-family: 'Raleway', sans-serif;
+                border-radius: 3px;
+                border: none;
+                height: 50px !important;
+                padding: 4px 10px;
+                font-size: 20px;
+                color: white;
+                background-color: #212024;
+                &:focus-visible{
+                    outline: none;
+                }
+                margin-bottom: 10px;
+            }
+            .rooms{
+                overflow: hidden scroll;
+                height: 180px;
+                .room{
+                    padding: 4px;
+                    font-size: 20px;
+                    margin-right: 6px;
+                    border-radius: 4px;
+                    align-items: center ;
+                    display: flex;
+                    padding: 5px;
+                    color:white;
+                    text-decoration: none;
+                    .room_ava{
+                        width: 30px;
+                        height: 30px;
+                        border-radius: 50%;
+                        margin-right: 5px;
+                    }
+                    p{
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+                    &:hover{
+                        background-color:#2a2c30;
+                    }
+                    
+                }
+         }
+    }
+}

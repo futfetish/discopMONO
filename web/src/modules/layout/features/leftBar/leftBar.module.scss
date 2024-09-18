@@ -1,0 +1,17 @@
+.self__leftbar {
+    display: flex;
+    flex-direction: column;
+    background-color: #2a2c30;
+    width: 240px;
+
+    .self__leftbar_top {
+      background-color: #2a2c30;
+      display: flex;
+      height: 48px;
+      border-bottom: rgba(0, 0, 0, 0.3) solid 1px;
+    }
+
+    .self__leftbar_content {
+      flex-grow: 1;
+    }
+  }

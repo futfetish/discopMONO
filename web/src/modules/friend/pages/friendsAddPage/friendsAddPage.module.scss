@@ -1,0 +1,75 @@
+.self__self {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 30px;
+
+  .add_friend_container {
+    width: 100%;
+    display: flex;
+
+    align-items: center;
+    height: 50px;
+    padding: 5px 5px 5px 10px;
+    border-radius: 8px;
+    background-color: #212024;
+    border: rgba(0, 0, 0, 0) solid 1px;
+    &:focus-within {
+      border: #03d3fc solid 1px;
+    }
+    input {
+      height: 100%;
+      flex-grow: 1;
+      font-family: "Raleway", sans-serif;
+      border: none;
+      font-size: 15px;
+      color: white;
+      background-color: #00000000;
+      &:focus-visible {
+        outline: none;
+      }
+  
+    }
+    .but {
+      color: white;
+      outline: none;
+      height: 32px;
+      border-radius: 5px;
+      box-shadow: none;
+      padding: 5px 10px;
+      margin: 0 10px;
+      border: none;
+      background-color: #6368ff;
+      transition: all ease-in-out 0.1s;
+      &:hover {
+        background-color: #565adb;
+      }
+    }
+    label {
+      width: 100%;
+      color: #b5b3b3;
+      padding: 12px 0px 6px 0px;
+      user-select: none;
+    }
+  }
+  .friends__text{
+    color:white;
+    margin-bottom: 20px ;
+    width: 100%;
+}
+.check{
+    height: 40px;
+    font-weight: 400;
+    margin-top: 10px;
+    width: 100%;
+    color : #42d66b;
+    display: flex;
+    align-items: center;
+    .user_name{
+        font-weight: 600;
+        margin-left: 5px ;
+        color:#39d464;
+        
+    }
+}
+}
