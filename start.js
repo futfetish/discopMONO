@@ -1,8 +1,8 @@
 const { spawn } = require("child_process");
 
 const services = [
-  { name: "mainWebService", command: "npm", args: ["run", "dev"] },
-  { name: "webSocketService", command: "npm", args: ["run", "dev"] }
+  { name: "web", command: "npm", args: ["run", "dev"] },
+  { name: "ws", command: "npm", args: ["run", "dev"] }
 ];
 
 const startService = (service) => {
