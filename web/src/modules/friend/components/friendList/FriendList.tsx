@@ -77,7 +77,6 @@ const FriendButton: FC<{ btn: Btn; friend: FriendType }> = ({
     cancel: "Отмена",
   };
 
-  const buttonRef = useRef<HTMLDivElement>(null);
   const parentRef = useRef<HTMLDivElement>(null);
 
   const [isPanelOpen, setIsPanelOpen] = useState(false);
@@ -89,7 +88,6 @@ const FriendButton: FC<{ btn: Btn; friend: FriendType }> = ({
         isOpen={isPanelOpen}
         setIsOpen={setIsPanelOpen}
         parentRef={parentRef}
-        buttonRef={buttonRef}
         offsetPx={{left : 10 , top : 5}}
         xCenter={true}
         offsetPercentage={{top : -100 }}
@@ -101,7 +99,6 @@ const FriendButton: FC<{ btn: Btn; friend: FriendType }> = ({
         )}
       </Panel>
       <div
-        ref={buttonRef}
         onMouseEnter={() => setIsPanelOpen(true)}
         onMouseLeave={() => setIsPanelOpen(false)}
         className={`${Styles.friend__but} ${btn.className} ${

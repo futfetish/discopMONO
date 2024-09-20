@@ -14,9 +14,9 @@ import ReactDOM from "react-dom";
 interface PanelProps extends HTMLAttributes<HTMLDivElement> {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
-  buttonRef: RefObject<HTMLElement>;
+  buttonRef?: RefObject<HTMLElement>;
   animationDuration?: number;
-  parentRef: RefObject<HTMLElement>;
+  parentRef?: RefObject<HTMLElement>;
   offsetPx?: {
     top?: number;
     left?: number;
@@ -89,7 +89,7 @@ export const Panel: React.FC<PanelProps> = ({
   // };
 
   useEffect(() => {
-    if (parentRef.current) {
+    if (  parentRef?.current) {
       const rect = parentRef.current.getBoundingClientRect();
       setPosition({
         top: rect.top,
@@ -110,7 +110,7 @@ export const Panel: React.FC<PanelProps> = ({
       if (
         panelRef.current &&
         !panelRef.current.contains(event.target as Node) &&
-        buttonRef.current &&
+        buttonRef?.current &&
         !buttonRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
