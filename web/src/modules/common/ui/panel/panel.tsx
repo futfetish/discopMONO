@@ -103,7 +103,7 @@ export const Panel: React.FC<PanelProps> = ({
         height: rect.height,
       });
     }
-  }, [isOpen]);
+  }, [isOpen , parentRef]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -121,7 +121,7 @@ export const Panel: React.FC<PanelProps> = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [setIsOpen]);
+  }, [setIsOpen , buttonRef]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -142,6 +142,7 @@ export const Panel: React.FC<PanelProps> = ({
     // Cleanup on unmount
     return () => {
       if (panelRef.current) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         resizeObserver.unobserve(panelRef.current);
       }
     };
