@@ -101,7 +101,7 @@ const FriendButton: FC<{ btn: Btn; friend: FriendType }> = ({
       </Panel>
       <div
         onMouseEnter={() => setIsPanelOpen(true)}
-        // onMouseLeave={() => setIsPanelOpen(false)}
+        onMouseLeave={() => setIsPanelOpen(false)}
         className={`${Styles.friend__but} ${btn.className} ${
           btn.type && buttonsClasses[btn.type]
         }`}
