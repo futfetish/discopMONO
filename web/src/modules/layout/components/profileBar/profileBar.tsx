@@ -20,7 +20,7 @@ export const ProfileBar: FC<{
   const user = useAppSelector((state) => state.global.user);
   return (
     <div ref={parentRef} className={Styles.profile_bar}>
-      <Panel parentRef={parentRef} useTop={false} useLeft={true} offsetPx={{left : -16 , bottom : 16}} offsetPercentage={{bottom : 100}} animationDuration={50} className={Styles.profile_card} buttonRef={buttonRef}  isOpen={isOpen} setIsOpen={setIsOpen} >
+      <Panel   parentRef={parentRef} useTop={false} useLeft={true} offsetPx={{left : -16 , bottom : 16}} offsetPercentage={{bottom : 100}}  className={Styles.profile_card} buttonRef={buttonRef}  isOpen={isOpen} setIsOpen={setIsOpen} >
         <ProfileCard user={user}  />
       </Panel>
       <div className={Styles.content}>
