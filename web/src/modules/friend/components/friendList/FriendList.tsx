@@ -84,7 +84,8 @@ const FriendButton: FC<{ btn: Btn; friend: FriendType }> = ({
   return (
     <div ref={parentRef} className={Styles.button__container}>
       <Panel
-      animationDuration={50}
+      opacityAnimation={{ duration : 50}}
+      scaleAnimation={  { duration : 50 , startScale : 97 }}
         isOpen={isPanelOpen}
         setIsOpen={setIsPanelOpen}
         parentRef={parentRef}
@@ -100,7 +101,7 @@ const FriendButton: FC<{ btn: Btn; friend: FriendType }> = ({
       </Panel>
       <div
         onMouseEnter={() => setIsPanelOpen(true)}
-        onMouseLeave={() => setIsPanelOpen(false)}
+        // onMouseLeave={() => setIsPanelOpen(false)}
         className={`${Styles.friend__but} ${btn.className} ${
           btn.type && buttonsClasses[btn.type]
         }`}

@@ -15,7 +15,13 @@ interface PanelProps extends HTMLAttributes<HTMLDivElement> {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   buttonRef?: RefObject<HTMLElement>;
-  animationDuration?: number;
+  opacityAnimation?: {
+    duration: number;
+  };
+  scaleAnimation?: {
+    duration: number;
+    startScale: number;
+  };
   parentRef?: RefObject<HTMLElement>;
   offsetPx?: {
     top?: number;
@@ -40,7 +46,8 @@ export const Panel: React.FC<PanelProps> = ({
   setIsOpen,
   children,
   buttonRef,
-  animationDuration = 1,
+  opacityAnimation = { duration: 1 },
+  scaleAnimation = { duration: 0, startScale: 100 },
   parentRef,
   offsetPx = {},
   offsetPercentage = {},
@@ -50,9 +57,12 @@ export const Panel: React.FC<PanelProps> = ({
   yCenter = false,
   ...divProps
 }) => {
-  animationDuration = Math.max(animationDuration, 1);
+  opacityAnimation.duration = Math.max(opacityAnimation.duration, 1);
+  scaleAnimation.duration = Math.max(scaleAnimation.duration, 0);
+  scaleAnimation.startScale = Math.max(scaleAnimation.startScale, 0);
   const WINDOWS_PADDING = 8; //px
   const panelRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const closeTimer: MutableRefObject<NodeJS.Timeout | null> =
     useRef<NodeJS.Timeout>(null);
@@ -69,7 +79,7 @@ export const Panel: React.FC<PanelProps> = ({
     width: 0,
     height: 0,
   });
-  const [panelDimensions, setPanelDimensions] = useState({
+  const [wrapperDimensions, setWrapperDimensions] = useState({
     width: 0,
     height: 0,
   });
@@ -89,7 +99,7 @@ export const Panel: React.FC<PanelProps> = ({
   // };
 
   useEffect(() => {
-    if (  parentRef?.current) {
+    if (parentRef?.current) {
       const rect = parentRef.current.getBoundingClientRect();
       setPosition({
         top: rect.top,
@@ -103,7 +113,7 @@ export const Panel: React.FC<PanelProps> = ({
         height: rect.height,
       });
     }
-  }, [isOpen , parentRef]);
+  }, [isOpen, parentRef]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -121,34 +131,17 @@ export const Panel: React.FC<PanelProps> = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [setIsOpen , buttonRef]);
+  }, [setIsOpen, buttonRef]);
 
   useEffect(() => {
-    const handleResize = () => {
-      if (panelRef.current) {
-        const rect = panelRef.current.getBoundingClientRect();
-        setPanelDimensions({
-          width: rect.width,
-          height: rect.height,
-        });
-      }
-    };
-
-    const resizeObserver = new ResizeObserver(handleResize);
-    if (panelRef.current) {
-      resizeObserver.observe(panelRef.current);
+    if (wrapperRef.current) {
+      const rect = wrapperRef.current.getBoundingClientRect();
+      setWrapperDimensions({
+        width: rect.width,
+        height: rect.height,
+      });
     }
-
-    // Cleanup on unmount
-    return () => {
-      if (panelRef.current) {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        resizeObserver.unobserve(panelRef.current);
-      }
-    };
-  }, []);
-
-  console.log(position, panelDimensions);
+  }, [wrapperRef]);
 
   useEffect(() => {
     if (panelRef.current) {
@@ -160,18 +153,16 @@ export const Panel: React.FC<PanelProps> = ({
         setShow(true);
 
         panelRef.current.style.opacity = "1";
+        panelRef.current.style.transform = `scale(1)`;
       } else {
         panelRef.current.style.opacity = "0";
-        if (animationDuration) {
-          closeTimer.current = setTimeout(() => {
-            setShow(false);
-          }, animationDuration);
-        } else {
-          setShow(false);
-        }
+        panelRef.current.style.transform = `scale(${
+          scaleAnimation.startScale / 100
+        })`;
+        setShow(false);
       }
     }
-  }, [isOpen, animationDuration]);
+  }, [isOpen, opacityAnimation.duration , scaleAnimation.startScale]);
 
   console.log(window.innerWidth);
 
@@ -179,11 +170,12 @@ export const Panel: React.FC<PanelProps> = ({
     position.right + rightPx + parentDimensions.width * (rightPercentage / 100),
     WINDOWS_PADDING,
 
-    window.innerWidth - panelDimensions.width - WINDOWS_PADDING,
+    window.innerWidth - wrapperDimensions.width - WINDOWS_PADDING,
   );
 
   return ReactDOM.createPortal(
     <div
+      ref={wrapperRef}
       {...divProps}
       style={{
         position: "absolute",
@@ -191,65 +183,88 @@ export const Panel: React.FC<PanelProps> = ({
           ? `calc(${Math.min(
               Math.max(
                 yCenter
-                  ? parentDimensions.height / 2 + position.top - panelDimensions.height / 2
+                  ? parentDimensions.height / 2 +
+                      position.top -
+                      wrapperDimensions.height / 2
                   : position.top +
                       topPx +
                       parentDimensions.height * (topPercentage / 100),
                 WINDOWS_PADDING,
               ),
-              window.innerHeight - panelDimensions.height - WINDOWS_PADDING,
+              window.innerHeight - wrapperDimensions.height - WINDOWS_PADDING,
             )}px)`
           : "auto",
         left: useLeft
           ? `calc(${Math.min(
               Math.max(
                 xCenter
-                  ? parentDimensions.width / 2 + position.left - panelDimensions.width / 2
+                  ? parentDimensions.width / 2 +
+                      position.left -
+                      wrapperDimensions.width / 2
                   : position.left +
                       leftPx +
                       parentDimensions.width * (leftPercentage / 100),
                 WINDOWS_PADDING,
               ),
-              window.innerWidth - panelDimensions.width - WINDOWS_PADDING,
+              window.innerWidth - wrapperDimensions.width - WINDOWS_PADDING,
             )}px)`
           : "auto",
         bottom: !useTop
           ? `calc(${Math.min(
               Math.max(
                 yCenter
-                  ? parentDimensions.height / 2 + position.bottom - panelDimensions.height / 2
+                  ? parentDimensions.height / 2 +
+                      position.bottom -
+                      wrapperDimensions.height / 2
                   : position.bottom +
                       bottomPx +
                       parentDimensions.height * (bottomPercentage / 100),
                 WINDOWS_PADDING,
               ),
-              window.innerHeight - panelDimensions.height - WINDOWS_PADDING,
+              window.innerHeight - wrapperDimensions.height - WINDOWS_PADDING,
             )}px)`
           : "auto",
         right: !useLeft
           ? `calc(${Math.min(
               Math.max(
                 xCenter
-                  ? parentDimensions.height / 2 + position.right - panelDimensions.height / 2
+                  ? parentDimensions.height / 2 +
+                      position.right -
+                      wrapperDimensions.height / 2
                   : position.right +
                       rightPx +
                       parentDimensions.width * (rightPercentage / 100),
                 WINDOWS_PADDING,
               ),
-              window.innerWidth - panelDimensions.width - WINDOWS_PADDING,
+              window.innerWidth - wrapperDimensions.width - WINDOWS_PADDING,
             )}px)`
           : "auto",
         zIndex: "100",
+        visibility: show ? "visible" : "hidden",
+        pointerEvents: show ? "auto" : "none",
       }}
     >
       <div
         style={{
-          transition: "opacity " + animationDuration + "ms ease-in",
+          transition: `opacity ${opacityAnimation.duration}ms ease-in, 
+           transform ${scaleAnimation.duration}ms ease-in`,
           opacity: 0,
+          transform: `scale(${scaleAnimation.startScale / 100})`,
         }}
         ref={panelRef}
       >
-        {show && <div>{children}</div>}
+        <div
+        // style={
+        //   show
+        //     ? {}
+        //     : {
+        //         visibility: "hidden",
+        //         pointerEvents: "none",
+        //       }
+        // }
+        >
+          {children}
+        </div>
       </div>
     </div>,
     document.body,
