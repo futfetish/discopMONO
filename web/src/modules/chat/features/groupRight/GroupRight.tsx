@@ -74,6 +74,7 @@ function MemberItem({
         useTop={true}
         offsetPx={{ right: 16 }}
         offsetPercentage={{ right: 100 }}
+        opacityAnimation={{duration : 50}}
         parentRef={containerRef}
         buttonRef={buttonRef}
         isOpen={isPanelOpen}
