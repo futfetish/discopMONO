@@ -34,3 +34,14 @@ body{
     overflow: hidden;
       font-family: 'Raleway', sans-serif;
   }
+
+.hidden_scroll{
+  scrollbar-width: none;
+  &::-webkit-scrollbar{
+    display: none;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: transparent; 
+  }
+}
