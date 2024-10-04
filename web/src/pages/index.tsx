@@ -1,11 +1,15 @@
-import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { GetStaticProps } from 'next';
+
+export const getStaticProps: GetStaticProps = async () => {
+    return {
+      redirect: {
+        destination: '/friends',
+        permanent: false,
+      },
+    };
+};
+
 
 export default function Home() {
-  const router = useRouter();
-  useEffect(() => {
-    router.push("/friends");
-  });
-
   return <div>...</div>;
 }
