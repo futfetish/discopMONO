@@ -9,36 +9,6 @@ import { LoadingPage } from "~/modules/validationPages/pages/loadingPage/loading
 import { ErrorPage } from "~/modules/validationPages/pages/errorPage/errorPage";
 import { ChannelPage } from "~/modules/chat/pages/channelPage/channelPage";
 
-// class MessageAuthorFlyWeight {
-//   users: Map<string, room["members"][number]["user"]> = new Map<
-//     string,
-//     room["members"][number]["user"]
-//   >();
-//   db : DBtype = db
-
-//   async getUser(id: string): Promise<room["members"][number]["user"]> {
-//     if(!this.users.has(id)){
-//       const newUser = await this.db.user.findUnique({
-//         where  : {
-//           id
-//         },
-//         select: {
-//           id: true,
-//           name: true,
-//           image: true,
-//         }
-//       })
-//       if (newUser){
-//         this.users.set(id , newUser)
-//       }else{
-//         this.users.set(id , {id : id , name : 'unknown' , image:''})
-//       }
-
-//     }
-//     return this.users.get(id)!
-//   }
-// }
-
 const getRoom = async (id: number) => {
   const res = await db.room.findUnique({
     where: {
