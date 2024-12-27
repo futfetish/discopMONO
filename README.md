@@ -24,7 +24,7 @@ This project is a full-featured messenger inspired by Discord. It allows users t
 
 ### Backend
 - Next.js
-- Node.js
+- NextAuth.js
 - Express.js
 - Socket.io
 - tRPC
