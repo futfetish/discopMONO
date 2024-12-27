@@ -13,6 +13,17 @@ export const MessageList: FC<{ msgs: ChannelType["msgs"] }> = ({ msgs }) => {
     }
   });
 
+  function isDifferenceMoreThanHour(date1: Date | string, date2: Date | string) {
+    const time1 = new Date(date1).getTime();
+    const time2 = new Date(date2).getTime();
+
+    const differenceInMs = Math.abs(time1 - time2);
+
+    const differenceInHours = differenceInMs / (1000 * 60 * 60);
+
+    return differenceInHours > 1;
+}
+
   function isSameDay(date1: Date | string, date2: Date | string): boolean {
     const dateObj1 = typeof date1 === "string" ? new Date(date1) : date1;
     const dateObj2 = typeof date2 === "string" ? new Date(date2) : date2;
@@ -45,7 +56,7 @@ export const MessageList: FC<{ msgs: ChannelType["msgs"] }> = ({ msgs }) => {
   ) {
     return (
       (message && pastMessage && message.authorId !== pastMessage.authorId) ||
-      !isSameDay(message.createdAt, pastMessage.createdAt)
+      !isSameDay(message.createdAt, pastMessage.createdAt) || isDifferenceMoreThanHour(message.createdAt, pastMessage.createdAt)
     );
   }
 
