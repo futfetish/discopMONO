@@ -18,17 +18,17 @@ This project is a full-featured messenger inspired by Discord. It allows users t
 ### Frontend
 - TypeScript
 - React
-- Redux Toolkit
+- Redux
 - Next.js
-- SCSS for styling
+- SCSS
 
 ### Backend
 - Node.js
 - Express.js
-- Socket.io for WebSocket-based real-time communication
-- tRPC for API endpoints
-- Prisma ORM for database interaction
-- Zod for input validation
+- Socket.io
+- tRPC
+- Prisma ORM
+- Zod
 
 ## Launching the Application
 To start the application, run the following command:
