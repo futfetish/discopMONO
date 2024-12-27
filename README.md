@@ -23,6 +23,7 @@ This project is a full-featured messenger inspired by Discord. It allows users t
 - SCSS
 
 ### Backend
+- TypeScript
 - Next.js
 - NextAuth.js
 - Express.js
