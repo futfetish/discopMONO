@@ -1,3 +1,4 @@
+## Monolithic Application (Next.js)
 - [React](https://reactjs.org)
 - [Redux](https://redux.js.org)
 - [Next.js](https://nextjs.org)
